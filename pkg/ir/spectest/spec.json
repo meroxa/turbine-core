@@ -1,0 +1,40 @@
+{
+    "secrets": {
+        "key": "valuesecret"
+    },
+    "connectors": [
+        {
+            "collection": "user_activity",
+            "kind": "source",
+            "resource": "mypg",
+            "config": {
+                "logical_replication": true
+            }
+        },
+        {
+            "uuid": "61580bed-74c6-46fd-a451-39f7502836c1",
+            "collection": "user_activity_enriched",
+            "kind": "destination",
+            "resource": "mypg"
+        }
+    ],
+    "functions": [
+        {
+            "name": "user_activity_enriched",
+            "image": "ftorres/enrich:9",
+            "env_vars": {
+                "CLEARBIT_API_KEY": "token-1"
+            }
+        }
+    ],
+    "definition": {
+        "git_sha": "3630e05a-98b7-43a0-aeb0-c9b5b0d4261c",
+        "metadata": {
+            "turbine": {
+                "language": "golang",
+                "version": "0.1.0"
+            },
+            "spec_version": "0.1.1"
+        }
+    }
+}
