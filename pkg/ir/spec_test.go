@@ -22,7 +22,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Connectors: []ir.ConnectorSpec{
 			{
-				Kind:       ir.ConnectorSource,
+				Type:       ir.ConnectorSource,
 				Resource:   "mypg",
 				Collection: "user_activity",
 				Config: map[string]interface{}{
@@ -30,7 +30,7 @@ func Test_DeploymentSpec(t *testing.T) {
 				},
 			},
 			{
-				Kind:       ir.ConnectorDestination,
+				Type:       ir.ConnectorDestination,
 				Resource:   "mypg",
 				Collection: "user_activity_enriched",
 			},

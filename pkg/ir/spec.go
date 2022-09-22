@@ -1,13 +1,13 @@
 package ir
 
-type ConnectorKind string
+type ConnectorType string
 type Lang string
 
 const (
 	GoLang Lang = "golang"
 
-	ConnectorSource      ConnectorKind = "source"
-	ConnectorDestination ConnectorKind = "destination"
+	ConnectorSource      ConnectorType = "source"
+	ConnectorDestination ConnectorType = "destination"
 )
 
 type DeploymentSpec struct {
@@ -18,7 +18,7 @@ type DeploymentSpec struct {
 }
 
 type ConnectorSpec struct {
-	Kind       ConnectorKind          `json:"kind"`
+	Type       ConnectorType          `json:"type"`
 	Resource   string                 `json:"resource"`
 	Collection string                 `json:"collection"`
 	Config     map[string]interface{} `json:"config,omitempty"`

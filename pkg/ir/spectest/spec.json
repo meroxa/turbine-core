@@ -5,16 +5,15 @@
     "connectors": [
         {
             "collection": "user_activity",
-            "kind": "source",
+            "type": "source",
             "resource": "mypg",
             "config": {
                 "logical_replication": true
             }
         },
         {
-            "uuid": "61580bed-74c6-46fd-a451-39f7502836c1",
             "collection": "user_activity_enriched",
-            "kind": "destination",
+            "type": "destination",
             "resource": "mypg"
         }
     ],
