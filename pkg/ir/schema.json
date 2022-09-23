@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://turbine.ir.schema.json",
+	"$id": "https://api.meroxa.io/spec/turbine.ir.schema.json",
 	"title": "Turbine intermediate representation schema",
 	"type": "object",
 	"properties": {

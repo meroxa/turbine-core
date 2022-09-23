@@ -18,7 +18,7 @@ func Test_ValidSpec(t *testing.T) {
 			desc:        "empty spec",
 			specVersion: "0.1.1",
 			spec:        `{}`,
-			err:         "missing properties: 'connectors', 'metadata'",
+			err:         "\"\" field fails /required validation: missing properties: 'connectors', 'metadata'",
 		},
 		{
 			desc:        "empty metadata",
@@ -33,7 +33,7 @@ func Test_ValidSpec(t *testing.T) {
 				],
 				"metadata": {}
 			}`,
-			err: "missing properties: 'turbine'",
+			err: "\"/metadata\" field fails /properties/metadata/required validation: missing properties: 'turbine'",
 		},
 		{
 			desc:        "empty turbine",
@@ -50,7 +50,7 @@ func Test_ValidSpec(t *testing.T) {
 					"turbine": {}
 				}
 			}`,
-			err: "missing properties: 'language', 'version'",
+			err: "\"/metadata/turbine\" field fails /properties/metadata/properties/turbine/required validation: missing properties: 'language', 'version'",
 		},
 		{
 			desc:        "minimal valid spec",
@@ -84,7 +84,7 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "minimum 1 items required, but found 0 items",
+			err: "\"/connectors\" field fails /properties/connectors/minItems validation: minimum 1 items required, but found 0 items",
 		},
 		{
 			desc:        "empty connector",
@@ -100,7 +100,7 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "missing properties: 'collection', 'type', 'resource'",
+			err: "\"/connectors/0\" field fails /properties/connectors/items/0/required validation: missing properties: 'collection', 'type', 'resource'",
 		},
 		{
 			desc:        "unknown connector type",
@@ -120,7 +120,7 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "value must be one of \"source\", \"destination\"",
+			err: "\"/connectors/0/type\" field fails /properties/connectors/items/0/properties/type/enum validation: value must be one of \"source\", \"destination\"",
 		},
 		{
 			desc:        "one destination connector",
@@ -140,7 +140,7 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "does not match pattern '^source$'",
+			err: "\"/connectors/0/type\" field fails /properties/connectors/contains/properties/type/pattern validation: does not match pattern '^source$'",
 		},
 		{
 			desc:        "one source, one destination connectors",
@@ -223,7 +223,7 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "valid must be <= 1, but got 2",
+			err: "\"/connectors\" field fails /properties/connectors/maxContains validation: valid must be <= 1, but got 2",
 		},
 		{
 			desc:        "one source, two duplicate destination connectors",
@@ -253,7 +253,7 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "items at index 0 and 1 are equal",
+			err: "\"/connectors\" field fails /properties/connectors/uniqueItems validation: items at index 0 and 1 are equal",
 		},
 		{
 			desc:        "empty function list",
@@ -296,7 +296,7 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "missing properties: 'name', 'image'",
+			err: "\"/functions/0\" field fails /properties/functions/items/0/required validation: missing properties: 'name', 'image'",
 		},
 		{
 			desc:        "one function",
@@ -351,7 +351,7 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "maximum 1 items required, but found 2 items",
+			err: "\"/functions\" field fails /properties/functions/maxItems validation: maximum 1 items required, but found 2 items",
 		},
 		{
 			desc:        "maximum spec",
@@ -396,7 +396,7 @@ func Test_ValidSpec(t *testing.T) {
 			if tc.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.Contains(t, err.Error(), tc.err)
+				require.Equal(t, err.Error(), tc.err)
 			}
 		})
 	}
