@@ -1,10 +1,13 @@
 package ir
 
+import "fmt"
+
 type ConnectorType string
 type Lang string
 
 const (
-	GoLang Lang = "golang"
+	GoLang            Lang = "golang"
+	LatestSpecVersion      = "0.1.1"
 
 	ConnectorSource      ConnectorType = "source"
 	ConnectorDestination ConnectorType = "destination"
@@ -43,4 +46,11 @@ type MetadataSpec struct {
 type TurbineSpec struct {
 	Language Lang   `json:"language"`
 	Version  string `json:"version"`
+}
+
+func ValidateSpecVersion(specVersion string) error {
+	if specVersion != LatestSpecVersion {
+		return fmt.Errorf("spec version %q is not a supported. use version %q instead", specVersion, LatestSpecVersion)
+	}
+	return nil
 }

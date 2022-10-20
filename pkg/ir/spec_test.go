@@ -2,6 +2,8 @@ package ir_test
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"path"
 	"testing"
@@ -67,5 +69,34 @@ func Test_DeploymentSpec(t *testing.T) {
 	); diff != "" {
 		t.Fatalf("mismatched spec: %s", diff)
 	}
+}
 
+func Test_ValidateVersion(t *testing.T) {
+	testCases := []struct {
+		name        string
+		specVersion string
+		wantError   error
+	}{
+		{
+			name:        "using valid spec version",
+			specVersion: ir.LatestSpecVersion,
+			wantError:   nil,
+		},
+		{
+			name:        "using invalid spec version",
+			specVersion: "0.0.0",
+			wantError:   fmt.Errorf("spec version \"0.0.0\" is not a supported. use version %q instead", ir.LatestSpecVersion),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			gotError := ir.ValidateSpecVersion(tc.specVersion)
+			if tc.wantError != nil {
+				assert.Equal(t, gotError.Error(), tc.wantError.Error())
+			} else {
+				assert.NoError(t, gotError)
+			}
+		})
+	}
 }
