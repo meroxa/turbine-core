@@ -3,8 +3,6 @@ package ir
 import (
 	_ "embed"
 	"encoding/json"
-	"fmt"
-
 	"github.com/santhosh-tekuri/jsonschema/v5"
 )
 
@@ -13,13 +11,10 @@ var (
 	turbineIRSchema string
 )
 
-const (
-	SpecVersion = "0.1.1"
-)
-
 func ValidateSpec(spec []byte, specVersion string) error {
-	if specVersion != SpecVersion {
-		return fmt.Errorf("spec version %q is not a supported version %q", specVersion, SpecVersion)
+	err := ValidateSpecVersion(specVersion)
+	if err != nil {
+		return err
 	}
 
 	sch, err := jsonschema.CompileString("turbine.ir.schema.json", turbineIRSchema)
