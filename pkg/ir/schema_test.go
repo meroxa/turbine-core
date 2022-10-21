@@ -18,7 +18,22 @@ func Test_ValidSpec(t *testing.T) {
 			desc:        "empty spec",
 			specVersion: "0.1.1",
 			spec:        `{}`,
-			err:         "\"\" field fails /required validation: missing properties: 'connectors', 'metadata'",
+			err:         "\"\" field fails /required validation: missing properties: 'connectors', 'definition'",
+		},
+		{
+			desc:        "empty definition",
+			specVersion: "0.1.1",
+			spec: `{
+				"connectors": [
+					{
+						"collection": "users",
+						"type": "source",
+						"resource": "pg"
+					}
+				],
+				"definition": {}
+			}`,
+			err: "\"/definition\" field fails /properties/definition/required validation: missing properties: 'git_sha', 'metadata'",
 		},
 		{
 			desc:        "empty metadata",
@@ -31,9 +46,12 @@ func Test_ValidSpec(t *testing.T) {
 						"resource": "pg"
 					}
 				],
-				"metadata": {}
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {}
+				}
 			}`,
-			err: "\"/metadata\" field fails /properties/metadata/required validation: missing properties: 'turbine'",
+			err: "\"/definition/metadata\" field fails /properties/definition/properties/metadata/required validation: missing properties: 'turbine', 'spec_version'",
 		},
 		{
 			desc:        "empty turbine",
@@ -46,11 +64,15 @@ func Test_ValidSpec(t *testing.T) {
 						"resource": "pg"
 					}
 				],
-				"metadata": {
-					"turbine": {}
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {},
+						"spec_version": "0.1.1"
+					}
 				}
 			}`,
-			err: "\"/metadata/turbine\" field fails /properties/metadata/properties/turbine/required validation: missing properties: 'language', 'version'",
+			err: "\"/definition/metadata/turbine\" field fails /properties/definition/properties/metadata/properties/turbine/required validation: missing properties: 'language', 'version'",
 		},
 		{
 			desc:        "minimal valid spec",
@@ -63,10 +85,14 @@ func Test_ValidSpec(t *testing.T) {
 						"resource": "pg"
 					}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -77,10 +103,14 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 				"connectors": [
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -93,10 +123,14 @@ func Test_ValidSpec(t *testing.T) {
 				"connectors": [
 					{}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -113,10 +147,14 @@ func Test_ValidSpec(t *testing.T) {
 						"resource": "pg"
 					}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -133,10 +171,14 @@ func Test_ValidSpec(t *testing.T) {
 						"resource": "pg"
 					}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -158,10 +200,14 @@ func Test_ValidSpec(t *testing.T) {
 						"resource": "pg"
 					}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -187,10 +233,14 @@ func Test_ValidSpec(t *testing.T) {
 						"resource": "pg"
 					}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -216,10 +266,14 @@ func Test_ValidSpec(t *testing.T) {
 						"resource": "pg"
 					}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -246,10 +300,14 @@ func Test_ValidSpec(t *testing.T) {
 						"resource": "pg"
 					}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -267,10 +325,14 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				],
 				"function": [],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -289,10 +351,14 @@ func Test_ValidSpec(t *testing.T) {
 				"functions": [
 					{}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -315,10 +381,14 @@ func Test_ValidSpec(t *testing.T) {
 						"image": "ftorres/enrich:9"
 					}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -344,10 +414,14 @@ func Test_ValidSpec(t *testing.T) {
 						"image": "ftorres/enrich:1000"
 					}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
@@ -357,34 +431,36 @@ func Test_ValidSpec(t *testing.T) {
 			desc:        "maximum spec",
 			specVersion: "0.1.1",
 			spec: `{
-				"connectors": [
-					{
-						"collection": "users",
-						"type": "source",
-						"resource": "pg",
-						"config": {
-							"logical_replication": true
-						}
-					}, 
-					{
-						"collection": "users_enriched",
-						"type": "destination",
-						"resource": "pg_prod"
-					}
-				],
+				"secrets": {
+					"API_KEY": "token"
+				}, 
 				"functions": [
 					{
-						"name": "enrich",
-						"image": "ftorres/enrich:9",
-						"env_vars": {
-							"CLEARBIT_API_KEY": "token-1"
-						}
-					}
+						"name": "anonymize",
+						"image": "ec3b84a9-0866-4003-8e67-1492e9a3e61e"}
 				],
-				"metadata": {
-					"turbine": {
-						"language": "golang",
-						"version": "0.19"
+				"connectors": [
+					{
+						"type": "source",
+						"config": {}, 
+						"resource": "pg", 
+						"collection": "sequences"
+					}, 
+					{
+						"type": "destination", 
+						"config": {}, 
+						"resource": "pg", 
+						"collection": "test_py_feature_branch"
+					}
+				], 
+				"definition": {
+					"git_sha": "b1537986d46bcd810960696d1e6df739e7bcc592", 
+					"metadata": {
+						"turbine": {
+							"version": "1.5.1", 
+							"language": "py"
+						}, 
+						"spec_version": "0.1.1"
 					}
 				}
 			}`,
