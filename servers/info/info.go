@@ -6,16 +6,14 @@ import (
 
 	turbinecore "github.com/meroxa/turbine-core"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	"github.com/meroxa/turbine-core/platform"
 	platform2 "github.com/meroxa/turbine-core/servers/platform"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type server struct {
 	pb.UnimplementedTurbineServiceServer
-	client                   *platform.Client
 	processes                map[string]*pb.Process
-	resources                []pb.Resource
+	resources                []*pb.Resource
 	resourcesWithCollections []pb.ResourceWithCollection
 	deploy                   bool
 	imageName                string
@@ -61,18 +59,15 @@ func (s *server) ListResources(ctx context.Context, empty *emptypb.Empty) (*pb.L
 	return &rr, nil
 }
 
-func (s *server) GetResource(ctx context.Context, id *pb.NameOrUUID) (*pb.Resource, error) {
-	r := pb.Resource{}
-	if id.Uuid != "" {
-		r.Uuid = id.Uuid
-	}
+func (s *server) GetResource(ctx context.Context, id *pb.GetResourceRequest) (*pb.Resource, error) {
+	r := &pb.Resource{}
 	if id.Name != "" {
 		r.Name = id.Name
 	}
 
 	s.resources = append(s.resources, r)
 
-	return &r, nil
+	return r, nil
 }
 
 func (s *server) ReadCollection(ctx context.Context, request *pb.ReadCollectionRequest) (*pb.Collection, error) {
@@ -111,7 +106,7 @@ func (s *server) AddProcessToCollection(ctx context.Context, request *pb.Process
 func New() *server {
 	return &server{
 		processes: make(map[string]*pb.Process),
-		resources: []pb.Resource{},
+		resources: []*pb.Resource{},
 		deploy:    false,
 		imageName: "",
 		config:    turbinecore.AppConfig{},

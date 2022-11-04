@@ -3,10 +3,11 @@ package ir_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/meroxa/turbine-core/pkg/ir"
@@ -41,9 +42,6 @@ func Test_DeploymentSpec(t *testing.T) {
 			{
 				Name:  "user_activity_enriched",
 				Image: "ftorres/enrich:9",
-				EnvVars: map[string]interface{}{
-					"CLEARBIT_API_KEY": "token-1",
-				},
 			},
 		},
 		Definition: ir.DefinitionSpec{

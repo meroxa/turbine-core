@@ -13,6 +13,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :configFilePath, :string, 2
       optional :language, :enum, 3, "turbine_core.InitRequest.Language"
       optional :gitSHA, :string, 4
+      optional :turbineVersion, :string, 5
     end
     add_enum "turbine_core.InitRequest.Language" do
       value :GOLANG, 0
@@ -20,9 +21,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       value :JAVASCRIPT, 2
       value :RUBY, 3
     end
-    add_message "turbine_core.NameOrUUID" do
+    add_message "turbine_core.GetResourceRequest" do
       optional :name, :string, 1
-      optional :uuid, :string, 2
     end
     add_message "turbine_core.Resource" do
       optional :uuid, :string, 1
@@ -64,14 +64,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.Process" do
       optional :name, :string, 1
-      optional :type, :enum, 2, "turbine_core.Process.Type"
-      optional :image, :string, 3
-    end
-    add_enum "turbine_core.Process.Type" do
-      value :GO, 0
-      value :NODE, 1
-      value :PYTHON, 2
-      value :DOCKER, 3
     end
     add_message "turbine_core.ProcessCollectionRequest" do
       optional :process, :message, 1, "turbine_core.Process"
@@ -102,7 +94,7 @@ end
 module TurbineCore
   InitRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.InitRequest").msgclass
   InitRequest::Language = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.InitRequest.Language").enummodule
-  NameOrUUID = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.NameOrUUID").msgclass
+  GetResourceRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetResourceRequest").msgclass
   Resource = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Resource").msgclass
   Resource::Direction = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Resource.Direction").enummodule
   Collection = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Collection").msgclass
@@ -112,7 +104,6 @@ module TurbineCore
   ResourceConfigs = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ResourceConfigs").msgclass
   ResourceConfig = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ResourceConfig").msgclass
   Process = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Process").msgclass
-  Process::Type = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Process.Type").enummodule
   ProcessCollectionRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessCollectionRequest").msgclass
   Secret = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Secret").msgclass
   ListFunctionsResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ListFunctionsResponse").msgclass

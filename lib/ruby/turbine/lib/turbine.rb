@@ -10,25 +10,38 @@ module Turbine
   class Runner
     attr_reader :core_server
 
-    def initialize(app_name)
-      # TODO: figure out what the deal is with :this_channel_is_insecure
+    def initialize(app_name, gitSHA)
       turbine_server_addr = ENV['TURBINE_CORE_SERVER']
+
+      # TODO: figure out what the deal is with :this_channel_is_insecure
       @core_server = TurbineCore::TurbineService::Stub.new(turbine_server_addr, :this_channel_is_insecure)
       req = TurbineCore::InitRequest.new(
-        language: :RUBY,
         appName: app_name,
-        configFilePath: Dir.getwd
+        configFilePath: Dir.getwd,
+        language: :RUBY,
+        gitSHA: gitSHA,
+        turbineVersion: Gem.loaded_specs["turbine"].version.version
       )
       @core_server.init(req)
     end
 
     def resource(name:)
-      req = TurbineCore::NameOrUUID.new(name:)
+      req = TurbineCore::GetResourceRequest.new(name:)
       res = @core_server.get_resource(req)
       Resource.new(res, self)
     end
 
     def process(records:, process:)
+      if records.instance_of?(Collection)
+        unwraped_records = records.unwrap
+      end
+      p = TurbineCore::Process.new(
+        name: process.class.name
+      )
+      
+      req = TurbineCore::ProcessCollectionRequest.new(collection: unwraped_records, process: p)
+      @core_server.add_process_to_collection(req)
+
       records.pb_collection = process.call(records: records.pb_collection)
       records
     end
@@ -106,7 +119,9 @@ module Turbine
   end
 
   def self.run
-    runner = Runner.new(@app.class.name)
+    gitSHA = ARGV[0]
+
+    runner = Runner.new(@app.class.name, gitSHA)
     @app.call(runner)
   end
 end
