@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+# this assumes that the turbine-core binary has been installed
+turbine-core --mode=local
