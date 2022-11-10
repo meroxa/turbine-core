@@ -1,0 +1,8 @@
+{
+    "name": "ruby-example",
+    "language": "ruby",
+    "environment": "common",
+    "resources": {
+        "demopg": "fixtures/demo.json"
+    }
+}

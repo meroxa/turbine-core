@@ -1,0 +1,9 @@
+{
+    "events": [
+        {
+            "key": "1",
+            "value": {"message":"hello"},
+            "timestamp": "1662758822"
+        }
+    ]
+}
