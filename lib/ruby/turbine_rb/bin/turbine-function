@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require 'turbine_rb'
+require File.join(ARGV[0] || Dir.getwd, "app")
+
+TurbineRb.serve
