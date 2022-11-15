@@ -1,9 +1,10 @@
 # frozen_string_literal: true
-
-require "turbine_rb/version"
-require "turbine_rb/client"
 require 'proto/process/v1/service_services_pb'
 require 'proto/turbine/v1/turbine_services_pb'
+
+require "turbine_rb/collection_patch"
+require "turbine_rb/version"
+require "turbine_rb/client"
 
 module TurbineRb
   class Error < StandardError; end

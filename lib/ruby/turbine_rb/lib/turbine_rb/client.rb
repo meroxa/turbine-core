@@ -1,17 +1,4 @@
 # frozen_string_literal: true
-require 'proto/turbine/v1/turbine_services_pb'
-
-TurbineCore::Collection.class_eval do
-  def wrap(app)
-    TurbineRb::Client::App::Collection.new(
-      name,
-      records,
-      stream,
-      app
-    )
-  end
-end
-
 module TurbineRb
   module Client
     class App
