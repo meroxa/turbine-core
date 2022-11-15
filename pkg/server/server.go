@@ -15,23 +15,23 @@ const (
 	ListenAddress = "localhost:50500"
 )
 
-type TurbineCoreServer struct {
+type turbineCoreServer struct {
 	*grpc.Server
 }
 
-func NewRunServer() *TurbineCoreServer {
+func NewRunServer() *turbineCoreServer {
 	s := grpc.NewServer()
 	pb.RegisterTurbineServiceServer(s, NewRunService())
-	return &TurbineCoreServer{Server: s}
+	return &turbineCoreServer{Server: s}
 }
 
-func NewRecordServer() *TurbineCoreServer {
+func NewRecordServer() *turbineCoreServer {
 	s := grpc.NewServer()
-	pb.RegisterTurbineServiceServer(s, NewRunService())
-	return &TurbineCoreServer{Server: s}
+	pb.RegisterTurbineServiceServer(s, NewRecordService())
+	return &turbineCoreServer{Server: s}
 }
 
-func (s *TurbineCoreServer) Run(ctx context.Context) {
+func (s *turbineCoreServer) Run(ctx context.Context) {
 	listener, err := net.Listen("tcp", ListenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
