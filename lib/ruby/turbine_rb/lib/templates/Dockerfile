@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . .
 RUN bundle install
 USER nobody
-ENTRYPOINT ["bundle exec turbine_rb function"]
+ENTRYPOINT ["bundle exec turbine-function"]
