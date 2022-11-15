@@ -1,4 +1,4 @@
-package platform
+package server
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 func TestInit(t *testing.T) {
 	var (
 		ctx  = context.Background()
-		s    = New()
+		s    = NewRecordService()
 		want = ir.DeploymentSpec{
 			Definition: ir.DefinitionSpec{
 				GitSha: "gitsha",
@@ -43,7 +43,7 @@ func TestInit(t *testing.T) {
 func TestGetResource(t *testing.T) {
 	var (
 		ctx = context.Background()
-		s   = New()
+		s   = NewRecordService()
 	)
 
 	res, err := s.GetResource(ctx, &core.GetResourceRequest{
@@ -51,13 +51,13 @@ func TestGetResource(t *testing.T) {
 	})
 	require.Nil(t, err)
 	require.Equal(t, &core.Resource{Name: "pg"}, res)
-	require.Equal(t, []core.Resource{{Name: "pg"}}, s.resources)
+	require.Equal(t, []*core.Resource{{Name: "pg"}}, s.resources)
 }
 
 func TestReadCollection(t *testing.T) {
 	tests := []struct {
 		description     string
-		populateService func(*server) *server
+		populateService func(*recordService) *recordService
 		req             *core.ReadCollectionRequest
 		want            ir.DeploymentSpec
 		errMsg          string
@@ -68,7 +68,7 @@ func TestReadCollection(t *testing.T) {
 			errMsg:      "please provide a collection name to 'read'",
 		},
 		{
-			description: "server has existing source connector",
+			description: "recordService has existing source connector",
 			req: &core.ReadCollectionRequest{
 				Collection: "accounts",
 				Resource: &core.Resource{
@@ -76,7 +76,7 @@ func TestReadCollection(t *testing.T) {
 				},
 				Configs: nil,
 			},
-			populateService: func(s *server) *server {
+			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec.Connectors = []ir.ConnectorSpec{
 					{
 						Collection: "accounts",
@@ -148,7 +148,7 @@ func TestReadCollection(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			var (
 				ctx = context.Background()
-				s   = New()
+				s   = NewRecordService()
 			)
 			if test.populateService != nil {
 				s = test.populateService(s)
@@ -170,7 +170,7 @@ func TestReadCollection(t *testing.T) {
 func TestWriteCollectionToResource(t *testing.T) {
 	tests := []struct {
 		description     string
-		populateService func(*server) *server
+		populateService func(*recordService) *recordService
 		req             *core.WriteCollectionRequest
 		want            ir.DeploymentSpec
 		errMsg          string
@@ -181,7 +181,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 			errMsg:      "please provide a collection name to 'write'",
 		},
 		{
-			description: "server has existing connector",
+			description: "recordService has existing connector",
 			req: &core.WriteCollectionRequest{
 				TargetCollection: "accounts_copy",
 				Resource: &core.Resource{
@@ -189,7 +189,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 				},
 				Configs: nil,
 			},
-			populateService: func(s *server) *server {
+			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec.Connectors = []ir.ConnectorSpec{
 					{
 						Collection: "accounts",
@@ -255,7 +255,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			var (
 				ctx = context.Background()
-				s   = New()
+				s   = NewRecordService()
 			)
 			if test.populateService != nil {
 				s = test.populateService(s)
@@ -277,12 +277,11 @@ func TestWriteCollectionToResource(t *testing.T) {
 func TestAddProcessToCollection(t *testing.T) {
 	var (
 		ctx  = context.Background()
-		s    = New()
+		s    = NewRecordService()
 		want = ir.DeploymentSpec{
 			Functions: []ir.FunctionSpec{
 				{
-					Name:  "synchronize",
-					Image: "some/image",
+					Name: "synchronize",
 				},
 			},
 		}
@@ -302,7 +301,7 @@ func TestAddProcessToCollection(t *testing.T) {
 func TestRegisterSecret(t *testing.T) {
 	var (
 		ctx  = context.Background()
-		s    = New()
+		s    = NewRecordService()
 		want = ir.DeploymentSpec{
 			Secrets: map[string]string{
 				"api_key":     "secret_key",

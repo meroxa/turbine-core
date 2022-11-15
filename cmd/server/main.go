@@ -6,11 +6,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	"github.com/meroxa/turbine-core/servers/info"
-	"github.com/meroxa/turbine-core/servers/local"
-	"github.com/meroxa/turbine-core/servers/platform"
-	"google.golang.org/grpc"
+	"github.com/meroxa/turbine-core/pkg/server"
 )
 
 const Port = 50051
@@ -20,22 +16,20 @@ var (
 )
 
 func main() {
-	flag.StringVar(&Mode, "mode", "info", "gRPC server mode. Options are info, platform and local. Default is info.")
+	flag.StringVar(&Mode, "mode", "record", "gRPC server mode. Options are record and run. Default is record.")
 	flag.Parse()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
+	var s *server.TurbineCoreServer
 	log.Printf("running gRPC server in %s mode", Mode)
 	switch Mode {
-	case "info":
-		pb.RegisterTurbineServiceServer(s, info.New())
-	case "platform":
-		pb.RegisterTurbineServiceServer(s, platform.New())
-	case "local":
-		pb.RegisterTurbineServiceServer(s, local.New())
+	case "record":
+		s = server.NewRecordServer()
+	case "run":
+		s = server.NewRunServer()
 	default:
 		log.Fatalf("unsupported or invalid mode %s", Mode)
 	}

@@ -1,4 +1,4 @@
-package platform
+package server
 
 import (
 	"context"
@@ -10,13 +10,17 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type server struct {
+type recordService struct {
 	pb.UnimplementedTurbineServiceServer
 	deploymentSpec ir.DeploymentSpec
 	resources      []*pb.Resource
 }
 
-func (s *server) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
+func NewRecordService() *recordService {
+	return &recordService{}
+}
+
+func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
 	s.deploymentSpec.Definition = ir.DefinitionSpec{
 		GitSha: request.GetGitSHA(),
 		Metadata: ir.MetadataSpec{
@@ -31,7 +35,7 @@ func (s *server) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Em
 	return Empty(), nil
 }
 
-func (s *server) GetResource(ctx context.Context, request *pb.GetResourceRequest) (*pb.Resource, error) {
+func (s *recordService) GetResource(ctx context.Context, request *pb.GetResourceRequest) (*pb.Resource, error) {
 	r := &pb.Resource{
 		Name: request.GetName(),
 	}
@@ -48,7 +52,7 @@ func resourceConfigsToMap(configs []*pb.ResourceConfig) map[string]interface{} {
 	return m
 }
 
-func (s *server) ReadCollection(ctx context.Context, request *pb.ReadCollectionRequest) (*pb.Collection, error) {
+func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadCollectionRequest) (*pb.Collection, error) {
 	if request.GetCollection() == "" {
 		return &pb.Collection{}, fmt.Errorf("please provide a collection name to 'read'")
 	}
@@ -73,7 +77,7 @@ func (s *server) ReadCollection(ctx context.Context, request *pb.ReadCollectionR
 	return &pb.Collection{}, nil
 }
 
-func (s *server) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+func (s *recordService) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
 	// This function may be called zero or more times.
 	if request.GetTargetCollection() == "" {
 		return Empty(), fmt.Errorf("please provide a collection name to 'write'")
@@ -92,7 +96,7 @@ func (s *server) WriteCollectionToResource(ctx context.Context, request *pb.Writ
 	return Empty(), nil
 }
 
-func (s *server) AddProcessToCollection(ctx context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+func (s *recordService) AddProcessToCollection(ctx context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {
 	p := request.GetProcess()
 	s.deploymentSpec.Functions = append(
 		s.deploymentSpec.Functions,
@@ -102,18 +106,10 @@ func (s *server) AddProcessToCollection(ctx context.Context, request *pb.Process
 	return &pb.Collection{}, nil
 }
 
-func (s *server) RegisterSecret(ctx context.Context, secret *pb.Secret) (*emptypb.Empty, error) {
+func (s *recordService) RegisterSecret(ctx context.Context, secret *pb.Secret) (*emptypb.Empty, error) {
 	if s.deploymentSpec.Secrets == nil {
 		s.deploymentSpec.Secrets = map[string]string{}
 	}
 	s.deploymentSpec.Secrets[secret.Name] = secret.Value
 	return Empty(), nil
-}
-
-func New() *server {
-	return &server{}
-}
-
-func Empty() *emptypb.Empty {
-	return new(emptypb.Empty)
 }
