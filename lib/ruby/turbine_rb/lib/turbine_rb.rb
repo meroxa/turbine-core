@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "turbine_rb/version"
-require_relative "turbine_rb/client"
-require_relative './proto/process/v1/service_services_pb'
-require_relative './proto/turbine/v1/turbine_services_pb'
+require "turbine_rb/version"
+require "turbine_rb/client"
+require 'proto/process/v1/service_services_pb'
+require 'proto/turbine/v1/turbine_services_pb'
 
 module TurbineRb
   class Error < StandardError; end
@@ -63,6 +63,7 @@ module TurbineRb
   class Process
     def self.inherited(subclass)
       TurbineRb.register_fn(subclass)
+      super
     end
   end
 end

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require_relative '../proto/turbine/v1/turbine_services_pb'
+require 'proto/turbine/v1/turbine_services_pb'
 
 TurbineCore::Collection.class_eval do
   def wrap(app)
@@ -15,7 +15,7 @@ end
 module TurbineRb
   module Client
     class App
-      attr_accessor :core_server
+      attr_reader :core_server
 
       def initialize(grpc_server)
         @core_server = grpc_server

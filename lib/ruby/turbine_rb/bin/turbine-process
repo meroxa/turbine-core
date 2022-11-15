@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'turbine_rb'
+require "#{Dir.getwd}/app"
+
+runner = TurbineRb.run
