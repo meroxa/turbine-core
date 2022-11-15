@@ -24,7 +24,7 @@ process_ruby_proto:
 	docker run \
 		--rm \
 		-v $(CURDIR)/proto:/defs \
-		-v $(CURDIR)/lib/ruby/turbine/lib/proto:/out \
+		-v $(CURDIR)/lib/ruby/turbine_rb/lib/proto:/out \
 		namely/protoc-all  \
 		-f ./process/v1/service.proto -l ruby -o /out
 

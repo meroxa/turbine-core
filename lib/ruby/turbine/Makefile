@@ -2,4 +2,4 @@ test:
 	rake
 
 package:
-	gem build turbine.gemspec
+	gem build -o pkg/turbine.gem turbine.gemspec
