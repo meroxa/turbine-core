@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 require 'turbine_rb'
-
-path_to_data_app = ARGV[0] || Dir.getwd
-require "#{path_to_data_app}/app"
+require File.join(ARGV[0] || Dir.getwd, "app")
 
 TurbineRb.serve
