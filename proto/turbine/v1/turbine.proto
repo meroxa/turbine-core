@@ -8,13 +8,11 @@ import "google/protobuf/timestamp.proto";
 
 service TurbineService {
   rpc Init(InitRequest) returns (google.protobuf.Empty);
-  rpc GetResource(NameOrUUID) returns (Resource);
+  rpc GetResource(GetResourceRequest) returns (Resource);
   rpc ReadCollection(ReadCollectionRequest) returns (Collection);
   rpc WriteCollectionToResource(WriteCollectionRequest) returns (google.protobuf.Empty);
   rpc AddProcessToCollection(ProcessCollectionRequest) returns (Collection);
   rpc RegisterSecret(Secret) returns (google.protobuf.Empty);
-  rpc ListFunctions(google.protobuf.Empty) returns (ListFunctionsResponse);
-  rpc ListResources(google.protobuf.Empty) returns (ListResourcesResponse);
 }
 
 message InitRequest {
@@ -28,11 +26,11 @@ message InitRequest {
   }
   Language language = 3;
   string gitSHA = 4;
+  string turbineVersion = 5;
 }
 
-message NameOrUUID {
+message GetResourceRequest {
   string name = 1;
-  string uuid = 2;
 }
 
 message Resource {
@@ -82,14 +80,6 @@ message ResourceConfig {
 
 message Process {
   string name = 1;
-  enum Type {
-    GO = 0;
-    NODE = 1;
-    PYTHON = 2;
-    DOCKER = 3;
-  }
-  Type type = 2;
-  string image = 3;
 }
 
 message ProcessCollectionRequest {

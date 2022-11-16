@@ -15,13 +15,11 @@ module TurbineCore
       self.service_name = 'turbine_core.TurbineService'
 
       rpc :Init, ::TurbineCore::InitRequest, ::Google::Protobuf::Empty
-      rpc :GetResource, ::TurbineCore::NameOrUUID, ::TurbineCore::Resource
+      rpc :GetResource, ::TurbineCore::GetResourceRequest, ::TurbineCore::Resource
       rpc :ReadCollection, ::TurbineCore::ReadCollectionRequest, ::TurbineCore::Collection
       rpc :WriteCollectionToResource, ::TurbineCore::WriteCollectionRequest, ::Google::Protobuf::Empty
       rpc :AddProcessToCollection, ::TurbineCore::ProcessCollectionRequest, ::TurbineCore::Collection
       rpc :RegisterSecret, ::TurbineCore::Secret, ::Google::Protobuf::Empty
-      rpc :ListFunctions, ::Google::Protobuf::Empty, ::TurbineCore::ListFunctionsResponse
-      rpc :ListResources, ::Google::Protobuf::Empty, ::TurbineCore::ListResourcesResponse
     end
 
     Stub = Service.rpc_stub_class
