@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/meroxa/turbine-core/pkg/ir"
@@ -97,4 +98,68 @@ func Test_ValidateVersion(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_SetImageForFunctions(t *testing.T) {
+	image := "some/image"
+	spec := &ir.DeploymentSpec{
+		Functions: []ir.FunctionSpec{
+			{
+				Name: "addition",
+			},
+			{
+				Name: "subtraction",
+			},
+		},
+	}
+	spec.SetImageForFunctions(image)
+
+	for _, f := range spec.Functions {
+		require.Equal(t, f.Image, image)
+	}
+}
+
+func Test_MarshalUnmarshal(t *testing.T) {
+	spec := &ir.DeploymentSpec{
+		Secrets: map[string]string{
+			"a secret": "with value",
+		},
+		Functions: []ir.FunctionSpec{
+			{
+				Name: "addition",
+			},
+		},
+		Connectors: []ir.ConnectorSpec{
+			{
+				Collection: "accounts",
+				Resource:   "mongo",
+				Type:       ir.ConnectorSource,
+			},
+			{
+				Collection: "accounts_copy",
+				Resource:   "pg",
+				Type:       ir.ConnectorDestination,
+				Config: map[string]interface{}{
+					"config": "value",
+				},
+			},
+		},
+		Definition: ir.DefinitionSpec{
+			GitSha: "gitsh",
+			Metadata: ir.MetadataSpec{
+				SpecVersion: "0.1.1",
+				Turbine: ir.TurbineSpec{
+					Language: ir.GoLang,
+					Version:  "10",
+				},
+			},
+		},
+	}
+	b, err := spec.Marshal()
+	require.NoError(t, err)
+
+	got, err := ir.Unmarshal(b)
+	require.NoError(t, err)
+
+	require.Equal(t, spec, got)
 }
