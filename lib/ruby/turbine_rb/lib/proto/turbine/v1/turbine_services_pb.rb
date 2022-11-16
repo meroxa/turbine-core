@@ -2,7 +2,7 @@
 # Source: turbine/v1/turbine.proto for package 'turbine_core'
 
 require 'grpc'
-require_relative 'turbine_pb'
+require 'turbine/v1/turbine_pb'
 
 module TurbineCore
   module TurbineService

@@ -55,11 +55,11 @@ func (s *runService) ReadCollection(ctx context.Context, request *pb.ReadCollect
 }
 
 func (s *runService) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
-	if request.Collection.Name == "" {
+	if request.SourceCollection.Name == "" {
 		return empty(), fmt.Errorf("please provide a collection name to Records()")
 	}
 
-	prettyPrintRecords(request.Resource.Name, request.Collection.Stream, request.Collection.Records)
+	prettyPrintRecords(request.Resource.Name, request.SourceCollection.Stream, request.SourceCollection.Records)
 
 	return empty(), nil
 }
