@@ -20,6 +20,8 @@ module TurbineCore
       rpc :WriteCollectionToResource, ::TurbineCore::WriteCollectionRequest, ::Google::Protobuf::Empty
       rpc :AddProcessToCollection, ::TurbineCore::ProcessCollectionRequest, ::TurbineCore::Collection
       rpc :RegisterSecret, ::TurbineCore::Secret, ::Google::Protobuf::Empty
+      rpc :HasFunctions, ::Google::Protobuf::Empty, ::Google::Protobuf::BoolValue
+      rpc :ListResources, ::Google::Protobuf::Empty, ::TurbineCore::ListResourcesResponse
     end
 
     Stub = Service.rpc_stub_class

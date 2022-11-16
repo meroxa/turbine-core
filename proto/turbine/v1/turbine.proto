@@ -4,6 +4,7 @@ package turbine_core;
 option go_package = "github.com/meroxa/turbine/core";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
 import "validate/validate.proto";
 
@@ -14,6 +15,8 @@ service TurbineService {
   rpc WriteCollectionToResource(WriteCollectionRequest) returns (google.protobuf.Empty);
   rpc AddProcessToCollection(ProcessCollectionRequest) returns (Collection);
   rpc RegisterSecret(Secret) returns (google.protobuf.Empty);
+  rpc HasFunctions(google.protobuf.Empty) returns (google.protobuf.BoolValue);
+  rpc ListResources(google.protobuf.Empty) returns (ListResourcesResponse);
 }
 
 message InitRequest {
@@ -84,4 +87,8 @@ message ProcessCollectionRequest {
 message Secret {
   string name = 1;
   string value = 2;
+}
+
+message ListResourcesResponse {
+  repeated Resource resources = 1;
 }
