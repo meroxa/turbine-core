@@ -31,11 +31,11 @@ func (s *runService) Init(ctx context.Context, request *pb.InitRequest) (*emptyp
 	ac, err := turbinecore.ReadAppConfig(request.AppName, request.ConfigFilePath)
 	if err != nil {
 		log.Printf("error initializeing app; err: %s", err)
-		return Empty(), err
+		return empty(), err
 	}
 	s.config = ac
 	s.appRootPath = request.ConfigFilePath
-	return Empty(), nil
+	return empty(), nil
 }
 
 func (s *runService) GetResource(ctx context.Context, id *pb.GetResourceRequest) (*pb.Resource, error) {
@@ -56,12 +56,12 @@ func (s *runService) ReadCollection(ctx context.Context, request *pb.ReadCollect
 
 func (s *runService) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
 	if request.Collection.Name == "" {
-		return Empty(), fmt.Errorf("please provide a collection name to Records()")
+		return empty(), fmt.Errorf("please provide a collection name to Records()")
 	}
 
 	prettyPrintRecords(request.Resource.Name, request.Collection.Stream, request.Collection.Records)
 
-	return Empty(), nil
+	return empty(), nil
 }
 
 func (s *runService) AddProcessToCollection(ctx context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {

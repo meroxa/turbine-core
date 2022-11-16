@@ -36,7 +36,7 @@ func TestInit(t *testing.T) {
 		TurbineVersion: "0.1.0",
 	})
 	require.Nil(t, err)
-	require.Equal(t, Empty(), res)
+	require.Equal(t, empty(), res)
 	require.Equal(t, want, s.deploymentSpec)
 }
 
@@ -266,7 +266,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 				require.EqualError(t, err, test.errMsg)
 			} else {
 				require.Nil(t, err)
-				require.Equal(t, Empty(), res)
+				require.Equal(t, empty(), res)
 				require.Equal(t, test.want, s.deploymentSpec)
 			}
 		})
@@ -316,7 +316,7 @@ func TestRegisterSecret(t *testing.T) {
 			Value: "secret_key",
 		})
 	require.Nil(t, err)
-	require.Equal(t, Empty(), res)
+	require.Equal(t, empty(), res)
 
 	res, err = s.RegisterSecret(ctx,
 		&core.Secret{
@@ -324,7 +324,7 @@ func TestRegisterSecret(t *testing.T) {
 			Value: "key",
 		})
 	require.Nil(t, err)
-	require.Equal(t, Empty(), res)
+	require.Equal(t, empty(), res)
 
 	require.Equal(t, want, s.deploymentSpec)
 }

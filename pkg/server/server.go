@@ -42,6 +42,6 @@ func (s *turbineCoreServer) Run(ctx context.Context) {
 	}
 }
 
-func Empty() *emptypb.Empty {
+func empty() *emptypb.Empty {
 	return new(emptypb.Empty)
 }

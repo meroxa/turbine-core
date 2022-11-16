@@ -33,7 +33,7 @@ func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emp
 		},
 	}
 
-	return Empty(), nil
+	return empty(), nil
 }
 
 func (s *recordService) GetResource(ctx context.Context, request *pb.GetResourceRequest) (*pb.Resource, error) {
@@ -81,7 +81,7 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 func (s *recordService) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
 	// This function may be called zero or more times.
 	if request.GetTargetCollection() == "" {
-		return Empty(), fmt.Errorf("please provide a collection name to 'write'")
+		return empty(), fmt.Errorf("please provide a collection name to 'write'")
 	}
 
 	s.deploymentSpec.Connectors = append(
@@ -97,12 +97,12 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 	b, err := json.Marshal(s.deploymentSpec)
 	if err != nil {
 		fmt.Printf("MARSHAL ERR: %#+v\n", err)
-		return Empty(), err
+		return empty(), err
 	}
 	fmt.Printf("SPEC VALID: %#+v\n", ir.ValidateSpec(b, "0.1.1"))
 	fmt.Printf("SPEC: %#+v\n", s.deploymentSpec)
 
-	return Empty(), nil
+	return empty(), nil
 }
 
 func (s *recordService) AddProcessToCollection(ctx context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {
@@ -120,5 +120,5 @@ func (s *recordService) RegisterSecret(ctx context.Context, secret *pb.Secret) (
 		s.deploymentSpec.Secrets = map[string]string{}
 	}
 	s.deploymentSpec.Secrets[secret.Name] = secret.Value
-	return Empty(), nil
+	return empty(), nil
 }
