@@ -36,10 +36,13 @@ module TurbineRb
       # TODO: figure out what the deal is with :this_channel_is_insecure
       core_server = TurbineCore::TurbineService::Stub.new(ENV["TURBINE_CORE_SERVER"], :this_channel_is_insecure)
 
+      gitSHA = ARGV[0]
+
       req = TurbineCore::InitRequest.new(
+        configFilePath: Dir.getwd,
         language: :RUBY,
-        appName: @app.class.name,
-        configFilePath: Dir.getwd
+        gitSHA: gitSHA,
+        turbineVersion: Gem.loaded_specs["turbine_rb"].version.version
       )
 
       core_server.init(req)
