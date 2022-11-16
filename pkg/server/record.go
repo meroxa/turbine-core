@@ -95,7 +95,10 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 	)
 
 	b, err := json.Marshal(s.deploymentSpec)
-	fmt.Printf("MARSHAL ERR: %#+v\n", err)
+	if err != nil {
+		fmt.Printf("MARSHAL ERR: %#+v\n", err)
+		return Empty(), err
+	}
 	fmt.Printf("SPEC VALID: %#+v\n", ir.ValidateSpec(b, "0.1.1"))
 	fmt.Printf("SPEC: %#+v\n", s.deploymentSpec)
 
