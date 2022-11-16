@@ -8,6 +8,7 @@ import (
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/ir"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type recordService struct {
@@ -112,4 +113,12 @@ func (s *recordService) RegisterSecret(ctx context.Context, secret *pb.Secret) (
 	}
 	s.deploymentSpec.Secrets[secret.Name] = secret.Value
 	return empty(), nil
+}
+
+func (s *recordService) HasFunctions(ctx context.Context, in *emptypb.Empty) (*wrapperspb.BoolValue, error) {
+	return wrapperspb.Bool(len(s.deploymentSpec.Functions) > 0), nil
+}
+
+func (s *recordService) ListResources(ctx context.Context, in *emptypb.Empty) (*pb.ListResourcesResponse, error) {
+	return &pb.ListResourcesResponse{Resources: s.resources}, nil
 }

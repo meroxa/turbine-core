@@ -4,6 +4,7 @@
 require 'google/protobuf'
 
 require 'google/protobuf/empty_pb'
+require 'google/protobuf/wrappers_pb'
 require 'google/protobuf/timestamp_pb'
 require 'validate/validate_pb'
 
@@ -67,6 +68,9 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :name, :string, 1
       optional :value, :string, 2
     end
+    add_message "turbine_core.ListResourcesResponse" do
+      repeated :resources, :message, 1, "turbine_core.Resource"
+    end
   end
 end
 
@@ -84,4 +88,5 @@ module TurbineCore
   Process = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Process").msgclass
   ProcessCollectionRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessCollectionRequest").msgclass
   Secret = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Secret").msgclass
+  ListResourcesResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ListResourcesResponse").msgclass
 end

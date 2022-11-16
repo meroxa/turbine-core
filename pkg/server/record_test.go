@@ -328,3 +328,97 @@ func TestRegisterSecret(t *testing.T) {
 
 	require.Equal(t, want, s.deploymentSpec)
 }
+
+func TestHasFunctions(t *testing.T) {
+	tests := []struct {
+		description     string
+		populateService func(*recordService) *recordService
+		want            bool
+	}{
+		{
+			description: "service with no functions",
+			want:        false,
+		},
+		{
+			description: "service with function",
+			populateService: func(s *recordService) *recordService {
+				s.deploymentSpec.Functions = []ir.FunctionSpec{
+					{
+						Name: "addition",
+					},
+				}
+				return s
+			},
+			want: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			var (
+				ctx = context.Background()
+				s   = NewRecordService()
+			)
+			if test.populateService != nil {
+				s = test.populateService(s)
+			}
+
+			res, err := s.HasFunctions(ctx, empty())
+			require.Nil(t, err)
+			require.Equal(t, test.want, res.Value)
+		})
+	}
+}
+
+func TestListResources(t *testing.T) {
+	tests := []struct {
+		description     string
+		populateService func(*recordService) *recordService
+		want            *pb.ListResourcesResponse
+	}{
+		{
+			description: "service with no resources",
+			want:        &pb.ListResourcesResponse{},
+		},
+		{
+			description: "service with resources",
+			populateService: func(s *recordService) *recordService {
+				s.resources = []*pb.Resource{
+					{
+						Name: "pg",
+					},
+					{
+						Name: "mongo",
+					},
+				}
+				return s
+			},
+			want: &pb.ListResourcesResponse{
+				Resources: []*pb.Resource{
+					{
+						Name: "pg",
+					},
+					{
+						Name: "mongo",
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			var (
+				ctx = context.Background()
+				s   = NewRecordService()
+			)
+			if test.populateService != nil {
+				s = test.populateService(s)
+			}
+
+			res, err := s.ListResources(ctx, empty())
+			require.Nil(t, err)
+			require.Equal(t, test.want, res)
+		})
+	}
+}
