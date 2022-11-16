@@ -5,6 +5,7 @@ require 'google/protobuf'
 
 require 'google/protobuf/empty_pb'
 require 'google/protobuf/timestamp_pb'
+require 'validate/validate_pb'
 
 Google::Protobuf::DescriptorPool.generated_pool.build do
   add_file("turbine/v1/turbine.proto", :syntax => :proto3) do
@@ -25,14 +26,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :name, :string, 1
     end
     add_message "turbine_core.Resource" do
-      optional :uuid, :string, 1
-      optional :name, :string, 2
-      optional :type, :string, 3
-      optional :direction, :enum, 4, "turbine_core.Resource.Direction"
-    end
-    add_enum "turbine_core.Resource.Direction" do
-      value :DIRECTION_SOURCE, 0
-      value :DIRECTION_DESTINATION, 1
+      optional :name, :string, 1
     end
     add_message "turbine_core.Collection" do
       optional :name, :string, 1
@@ -51,7 +45,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.WriteCollectionRequest" do
       optional :resource, :message, 1, "turbine_core.Resource"
-      optional :collection, :message, 2, "turbine_core.Collection"
+      optional :sourceCollection, :message, 2, "turbine_core.Collection"
       optional :targetCollection, :string, 3
       optional :configs, :message, 4, "turbine_core.ResourceConfigs"
     end
@@ -73,21 +67,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :name, :string, 1
       optional :value, :string, 2
     end
-    add_message "turbine_core.ListFunctionsResponse" do
-      repeated :functions, :string, 1
-    end
-    add_message "turbine_core.ResourceWithCollection" do
-      optional :name, :string, 1
-      optional :collection, :string, 2
-      optional :direction, :enum, 3, "turbine_core.ResourceWithCollection.Direction"
-    end
-    add_enum "turbine_core.ResourceWithCollection.Direction" do
-      value :DIRECTION_SOURCE, 0
-      value :DIRECTION_DESTINATION, 1
-    end
-    add_message "turbine_core.ListResourcesResponse" do
-      repeated :resources, :message, 1, "turbine_core.ResourceWithCollection"
-    end
   end
 end
 
@@ -96,7 +75,6 @@ module TurbineCore
   InitRequest::Language = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.InitRequest.Language").enummodule
   GetResourceRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetResourceRequest").msgclass
   Resource = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Resource").msgclass
-  Resource::Direction = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Resource.Direction").enummodule
   Collection = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Collection").msgclass
   Record = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Record").msgclass
   ReadCollectionRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ReadCollectionRequest").msgclass
@@ -106,8 +84,4 @@ module TurbineCore
   Process = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Process").msgclass
   ProcessCollectionRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessCollectionRequest").msgclass
   Secret = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Secret").msgclass
-  ListFunctionsResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ListFunctionsResponse").msgclass
-  ResourceWithCollection = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ResourceWithCollection").msgclass
-  ResourceWithCollection::Direction = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ResourceWithCollection.Direction").enummodule
-  ListResourcesResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ListResourcesResponse").msgclass
 end

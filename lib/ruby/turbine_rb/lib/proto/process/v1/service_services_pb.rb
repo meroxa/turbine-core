@@ -2,7 +2,7 @@
 # Source: process/v1/service.proto for package 'io.meroxa.funtime'
 
 require 'grpc'
-require_relative 'service_pb'
+require 'process/v1/service_pb'
 
 module Io
   module Meroxa

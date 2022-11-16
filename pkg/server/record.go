@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -93,14 +92,6 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 			Config:     resourceConfigsToMap(request.GetConfigs().GetResourceConfig()),
 		},
 	)
-
-	b, err := json.Marshal(s.deploymentSpec)
-	if err != nil {
-		fmt.Printf("MARSHAL ERR: %#+v\n", err)
-		return empty(), err
-	}
-	fmt.Printf("SPEC VALID: %#+v\n", ir.ValidateSpec(b, "0.1.1"))
-	fmt.Printf("SPEC: %#+v\n", s.deploymentSpec)
 
 	return empty(), nil
 }
