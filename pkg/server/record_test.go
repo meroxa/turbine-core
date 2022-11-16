@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/ir"
 	"github.com/stretchr/testify/require"
@@ -28,10 +27,10 @@ func TestInit(t *testing.T) {
 		}
 	)
 
-	res, err := s.Init(ctx, &core.InitRequest{
+	res, err := s.Init(ctx, &pb.InitRequest{
 		AppName:        "test-ruby",
 		ConfigFilePath: "path/to/ruby",
-		Language:       core.InitRequest_RUBY,
+		Language:       pb.Language_RUBY,
 		GitSHA:         "gitsha",
 		TurbineVersion: "0.1.0",
 	})
@@ -46,32 +45,32 @@ func TestGetResource(t *testing.T) {
 		s   = NewRecordService()
 	)
 
-	res, err := s.GetResource(ctx, &core.GetResourceRequest{
+	res, err := s.GetResource(ctx, &pb.GetResourceRequest{
 		Name: "pg",
 	})
 	require.Nil(t, err)
-	require.Equal(t, &core.Resource{Name: "pg"}, res)
-	require.Equal(t, []*core.Resource{{Name: "pg"}}, s.resources)
+	require.Equal(t, &pb.Resource{Name: "pg"}, res)
+	require.Equal(t, []*pb.Resource{{Name: "pg"}}, s.resources)
 }
 
 func TestReadCollection(t *testing.T) {
 	tests := []struct {
 		description     string
 		populateService func(*recordService) *recordService
-		req             *core.ReadCollectionRequest
+		req             *pb.ReadCollectionRequest
 		want            ir.DeploymentSpec
 		errMsg          string
 	}{
 		{
 			description: "empty request",
-			req:         &core.ReadCollectionRequest{},
+			req:         &pb.ReadCollectionRequest{},
 			errMsg:      "please provide a collection name to 'read'",
 		},
 		{
 			description: "recordService has existing source connector",
-			req: &core.ReadCollectionRequest{
+			req: &pb.ReadCollectionRequest{
 				Collection: "accounts",
-				Resource: &core.Resource{
+				Resource: &pb.Resource{
 					Name: "pg",
 				},
 				Configs: nil,
@@ -90,9 +89,9 @@ func TestReadCollection(t *testing.T) {
 		},
 		{
 			description: "successfully store source information",
-			req: &core.ReadCollectionRequest{
+			req: &pb.ReadCollectionRequest{
 				Collection: "accounts",
-				Resource: &core.Resource{
+				Resource: &pb.Resource{
 					Name: "pg",
 				},
 				Configs: nil,
@@ -110,13 +109,13 @@ func TestReadCollection(t *testing.T) {
 		},
 		{
 			description: "successfully store source information with config",
-			req: &core.ReadCollectionRequest{
+			req: &pb.ReadCollectionRequest{
 				Collection: "accounts",
-				Resource: &core.Resource{
+				Resource: &pb.Resource{
 					Name: "pg",
 				},
-				Configs: &core.ResourceConfigs{
-					ResourceConfig: []*core.ResourceConfig{
+				Configs: &pb.Configs{
+					Config: []*pb.Config{
 						{
 							Field: "config",
 							Value: "value",
@@ -159,7 +158,7 @@ func TestReadCollection(t *testing.T) {
 				require.EqualError(t, err, test.errMsg)
 			} else {
 				require.Nil(t, err)
-				require.Equal(t, &core.Collection{}, res)
+				require.Equal(t, &pb.Collection{}, res)
 				require.Equal(t, test.want, s.deploymentSpec)
 			}
 		})
@@ -171,20 +170,20 @@ func TestWriteCollectionToResource(t *testing.T) {
 	tests := []struct {
 		description     string
 		populateService func(*recordService) *recordService
-		req             *core.WriteCollectionRequest
+		req             *pb.WriteCollectionRequest
 		want            ir.DeploymentSpec
 		errMsg          string
 	}{
 		{
 			description: "empty request",
-			req:         &core.WriteCollectionRequest{},
+			req:         &pb.WriteCollectionRequest{},
 			errMsg:      "please provide a collection name to 'write'",
 		},
 		{
 			description: "recordService has existing connector",
-			req: &core.WriteCollectionRequest{
+			req: &pb.WriteCollectionRequest{
 				TargetCollection: "accounts_copy",
-				Resource: &core.Resource{
+				Resource: &pb.Resource{
 					Name: "pg",
 				},
 				Configs: nil,
@@ -217,13 +216,13 @@ func TestWriteCollectionToResource(t *testing.T) {
 		},
 		{
 			description: "successfully store destination information with config",
-			req: &core.WriteCollectionRequest{
+			req: &pb.WriteCollectionRequest{
 				TargetCollection: "accounts_copy",
-				Resource: &core.Resource{
+				Resource: &pb.Resource{
 					Name: "pg",
 				},
-				Configs: &core.ResourceConfigs{
-					ResourceConfig: []*core.ResourceConfig{
+				Configs: &pb.Configs{
+					Config: []*pb.Config{
 						{
 							Field: "config",
 							Value: "value",
@@ -288,8 +287,8 @@ func TestAddProcessToCollection(t *testing.T) {
 	)
 
 	res, err := s.AddProcessToCollection(ctx,
-		&core.ProcessCollectionRequest{
-			Process: &core.Process{
+		&pb.ProcessCollectionRequest{
+			Process: &pb.ProcessCollectionRequest_Process{
 				Name: "synchronize",
 			},
 		})
@@ -311,7 +310,7 @@ func TestRegisterSecret(t *testing.T) {
 	)
 
 	res, err := s.RegisterSecret(ctx,
-		&core.Secret{
+		&pb.Secret{
 			Name:  "api_key",
 			Value: "secret_key",
 		})
@@ -319,7 +318,7 @@ func TestRegisterSecret(t *testing.T) {
 	require.Equal(t, empty(), res)
 
 	res, err = s.RegisterSecret(ctx,
-		&core.Secret{
+		&pb.Secret{
 			Name:  "another_key",
 			Value: "key",
 		})
@@ -421,4 +420,55 @@ func TestListResources(t *testing.T) {
 			require.Equal(t, test.want, res)
 		})
 	}
+}
+
+func TestGetSpec(t *testing.T) {
+
+	var (
+		ctx = context.Background()
+		s   = NewRecordService()
+	)
+	spec := ir.DeploymentSpec{
+		Secrets: map[string]string{
+			"a secret": "with value",
+		},
+		Functions: []ir.FunctionSpec{
+			{
+				Name: "addition",
+			},
+		},
+		Connectors: []ir.ConnectorSpec{
+			{
+				Collection: "accounts",
+				Resource:   "mongo",
+				Type:       ir.ConnectorSource,
+			},
+			{
+				Collection: "accounts_copy",
+				Resource:   "pg",
+				Type:       ir.ConnectorDestination,
+				Config: map[string]interface{}{
+					"config": "value",
+				},
+			},
+		},
+		Definition: ir.DefinitionSpec{
+			GitSha: "gitsh",
+			Metadata: ir.MetadataSpec{
+				SpecVersion: "0.1.1",
+				Turbine: ir.TurbineSpec{
+					Language: ir.GoLang,
+					Version:  "10",
+				},
+			},
+		},
+	}
+	s.deploymentSpec = spec
+
+	res, err := s.GetSpec(ctx, empty())
+	require.Nil(t, err)
+
+	got, err := ir.Unmarshal(res.Spec)
+	require.Nil(t, err)
+	require.Equal(t, got, &spec)
 }

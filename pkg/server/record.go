@@ -45,7 +45,7 @@ func (s *recordService) GetResource(ctx context.Context, request *pb.GetResource
 	return r, nil
 }
 
-func resourceConfigsToMap(configs []*pb.ResourceConfig) map[string]interface{} {
+func resourceConfigsToMap(configs []*pb.Config) map[string]interface{} {
 	m := make(map[string]interface{})
 	for _, rc := range configs {
 		m[rc.GetField()] = rc.GetValue()
@@ -71,7 +71,7 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 			Collection: request.GetCollection(),
 			Resource:   request.GetResource().GetName(),
 			Type:       ir.ConnectorSource,
-			Config:     resourceConfigsToMap(request.GetConfigs().GetResourceConfig()),
+			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
 		},
 	)
 
@@ -90,7 +90,7 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 			Collection: request.GetTargetCollection(),
 			Resource:   request.GetResource().GetName(),
 			Type:       ir.ConnectorDestination,
-			Config:     resourceConfigsToMap(request.GetConfigs().GetResourceConfig()),
+			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
 		},
 	)
 
@@ -121,4 +121,15 @@ func (s *recordService) HasFunctions(ctx context.Context, in *emptypb.Empty) (*w
 
 func (s *recordService) ListResources(ctx context.Context, in *emptypb.Empty) (*pb.ListResourcesResponse, error) {
 	return &pb.ListResourcesResponse{Resources: s.resources}, nil
+}
+
+func (s *recordService) GetSpec(ctx context.Context, in *emptypb.Empty) (*pb.GetSpecResponse, error) {
+	spec, err := s.deploymentSpec.Marshal()
+	if err != nil {
+		return &pb.GetSpecResponse{}, err
+	}
+
+	return &pb.GetSpecResponse{
+		Spec: spec,
+	}, nil
 }
