@@ -9,12 +9,23 @@ module TurbineRb
       end
 
       def resource(name:)
-        req = TurbineCore::NameOrUUID.new(name:)
+        req = TurbineCore::GetResourceRequest.new(name:)
         res = @core_server.get_resource(req)
         Resource.new(res, self)
       end
 
       def process(records:, process:)
+        if records.instance_of?(Collection)
+          unwrapped_records = records.unwrap
+        end
+
+        pr = TurbineCore::Process.new(
+          name: process.class.name
+        )
+
+        req = TurbineCore::ProcessCollectionRequest.new(collection: unwrapped_records, process: pr)
+        @core_server.add_process_to_collection(req)
+
         records.pb_collection = process.call(records: records.pb_collection)
         records
       end
