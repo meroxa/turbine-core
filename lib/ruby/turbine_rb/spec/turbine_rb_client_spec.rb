@@ -31,6 +31,53 @@ RSpec.describe TurbineRb::Client::App do
       expect(result.pb_collection.first.key).to eq("1")
     end
   end
+
+  describe "#register_secret" do
+    let(:secrets) {
+      [{ name: "ENV_VAR", value: "value"}, { name: "ENV_VAR_2", value: "value_2"}]
+    }
+
+    let(:core_server) {
+      Mocktail.of(TurbineCore::TurbineService::Stub)
+    }
+
+    let(:app) {
+      TurbineRb::Client::App.new(core_server)
+    } 
+    
+    before(:each) do
+      secrets.each do |s|
+        ENV[s[:name]] = s[:value]
+      end
+
+      stubs { |m| core_server.register_secret(m.is_a(TurbineCore::Secret)) }.with { TurbineCore::Secret.new }
+    end
+
+    after(:each) do
+      secrets.each do |s|
+        ENV.delete(s[:name])
+      end
+    end
+
+    it "calls to grpc register_secret using a single secret" do
+      user_secret = secrets[0][:name]
+      app.register_secrets(user_secret)
+      
+      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.name == secrets[0][:name]}) }
+      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.value == secrets[0][:value]}) }
+    end
+
+    it "calls to grpc register_secret using an array of secrets" do
+      user_secrets = [secrets[0][:name], secrets[1][:name]]
+      app.register_secrets(user_secrets)
+      
+      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.name == secrets[0][:name]}) }
+      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.value == secrets[0][:value]}) }
+
+      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.name == secrets[1][:name]}) }
+      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.value == secrets[1][:value]}) }
+    end
+  end
 end
 
 RSpec.describe TurbineRb::Client::App::Resource do
