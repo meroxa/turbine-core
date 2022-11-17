@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-require 'proto/process/v1/service_services_pb'
-require 'proto/turbine/v1/turbine_services_pb'
+require 'service_services_pb'
+require 'turbine_services_pb'
 
 require "turbine_rb/collection_patch"
 require "turbine_rb/version"

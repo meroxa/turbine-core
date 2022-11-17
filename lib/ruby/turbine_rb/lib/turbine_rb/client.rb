@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module TurbineRb
   module Client
     class App

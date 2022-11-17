@@ -17,22 +17,25 @@ turbine_proto:
 		-v $(CURDIR)/proto:/defs \
 		-v $(CURDIR)/lib/go:/out \
 		namely/protoc-all  \
-		-f ./turbine/v1/turbine.proto -l go -o /out
+			-f ./turbine/v1/turbine.proto \
+			-l go -o /out
 
 .PHONY: process_ruby_proto
 process_ruby_proto:
 	docker run \
 		--rm \
-		-v $(CURDIR)/proto:/defs \
-		-v $(CURDIR)/lib/ruby/turbine_rb/lib/proto:/out \
+		-v $(CURDIR)/proto/process/v1:/defs \
+		-v $(CURDIR)/lib/ruby/turbine_rb/lib:/out \
 		namely/protoc-all  \
-		-f ./process/v1/service.proto -l ruby -o /out
+			-f ./service.proto \
+			-l ruby -o /out
 
 .PHONY: turbine_ruby_proto
 turbine_ruby_proto:
 	docker run \
 		--rm \
-		-v $(CURDIR)/proto:/defs \
-		-v $(CURDIR)/lib/ruby/turbine_rb/lib/proto:/out \
+		-v $(CURDIR)/proto/turbine/v1:/defs \
+		-v $(CURDIR)/lib/ruby/turbine_rb/lib:/out \
 		namely/protoc-all  \
-		-f ./turbine/v1/turbine.proto -l ruby -o /out
+			-f ./turbine.proto \
+			-l ruby -o /out
