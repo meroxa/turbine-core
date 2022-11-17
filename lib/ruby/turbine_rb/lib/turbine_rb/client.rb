@@ -19,7 +19,7 @@ module TurbineRb
           unwrapped_records = records.unwrap
         end
 
-        pr = TurbineCore::Process.new(
+        pr = TurbineCore::ProcessCollectionRequest::Process.new(
           name: process.class.name
         )
 
@@ -48,7 +48,7 @@ module TurbineRb
           if records.instance_of?(Collection) # it has been processed by a function, so unwrap back to gRPC collection
             records = records.unwrap
           end
-          req = TurbineCore::WriteCollectionRequest.new(resource: @pb_resource, collection: records,
+          req = TurbineCore::WriteCollectionRequest.new(resource: @pb_resource, sourceCollection: records,
                                                     targetCollection: collection)
           req.configs = configs if configs
           @app.core_server.write_collection_to_resource(req)
