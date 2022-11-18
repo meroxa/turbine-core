@@ -6,6 +6,9 @@ require "turbine_rb/collection_patch"
 require "turbine_rb/version"
 require "turbine_rb/client"
 
+require 'optparse'
+require 'fileutils'
+
 module TurbineRb
   class Error < StandardError; end
 
@@ -36,7 +39,7 @@ module TurbineRb
       # TODO: figure out what the deal is with :this_channel_is_insecure
       core_server = TurbineCore::TurbineService::Stub.new(ENV["TURBINE_CORE_SERVER"], :this_channel_is_insecure)
 
-      gitSHA = ARGV[0]
+      gitSHA = "ARGV[0]"
 
       req = TurbineCore::InitRequest.new(
         configFilePath: Dir.getwd,
@@ -51,6 +54,13 @@ module TurbineRb
 
       TurbineRb.app.call(app)
     end
+
+    def build 
+      docker_file = File.join(File.expand_path(File.dirname(__FILE__)) , "templates", "Dockerfile")
+      dest_app = Dir.getwd
+      FileUtils.cp(docker_file, dest_app)
+    end 
+
   end
 
   class ProcessImpl < Io::Meroxa::Funtime::Function::Service
