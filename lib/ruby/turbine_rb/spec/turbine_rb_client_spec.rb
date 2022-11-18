@@ -2,7 +2,7 @@ RSpec.describe TurbineRb::Client::App do
   describe "#resource" do
     it "calls to grpc get_resource and returns a resource" do
       core_server = Mocktail.of(TurbineCore::TurbineService::Stub)
-      stubs { |m| core_server.get_resource(m.is_a(TurbineCore::NameOrUUID)) }.with { :resource }
+      stubs { |m| core_server.get_resource(m.is_a(TurbineCore::GetResourceRequest)) }.with { :resource }
 
       subject = TurbineRb::Client::App.new(core_server)
       result = subject.resource(name: "hey")
