@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
     end
   end
   spec.bindir = "bin"
-  spec.executables = ["turbine-process", "turbine-function"]
+  spec.executables = ["turbine-process", "turbine-function","turbine-build"]
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
