@@ -49,7 +49,11 @@ module TurbineRb
 
         def records(collection:, configs: nil)
           req = TurbineCore::ReadCollectionRequest.new(resource: @pb_resource, collection:)
-          req.configs = configs if configs
+          if configs
+            pb_configs = configs.keys.map { |key| TurbineCore::Config.new(field: key, value: configs[key]) }
+            req.configs = TurbineCore::Configs.new(config: pb_configs)
+          end
+
           @app.core_server.read_collection(req).wrap(@app) # wrap in Collection to enable chaining
         end
 
@@ -57,9 +61,15 @@ module TurbineRb
           if records.instance_of?(Collection) # it has been processed by a function, so unwrap back to gRPC collection
             records = records.unwrap
           end
+
           req = TurbineCore::WriteCollectionRequest.new(resource: @pb_resource, sourceCollection: records,
                                                     targetCollection: collection)
-          req.configs = configs if configs
+
+          if configs
+            pb_configs = configs.keys.map { |key| TurbineCore::Config.new(field: key, value: configs[key]) }
+            req.configs = TurbineCore::Configs.new(config: pb_configs)
+          end
+
           @app.core_server.write_collection_to_resource(req)
         end
       end
