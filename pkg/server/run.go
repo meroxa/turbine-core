@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -66,6 +67,14 @@ func (s *runService) WriteCollectionToResource(ctx context.Context, request *pb.
 
 func (s *runService) AddProcessToCollection(ctx context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {
 	return request.GetCollection(), nil
+}
+
+func (s *runService) RegisterSecret(ctx context.Context, secret *pb.Secret) (*emptypb.Empty, error) {
+	val := os.Getenv(secret.Name)
+	if val == "" {
+		return empty(), errors.New("secret is invalid or not set")
+	}
+	return empty(), nil
 }
 
 type fixtureRecord struct {

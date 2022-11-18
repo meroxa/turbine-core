@@ -31,6 +31,14 @@ module TurbineRb
         records
       end
 
+      # register_secrets accepts either a single string or an array of strings
+      def register_secrets(secrets)
+        [*secrets].map do |secret|
+            req = TurbineCore::Secret.new(name: secret, value: ENV[secret])
+            @core_server.register_secret(req)
+        end
+      end
+
       class Resource
         attr_reader :pb_resource
 
