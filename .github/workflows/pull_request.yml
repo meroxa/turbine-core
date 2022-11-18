@@ -15,5 +15,13 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.19
-      - name: Run tests
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.2'
+          bundler-cache: true
+      - name: Run go tests
         run: make test
+      - name: Run ruby tests
+        run: |
+          make setup_turbine_rb
+          make test_turbine_rb

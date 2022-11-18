@@ -6,6 +6,13 @@ gomod:
 test:
 	go test ./... -coverprofile=c.out -covermode=atomic -v
 
+.PHONY: setup_turbine_rb
+setup_turbine_rb:
+	bundle install --gemfile=./lib/ruby/turbine_rb/Gemfile
+
+.PHONY: test_turbine_rb
+test_turbine_rb:
+	rake -C ./lib/ruby/turbine_rb spec
 
 .PHONY: proto
 proto: turbine_proto process_ruby_proto turbine_ruby_proto
