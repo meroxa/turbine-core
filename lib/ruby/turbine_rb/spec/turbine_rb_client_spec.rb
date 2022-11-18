@@ -2,7 +2,7 @@ RSpec.describe TurbineRb::Client::App do
   describe "#resource" do
     it "calls to grpc get_resource and returns a resource" do
       core_server = Mocktail.of(TurbineCore::TurbineService::Stub)
-      stubs { |m| core_server.get_resource(m.is_a(TurbineCore::NameOrUUID)) }.with { :resource }
+      stubs { |m| core_server.get_resource(m.is_a(TurbineCore::GetResourceRequest)) }.with { :resource }
 
       subject = TurbineRb::Client::App.new(core_server)
       result = subject.resource(name: "hey")
@@ -29,6 +29,58 @@ RSpec.describe TurbineRb::Client::App do
       result = app.process(records: records, process: my_process.new)
 
       expect(result.pb_collection.first.key).to eq("1")
+    end
+  end
+
+  describe "#register_secret" do
+    let(:secrets) {
+      [{ name: "ENV_VAR", value: "value"}, { name: "ENV_VAR_2", value: "value_2"}]
+    }
+
+    let(:core_server) {
+      Mocktail.of(TurbineCore::TurbineService::Stub)
+    }
+
+    let(:app) {
+      TurbineRb::Client::App.new(core_server)
+    } 
+    
+    before(:each) do
+      secrets.each do |s|
+        ENV[s[:name]] = s[:value]
+      end
+
+      stubs { |m| core_server.register_secret(m.is_a(TurbineCore::Secret)) }.with { TurbineCore::Secret.new }
+    end
+
+    after(:each) do
+      secrets.each do |s|
+        ENV.delete(s[:name])
+      end
+    end
+
+    it "calls to grpc register_secret using a single secret" do
+      user_secret = secrets[0][:name]
+      app.register_secrets(user_secret)
+      
+      verify(times: 1) { |m| 
+        core_server.register_secret(m.that { |arg| 
+          arg.name == secrets[0][:name] && arg.value == secrets[0][:value]
+        }) 
+      }
+    end
+
+    it "calls to grpc register_secret using an array of secrets" do
+      user_secrets = [secrets[0][:name], secrets[1][:name]]
+      app.register_secrets(user_secrets)
+      
+      2.times do |i|
+        verify(times: 1) { |m| 
+          core_server.register_secret(m.that { |arg| 
+            arg.name == secrets[i][:name] && arg.value == secrets[i][:value]
+          }) 
+        }
+      end
     end
   end
 end
