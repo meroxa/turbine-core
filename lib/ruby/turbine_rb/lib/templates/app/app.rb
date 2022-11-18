@@ -12,6 +12,13 @@ class MyApp
 
     # procedural API
     records = database.records(collection: 'events')
+
+    # This register the secret to be available in the turbine application
+    app.register_secrets("MY_ENV_TEST") 
+
+    # you can also register several secrets at once
+    # app.register_secrets(["MY_ENV_TEST", "MY_OTHER_ENV_TEST"])
+
     processed_records = app.process(records: records, process: Passthrough.new) # Passthrough just has to match the signature
     database.write(records: processed_records, collection: "events_copy")
 
