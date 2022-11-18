@@ -63,19 +63,24 @@ RSpec.describe TurbineRb::Client::App do
       user_secret = secrets[0][:name]
       app.register_secrets(user_secret)
       
-      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.name == secrets[0][:name]}) }
-      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.value == secrets[0][:value]}) }
+      verify(times: 1) { |m| 
+        core_server.register_secret(m.that { |arg| 
+          arg.name == secrets[0][:name] && arg.value == secrets[0][:value]
+        }) 
+      }
     end
 
     it "calls to grpc register_secret using an array of secrets" do
       user_secrets = [secrets[0][:name], secrets[1][:name]]
       app.register_secrets(user_secrets)
       
-      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.name == secrets[0][:name]}) }
-      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.value == secrets[0][:value]}) }
-
-      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.name == secrets[1][:name]}) }
-      verify(times: 1) { |m| core_server.register_secret(m.that { |arg| arg.value == secrets[1][:value]}) }
+      2.times do |i|
+        verify(times: 1) { |m| 
+          core_server.register_secret(m.that { |arg| 
+            arg.name == secrets[i][:name] && arg.value == secrets[i][:value]
+          }) 
+        }
+      end
     end
   end
 end
