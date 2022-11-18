@@ -39,7 +39,7 @@ module TurbineRb
       # TODO: figure out what the deal is with :this_channel_is_insecure
       core_server = TurbineCore::TurbineService::Stub.new(ENV["TURBINE_CORE_SERVER"], :this_channel_is_insecure)
 
-      gitSHA = "ARGV[0]"
+      gitSHA = ARGV[0]
 
       req = TurbineCore::InitRequest.new(
         configFilePath: Dir.getwd,
