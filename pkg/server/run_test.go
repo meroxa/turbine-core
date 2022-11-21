@@ -41,12 +41,12 @@ func Test_Init(t *testing.T) {
 					os.WriteFile(
 						file,
 						[]byte(`{
-						    "name": "app",
-						    "language": "ruby",
-					 	   	"environment": "common",
-					 	   	"resources": {
-				    	    	"demopg": "fixtures/demo.json"
-						    }
+							"name": "app",
+							"language": "ruby",
+							"environment": "common",
+							"resources": {
+								"demopg": "fixtures/demo.json"
+							}
 						}`),
 						0644,
 					),
