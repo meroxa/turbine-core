@@ -7,13 +7,19 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
+
+	"github.com/meroxa/turbine-core/pkg/ir"
 )
+
+const LanguageNotSupportedError = "Currently, we support \"javascript\", \"golang\", \"python\", and \"ruby (beta)\" "
 
 type AppConfig struct {
 	Name        string            `json:"name"`
 	Environment string            `json:"environment"`
 	Pipeline    string            `json:"pipeline"` // TODO: Eventually remove support for providing a pipeline if we need to
 	Resources   map[string]string `json:"resources"`
+	Language    string            `json:"language"`
 }
 
 // validateAppConfig will check if app.json contains information required
@@ -21,7 +27,25 @@ func (c *AppConfig) validateAppConfig() error {
 	if c.Name == "" {
 		return errors.New("application name is required to be specified in your app.json")
 	}
+	if err := c.validateLanguage(c.Language); err != nil {
+		return err
+	}
 	return nil
+}
+
+//validate app.json language, make sure it is supported
+func (c *AppConfig) validateLanguage(lang string) error {
+	switch lang {
+	case "go", string(ir.GoLang):
+		return nil
+	case "js", strings.ToLower(string(ir.JavaScript)):
+		return nil
+	case "py", strings.ToLower(string(ir.Python)), strings.ToLower(string(ir.Python3)):
+		return nil
+	case "rb", strings.ToLower(string(ir.Ruby)):
+		return nil
+	}
+	return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 }
 
 // setPipelineName will check if Pipeline was specified via app.json
