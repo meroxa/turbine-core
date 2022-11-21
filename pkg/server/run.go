@@ -2,40 +2,39 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
-	"time"
 
-	turbinecore "github.com/meroxa/turbine-core"
+	"github.com/meroxa/turbine-core/pkg/app"
+	"github.com/meroxa/turbine-core/pkg/server/internal"
+
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+var _ pb.TurbineServiceServer = (*runService)(nil)
 
 type runService struct {
 	pb.UnimplementedTurbineServiceServer
-	config      turbinecore.AppConfig
-	appRootPath string
+	config  app.Config
+	appPath string
 }
 
 func NewRunService() *runService {
 	return &runService{
-		config: turbinecore.AppConfig{},
+		config: app.Config{},
 	}
 }
 
-func (s *runService) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
-	// load app config (app.json)
-	ac, err := turbinecore.ReadAppConfig(request.AppName, request.ConfigFilePath)
+func (s *runService) Init(ctx context.Context, req *pb.InitRequest) (*emptypb.Empty, error) {
+	config, err := app.ReadConfig(req.AppName, req.ConfigFilePath)
 	if err != nil {
-		log.Printf("error initializeing app; err: %s", err)
 		return empty(), err
 	}
-	s.config = ac
-	s.appRootPath = request.ConfigFilePath
+	s.config = config
+	s.appPath = req.ConfigFilePath
+
 	return empty(), nil
 }
 
@@ -51,8 +50,8 @@ func (s *runService) ReadCollection(ctx context.Context, request *pb.ReadCollect
 	}
 
 	fixtureFile := s.config.Resources[request.Resource.Name]
-	resourceFixturesPath := fmt.Sprintf("%s/%s", s.appRootPath, fixtureFile)
-	return readFixtures(resourceFixturesPath, request.Collection)
+	resourceFixturesPath := fmt.Sprintf("%s/%s", s.appPath, fixtureFile)
+	return internal.ReadFixtures(resourceFixturesPath, request.Collection)
 }
 
 func (s *runService) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
@@ -60,7 +59,7 @@ func (s *runService) WriteCollectionToResource(ctx context.Context, request *pb.
 		return empty(), fmt.Errorf("please provide a collection name to Records()")
 	}
 
-	prettyPrintRecords(request.Resource.Name, request.SourceCollection.Stream, request.SourceCollection.Records)
+	internal.PrettyPrintRecords(request.Resource.Name, request.SourceCollection.Stream, request.SourceCollection.Records)
 
 	return empty(), nil
 }
@@ -75,63 +74,4 @@ func (s *runService) RegisterSecret(ctx context.Context, secret *pb.Secret) (*em
 		return empty(), errors.New("secret is invalid or not set")
 	}
 	return empty(), nil
-}
-
-type fixtureRecord struct {
-	Key       string
-	Value     map[string]interface{}
-	Timestamp string
-}
-
-func readFixtures(path, collection string) (*pb.Collection, error) {
-	log.Printf("fixtures path: %s", path)
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return &pb.Collection{}, err
-	}
-
-	var records map[string][]fixtureRecord
-	err = json.Unmarshal(b, &records)
-	if err != nil {
-		return &pb.Collection{}, err
-	}
-
-	var rr []*pb.Record
-	for _, r := range records[collection] {
-		rr = append(rr, wrapRecord(r))
-	}
-
-	col := &pb.Collection{
-		Name:    collection,
-		Records: rr,
-	}
-
-	return col, nil
-}
-
-func wrapRecord(m fixtureRecord) *pb.Record {
-	b, _ := json.Marshal(m.Value)
-
-	var ts *timestamppb.Timestamp
-	if m.Timestamp == "" {
-		ts = timestamppb.New(time.Now())
-	} else {
-		t, _ := time.Parse(time.RFC3339, m.Timestamp)
-		ts = timestamppb.New(t)
-	}
-
-	return &pb.Record{
-		Key:       m.Key,
-		Value:     b,
-		Timestamp: ts,
-	}
-}
-
-func prettyPrintRecords(name string, collection string, rr []*pb.Record) {
-	fmt.Printf("=====================to %s (%s) resource=====================\n", name, collection)
-	for _, r := range rr {
-		payloadVal := string(r.Value)
-		fmt.Println(payloadVal)
-	}
-	fmt.Printf("%d record(s) written\n", len(rr))
 }
