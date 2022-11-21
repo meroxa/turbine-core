@@ -2,10 +2,12 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -471,4 +473,57 @@ func TestGetSpec(t *testing.T) {
 	got, err := ir.Unmarshal(res.Spec)
 	require.Nil(t, err)
 	require.Equal(t, got, &spec)
+}
+
+func Test_ValidateLanguage(t *testing.T) {
+	testCases := []struct {
+		desc      string
+		language  string
+		wantError error
+	}{
+		{
+			desc:      "Validate and assign golang",
+			language:  "golang",
+			wantError: nil,
+		},
+		{
+			desc:      "Validate and assign javascript",
+			language:  "javascript",
+			wantError: nil,
+		},
+		{
+			desc:      "Validate and assign python",
+			language:  "python",
+			wantError: nil,
+		},
+		{
+			desc:      "Validate and assign ruby",
+			language:  "ruby",
+			wantError: nil,
+		},
+		{
+			desc:      "Error on unsupported emoji language",
+			language:  "emoji",
+			wantError: fmt.Errorf("language %q not supported. %s", "emoji", LanguageNotSupportedError),
+		},
+	}
+
+	for _, tc := range testCases {
+		var (
+			ctx = context.Background()
+			s   = NewRecordService()
+		)
+
+		t.Run(tc.desc, func(t *testing.T) {
+			gotError := s.ValidateAndSetLanguage(ctx, tc.language)
+			if tc.wantError == nil {
+				assert.NoError(t, gotError)
+				assert.Equal(t, s.deploymentSpec.Definition.Metadata.Turbine.Language, ir.Lang(tc.language))
+			} else {
+				assert.Equal(t, gotError, tc.wantError)
+			}
+
+		})
+	}
+
 }
