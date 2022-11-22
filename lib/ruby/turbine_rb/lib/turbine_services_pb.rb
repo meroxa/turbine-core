@@ -22,7 +22,7 @@ module TurbineCore
       rpc :RegisterSecret, ::TurbineCore::Secret, ::Google::Protobuf::Empty
       rpc :HasFunctions, ::Google::Protobuf::Empty, ::Google::Protobuf::BoolValue
       rpc :ListResources, ::Google::Protobuf::Empty, ::TurbineCore::ListResourcesResponse
-      rpc :GetSpec, ::Google::Protobuf::Empty, ::TurbineCore::GetSpecResponse
+      rpc :GetSpec, ::TurbineCore::GetSpecRequest, ::TurbineCore::GetSpecResponse
     end
 
     Stub = Service.rpc_stub_class
