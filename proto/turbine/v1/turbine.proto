@@ -29,8 +29,8 @@ enum Language {
 }
 
 message InitRequest {
-  string appName = 1;
-  string configFilePath = 2;
+  string appName = 1 [(validate.rules).string.min_len = 1];
+  string configFilePath = 2 [(validate.rules).string.min_len = 1];;
   Language language = 3 [(validate.rules).enum.defined_only = true];
   string gitSHA = 4;
   string turbineVersion = 5;
@@ -41,17 +41,17 @@ message GetResourceRequest {
 }
 
 message Resource {
-  string name = 1;
+  string name = 1 [(validate.rules).string.min_len = 1];
 }
 
 message Collection {
-  string name = 1;
+  string name = 1 [(validate.rules).string.min_len = 1];
   string stream = 2;
   repeated Record records = 3;
 }
 
 message Record {
-  string key = 1;
+  string key = 1 [(validate.rules).string.min_len = 1];;
   bytes value = 2;
   google.protobuf.Timestamp timestamp = 3;
 }
@@ -83,13 +83,13 @@ message ProcessCollectionRequest {
     string name = 1;
   }
 
-  Process process = 1 [(validate.rules).string.min_len = 1];
-  Collection collection = 2 [(validate.rules).string.min_len = 1];
+  Process process = 1 [(validate.rules).message.required = true];
+  Collection collection = 2 [(validate.rules).message.required = true];
 }
 
 message Secret {
-  string name = 1;
-  string value = 2;
+  string name = 1 [(validate.rules).string.min_len = 1];
+  string value = 2 [(validate.rules).string.min_len = 1];
 }
 
 message ListResourcesResponse {

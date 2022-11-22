@@ -42,6 +42,7 @@ module TurbineRb
       gitSHA = ARGV[0]
 
       req = TurbineCore::InitRequest.new(
+        appName: app.class.name,
         configFilePath: Dir.getwd,
         language: :RUBY,
         gitSHA: gitSHA,
@@ -55,11 +56,11 @@ module TurbineRb
       TurbineRb.app.call(app)
     end
 
-    def build 
+    def build
       docker_file = File.join(File.expand_path(File.dirname(__FILE__)) , "templates", "Dockerfile")
       dest_app = Dir.getwd
       FileUtils.cp(docker_file, dest_app)
-    end 
+    end
 
   end
 
