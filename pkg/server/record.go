@@ -11,8 +11,6 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-const LanguageNotSupportedError = "Currently, we support \"javascript\", \"golang\", \"python\", and \"ruby (beta)\" "
-
 type recordService struct {
 	pb.UnimplementedTurbineServiceServer
 	deploymentSpec ir.DeploymentSpec
@@ -24,20 +22,19 @@ func NewRecordService() *recordService {
 }
 
 func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
+	if err := request.Validate(); err != nil {
+		return nil, err
+	}
 
 	s.deploymentSpec.Definition = ir.DefinitionSpec{
 		GitSha: request.GetGitSHA(),
 		Metadata: ir.MetadataSpec{
 			Turbine: ir.TurbineSpec{
-				Version: request.GetTurbineVersion(),
+				Language: ir.Lang(strings.ToLower(request.GetLanguage().String())),
+				Version:  request.GetTurbineVersion(),
 			},
 			SpecVersion: ir.LatestSpecVersion,
 		},
-	}
-
-	err := s.ValidateAndSetLanguage(ctx, strings.ToLower(request.Language.String()))
-	if err != nil {
-		return nil, err
 	}
 	return empty(), nil
 }
@@ -138,22 +135,4 @@ func (s *recordService) GetSpec(ctx context.Context, in *emptypb.Empty) (*pb.Get
 	return &pb.GetSpecResponse{
 		Spec: spec,
 	}, nil
-}
-
-func (s *recordService) ValidateAndSetLanguage(ctx context.Context, lang string) error {
-	switch lang {
-	case "go", string(ir.GoLang):
-		s.deploymentSpec.Definition.Metadata.Turbine.Language = ir.GoLang
-		return nil
-	case "js", strings.ToLower(string(ir.JavaScript)):
-		s.deploymentSpec.Definition.Metadata.Turbine.Language = ir.JavaScript
-		return nil
-	case "py", strings.ToLower(string(ir.Python)), strings.ToLower(string(ir.Python3)):
-		s.deploymentSpec.Definition.Metadata.Turbine.Language = ir.Python
-		return nil
-	case "rb", strings.ToLower(string(ir.Ruby)):
-		s.deploymentSpec.Definition.Metadata.Turbine.Language = ir.Ruby
-		return nil
-	}
-	return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 }

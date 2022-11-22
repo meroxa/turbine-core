@@ -2,43 +2,88 @@ package server
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"testing"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/ir"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestInit(t *testing.T) {
-	var (
-		ctx  = context.Background()
-		s    = NewRecordService()
-		want = ir.DeploymentSpec{
-			Definition: ir.DefinitionSpec{
-				GitSha: "gitsha",
-				Metadata: ir.MetadataSpec{
-					Turbine: ir.TurbineSpec{
-						Language: "ruby",
-						Version:  "0.1.0",
+	testCases := []struct {
+		test    string
+		spec    ir.DeploymentSpec
+		request pb.InitRequest
+		want    error
+	}{
+		{
+			test: "Init successful with correct language",
+			spec: ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					GitSha: "gitsha",
+					Metadata: ir.MetadataSpec{
+						Turbine: ir.TurbineSpec{
+							Language: "ruby",
+							Version:  "0.1.0",
+						},
+						SpecVersion: ir.LatestSpecVersion,
 					},
-					SpecVersion: ir.LatestSpecVersion,
 				},
 			},
-		}
-	)
+			request: pb.InitRequest{
+				AppName:        "test-ruby",
+				ConfigFilePath: "path/to/ruby",
+				Language:       pb.Language_RUBY,
+				GitSHA:         "gitsha",
+				TurbineVersion: "0.1.0",
+			},
+			want: nil,
+		},
+		{
+			test: "Init error with incorrect language",
+			spec: ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					GitSha: "gitsha",
+					Metadata: ir.MetadataSpec{
+						Turbine: ir.TurbineSpec{
+							Language: "emoji",
+							Version:  "0.1.0",
+						},
+						SpecVersion: ir.LatestSpecVersion,
+					},
+				},
+			},
+			request: pb.InitRequest{
+				AppName:        "test-emoji",
+				ConfigFilePath: "path/to/emoji",
+				Language:       101221,
+				GitSHA:         "gitsha",
+				TurbineVersion: "0.1.0",
+			},
+			want: errors.New("invalid InitRequest.Language: value must be one of the defined enum values"),
+		},
+	}
 
-	res, err := s.Init(ctx, &pb.InitRequest{
-		AppName:        "test-ruby",
-		ConfigFilePath: "path/to/ruby",
-		Language:       pb.Language_RUBY,
-		GitSHA:         "gitsha",
-		TurbineVersion: "0.1.0",
-	})
-	require.Nil(t, err)
-	require.Equal(t, empty(), res)
-	require.Equal(t, want, s.deploymentSpec)
+	for _, test := range testCases {
+		t.Run(test.test, func(t *testing.T) {
+			var (
+				ctx = context.Background()
+				s   = NewRecordService()
+			)
+			res, err := s.Init(ctx, &test.request)
+
+			if test.want == nil {
+				require.Nil(t, err)
+				require.Equal(t, empty(), res)
+				require.Equal(t, test.spec, s.deploymentSpec)
+			} else {
+				require.ErrorContains(t, err, test.want.Error())
+			}
+
+		})
+	}
+
 }
 
 func TestGetResource(t *testing.T) {
@@ -473,57 +518,4 @@ func TestGetSpec(t *testing.T) {
 	got, err := ir.Unmarshal(res.Spec)
 	require.Nil(t, err)
 	require.Equal(t, got, &spec)
-}
-
-func Test_ValidateLanguage(t *testing.T) {
-	testCases := []struct {
-		desc      string
-		language  string
-		wantError error
-	}{
-		{
-			desc:      "Validate and assign golang",
-			language:  "golang",
-			wantError: nil,
-		},
-		{
-			desc:      "Validate and assign javascript",
-			language:  "javascript",
-			wantError: nil,
-		},
-		{
-			desc:      "Validate and assign python",
-			language:  "python",
-			wantError: nil,
-		},
-		{
-			desc:      "Validate and assign ruby",
-			language:  "ruby",
-			wantError: nil,
-		},
-		{
-			desc:      "Error on unsupported emoji language",
-			language:  "emoji",
-			wantError: fmt.Errorf("language %q not supported. %s", "emoji", LanguageNotSupportedError),
-		},
-	}
-
-	for _, tc := range testCases {
-		var (
-			ctx = context.Background()
-			s   = NewRecordService()
-		)
-
-		t.Run(tc.desc, func(t *testing.T) {
-			gotError := s.ValidateAndSetLanguage(ctx, tc.language)
-			if tc.wantError == nil {
-				assert.NoError(t, gotError)
-				assert.Equal(t, s.deploymentSpec.Definition.Metadata.Turbine.Language, ir.Lang(tc.language))
-			} else {
-				assert.Equal(t, gotError, tc.wantError)
-			}
-
-		})
-	}
-
 }
