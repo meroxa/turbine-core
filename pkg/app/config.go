@@ -1,4 +1,4 @@
-package turbinecore
+package app
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ import (
 
 const LanguageNotSupportedError = "Currently, we support \"javascript\", \"golang\", \"python\", and \"ruby (beta)\" "
 
-type AppConfig struct {
+type Config struct {
 	Name        string            `json:"name"`
 	Environment string            `json:"environment"`
 	Pipeline    string            `json:"pipeline"` // TODO: Eventually remove support for providing a pipeline if we need to
@@ -23,7 +23,7 @@ type AppConfig struct {
 }
 
 // validateAppConfig will check if app.json contains information required
-func (c *AppConfig) validateAppConfig() error {
+func (c *Config) validateConfig() error {
 	if c.Name == "" {
 		return errors.New("application name is required to be specified in your app.json")
 	}
@@ -34,7 +34,7 @@ func (c *AppConfig) validateAppConfig() error {
 }
 
 //validate app.json language, make sure it is supported
-func (c *AppConfig) validateLanguage(lang string) error {
+func (c *Config) validateLanguage(lang string) error {
 	switch lang {
 	case "go", string(ir.GoLang):
 		return nil
@@ -50,13 +50,13 @@ func (c *AppConfig) validateLanguage(lang string) error {
 
 // setPipelineName will check if Pipeline was specified via app.json
 // otherwise, pipeline name will be set with the format of `turbine-pipeline-{Name}`
-func (c *AppConfig) setPipelineName() {
+func (c *Config) setPipelineName() {
 	if c.Pipeline == "" {
 		c.Pipeline = fmt.Sprintf("turbine-pipeline-%s", c.Name)
 	}
 }
 
-var ReadAppConfig = func(appName, appPath string) (AppConfig, error) {
+var ReadConfig = func(appName, appPath string) (Config, error) {
 	if appPath == "" {
 		exePath, err := os.Executable()
 		if err != nil {
@@ -67,21 +67,21 @@ var ReadAppConfig = func(appName, appPath string) (AppConfig, error) {
 
 	b, err := os.ReadFile(appPath + "/" + "app.json")
 	if err != nil {
-		return AppConfig{}, err
+		return Config{}, err
 	}
 
-	var ac AppConfig
+	var ac Config
 	err = json.Unmarshal(b, &ac)
 	if err != nil {
-		return AppConfig{}, err
+		return Config{}, err
 	}
 
 	if appName != "" {
 		ac.Name = appName
 	}
-	err = ac.validateAppConfig()
+	err = ac.validateConfig()
 	if err != nil {
-		return AppConfig{}, err
+		return Config{}, err
 	}
 
 	ac.setPipelineName()
