@@ -1,15 +1,20 @@
 package internal
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
-	"log"
 	"os"
 	"time"
 
+	"github.com/jedib0t/go-pretty/v6/table"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+type FixtureResource struct {
+	File       string
+	Collection string
+}
 
 type fixtureRecord struct {
 	Key       string
@@ -17,39 +22,30 @@ type fixtureRecord struct {
 	Timestamp string
 }
 
-func ReadFixtures(path, collection string) (*pb.Collection, error) {
-	log.Printf("fixtures path: %s", path)
-	b, err := os.ReadFile(path)
+func (f *FixtureResource) ReadAll(ctx context.Context) ([]*pb.Record, error) {
+	b, err := os.ReadFile(f.File)
 	if err != nil {
-		return &pb.Collection{}, err
+		return nil, err
 	}
 
 	var records map[string][]fixtureRecord
-	err = json.Unmarshal(b, &records)
-	if err != nil {
-		return &pb.Collection{}, err
+	if err := json.Unmarshal(b, &records); err != nil {
+		return nil, err
 	}
 
 	var rr []*pb.Record
-	for _, r := range records[collection] {
+	for _, r := range records[f.Collection] {
 		rr = append(rr, wrapRecord(r))
 	}
 
-	col := &pb.Collection{
-		Name:    collection,
-		Records: rr,
-	}
-
-	return col, nil
+	return rr, nil
 }
 
 func wrapRecord(m fixtureRecord) *pb.Record {
 	b, _ := json.Marshal(m.Value)
 
-	var ts *timestamppb.Timestamp
-	if m.Timestamp == "" {
-		ts = timestamppb.New(time.Now())
-	} else {
+	ts := timestamppb.New(time.Now())
+	if m.Timestamp != "" {
 		t, _ := time.Parse(time.RFC3339, m.Timestamp)
 		ts = timestamppb.New(t)
 	}
@@ -61,11 +57,14 @@ func wrapRecord(m fixtureRecord) *pb.Record {
 	}
 }
 
-func PrettyPrintRecords(name string, collection string, rr []*pb.Record) {
-	fmt.Printf("=====================to %s (%s) resource=====================\n", name, collection)
-	for _, r := range rr {
-		payloadVal := string(r.Value)
-		fmt.Println(payloadVal)
+func PrintRecords(name, collection string, rr []*pb.Record) {
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.SetTitle("Destination %s/%s", name, collection)
+	t.AppendHeader(table.Row{"index", "record"})
+	for i, r := range rr {
+		t.AppendRow(table.Row{i, string(r.Value)})
 	}
-	fmt.Printf("%d record(s) written\n", len(rr))
+	t.AppendFooter(table.Row{"records written", len(rr)})
+	t.Render()
 }

@@ -25,7 +25,7 @@ turbine_proto:
 		-v $(CURDIR)/lib/go:/out \
 		namely/protoc-all  \
 			-f ./turbine/v1/turbine.proto \
-			-l go -o /out
+			-l go --with-validator -o /out
 
 .PHONY: process_ruby_proto
 process_ruby_proto:

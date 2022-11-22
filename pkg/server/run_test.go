@@ -23,6 +23,37 @@ func Test_Init(t *testing.T) {
 		wantErr error
 	}{
 		{
+			desc:    "fails with invalid app name",
+			wantErr: errors.New("invalid InitRequest.AppName: value length must be at least 1 runes"),
+			setup: func() *pb.InitRequest {
+				return &pb.InitRequest{
+					ConfigFilePath: "/foo/bar",
+					Language:       pb.Language_GOLANG,
+				}
+			},
+		},
+		{
+			desc:    "fails with invalid config file path",
+			wantErr: errors.New("invalid InitRequest.ConfigFilePath: value length must be at least 1 runes"),
+			setup: func() *pb.InitRequest {
+				return &pb.InitRequest{
+					AppName:  "turbine-app",
+					Language: pb.Language_GOLANG,
+				}
+			},
+		},
+		{
+			desc:    "fails with invalid lang",
+			wantErr: errors.New("invalid InitRequest.Language: value must be one of the defined enum values"),
+			setup: func() *pb.InitRequest {
+				return &pb.InitRequest{
+					AppName:        "turbine-app",
+					ConfigFilePath: "/foo/bar",
+					Language:       101221,
+				}
+			},
+		},
+		{
 			desc:    "fails to load app config",
 			wantErr: errors.New("no such file or directory"),
 			setup: func() *pb.InitRequest {
@@ -85,106 +116,293 @@ func Test_Init(t *testing.T) {
 }
 
 func Test_GetResource(t *testing.T) {
-	s := &runService{}
-	r, err := s.GetResource(context.Background(), &pb.GetResourceRequest{
-		Name: "my-resource",
-	})
+	ctx := context.Background()
+	tests := []struct {
+		desc    string
+		setup   func() *pb.GetResourceRequest
+		wantErr error
+	}{
+		{
+			desc: "fails on invalid name",
+			setup: func() *pb.GetResourceRequest {
+				return &pb.GetResourceRequest{}
+			},
+			wantErr: errors.New("invalid GetResourceRequest.Name: value length must be at least 1 runes"),
+		},
+		{
+			desc: "success",
+			setup: func() *pb.GetResourceRequest {
+				return &pb.GetResourceRequest{
+					Name: "my-resource",
+				}
+			},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			s := &runService{}
+			req := tc.setup()
 
-	if assert.NoError(t, err) {
-		assert.Equal(t, r, &pb.Resource{
-			Name: "my-resource",
+			r, err := s.GetResource(ctx, req)
+			if tc.wantErr != nil {
+				assert.ErrorContains(t, err, tc.wantErr.Error())
+			} else {
+				if assert.NoError(t, err) {
+					assert.Equal(t, r.Name, req.Name)
+				}
+			}
 		})
 	}
 }
 
 func Test_AddProccessToCollection(t *testing.T) {
-	s := &runService{}
-	c, err := s.AddProcessToCollection(context.Background(), &pb.ProcessCollectionRequest{
-		Collection: &pb.Collection{
-			Name:   "my-collection",
-			Stream: "my-stream",
-			Records: []*pb.Record{
-				{
-					Key:   "key1",
-					Value: []byte("val1"),
-				},
-			},
-		},
-	})
-
-	if assert.NoError(t, err) {
-		assert.Equal(t, c, &pb.Collection{
-			Name:   "my-collection",
-			Stream: "my-stream",
-			Records: []*pb.Record{
-				{
-					Key:   "key1",
-					Value: []byte("val1"),
-				},
-			},
-		})
-	}
-}
-
-func TestRunService_RegisterSecret(t *testing.T) {
+	ctx := context.Background()
 	tests := []struct {
-		description string
-		envVars     map[string]string
-		secretWant  *pb.Secret
-		wantErr     error
+		desc    string
+		setup   func() *pb.ProcessCollectionRequest
+		wantErr error
 	}{
 		{
-			description: "when secret exists",
-			envVars: map[string]string{
-				"TEST_ENV_VAR": "my-value",
+			desc: "fails on missing process",
+			setup: func() *pb.ProcessCollectionRequest {
+				return &pb.ProcessCollectionRequest{}
 			},
-			secretWant: &pb.Secret{
-				Name: "TEST_ENV_VAR",
-			},
-			wantErr: nil,
+			wantErr: errors.New("invalid ProcessCollectionRequest.Process: value is required"),
 		},
 		{
-			description: "when secret doesn't exist",
-			envVars: map[string]string{
-				"TEST_ENV_VAR": "my-value",
+			desc: "fails on missing collection",
+			setup: func() *pb.ProcessCollectionRequest {
+				return &pb.ProcessCollectionRequest{
+					Process: &pb.ProcessCollectionRequest_Process{},
+				}
 			},
-			secretWant: &pb.Secret{
-				Name: "TEST_FOO",
+			wantErr: errors.New("invalid ProcessCollectionRequest.Collection: value is required"),
+		},
+		{
+			desc: "success",
+			setup: func() *pb.ProcessCollectionRequest {
+				return &pb.ProcessCollectionRequest{
+					Process: &pb.ProcessCollectionRequest_Process{
+						Name: "my-process",
+					},
+					Collection: &pb.Collection{
+						Name:   "my-collection",
+						Stream: "my-stream",
+						Records: []*pb.Record{
+							{
+								Key:   "key1",
+								Value: []byte("val1"),
+							},
+						},
+					},
+				}
 			},
-			wantErr: errors.New("secret is invalid or not set"),
 		},
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.description, func(t *testing.T) {
-			var (
-				ctx = context.Background()
-				s   = NewRunService()
-			)
+		t.Run(tc.desc, func(t *testing.T) {
+			s := &runService{}
+			req := tc.setup()
 
-			cleanup := envSet(tc.envVars)
-
-			_, gotErr := s.RegisterSecret(ctx, tc.secretWant)
+			c, err := s.AddProcessToCollection(ctx, req)
 			if tc.wantErr != nil {
-				assert.Equal(t, gotErr, tc.wantErr)
+				assert.ErrorContains(t, err, tc.wantErr.Error())
 			} else {
-				assert.NoError(t, gotErr)
+				if assert.NoError(t, err) {
+					assert.Equal(t, c, req.Collection)
+				}
 			}
-
-			t.Cleanup(cleanup)
 		})
 	}
 }
 
-// envSet will take care of setting and unsetting environment variables during cleanup
-func envSet(envs map[string]string) (cleanup func()) {
-	for name, value := range envs {
-		_ = os.Setenv(name, value)
+func Test_RegisterSecret(t *testing.T) {
+	ctx := context.Background()
+	tests := []struct {
+		desc    string
+		setup   func() *pb.Secret
+		wantErr error
+	}{
+		{
+			desc:    "fails when secret name is invalid",
+			wantErr: errors.New("invalid Secret.Name: value length must be at least 1 runes"),
+			setup: func() *pb.Secret {
+				return &pb.Secret{
+					Value: "secret-name",
+				}
+			},
+		},
+		{
+			desc:    "fails when secret value is invalid",
+			wantErr: errors.New("invalid Secret.Value: value length must be at least 1 runes"),
+			setup: func() *pb.Secret {
+				return &pb.Secret{
+					Name: "secret-value",
+				}
+			},
+		},
+		{
+			desc: "success",
+			setup: func() *pb.Secret {
+				return &pb.Secret{
+					Name:  "secret-name",
+					Value: "secret-value",
+				}
+			},
+		},
 	}
 
-	return func() {
-		for name := range envs {
-			_ = os.Unsetenv(name)
-		}
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			s := &runService{}
+			req := tc.setup()
+
+			_, err := s.RegisterSecret(ctx, req)
+			if tc.wantErr != nil {
+				assert.ErrorContains(t, err, tc.wantErr.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func Test_ReadCollection(t *testing.T) {
+	ctx := context.Background()
+	tempdir := t.TempDir()
+	tests := []struct {
+		desc           string
+		srv            *runService
+		setup          func() *pb.ReadCollectionRequest
+		wantCollection *pb.Collection
+		wantErr        error
+	}{
+		{
+			desc:    "fails when resource is missing",
+			srv:     &runService{},
+			wantErr: errors.New("invalid ReadCollectionRequest.Resource: value is required"),
+			setup: func() *pb.ReadCollectionRequest {
+				return &pb.ReadCollectionRequest{
+					Collection: "resource-collection",
+				}
+			},
+		},
+		{
+			desc:    "fails when collection name is missing",
+			srv:     &runService{},
+			wantErr: errors.New("invalid ReadCollectionRequest.Collection: value length must be at least 1 runes"),
+			setup: func() *pb.ReadCollectionRequest {
+				return &pb.ReadCollectionRequest{
+					Resource: &pb.Resource{
+						Name: "resource",
+					},
+				}
+			},
+		},
+		{
+			desc: "fails on missing fixture file",
+			srv: &runService{
+				appPath: tempdir,
+				config: app.Config{
+					Resources: map[string]string{
+						"resource": "fixture.json",
+					},
+				},
+			},
+			wantErr: errors.New("no such file or directory"),
+			setup: func() *pb.ReadCollectionRequest {
+				return &pb.ReadCollectionRequest{
+					Resource: &pb.Resource{
+						Name: "resource",
+					},
+					Collection: "resource-collection",
+				}
+			},
+		},
+		{
+			desc: "success",
+			srv: &runService{
+				appPath: path.Join(tempdir),
+				config: app.Config{
+					Resources: map[string]string{
+						"resource": "fixture.json",
+					},
+				},
+			},
+			wantCollection: &pb.Collection{
+				Name: "events",
+				Records: []*pb.Record{
+					{
+						Key:   "1",
+						Value: []byte(`{"message":"hello"}`),
+					},
+				},
+			},
+			setup: func() *pb.ReadCollectionRequest {
+				file := path.Join(tempdir, "fixture.json")
+				require.NoError(
+					t,
+					os.WriteFile(
+						file,
+						[]byte(`{
+							"events": [{
+								"key": "1",
+								"value": {"message":"hello"},
+								"timestamp": "1662758822"
+							}]
+						}`),
+						0644,
+					),
+				)
+				return &pb.ReadCollectionRequest{
+					Resource: &pb.Resource{
+						Name: "resource",
+					},
+					Collection: "events",
+				}
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			req := tc.setup()
+
+			c, err := tc.srv.ReadCollection(ctx, req)
+			if tc.wantErr != nil {
+				assert.ErrorContains(t, err, tc.wantErr.Error())
+			} else {
+				if assert.NoError(t, err) {
+					assert.Equal(t, c.Name, tc.wantCollection.Name)
+					assert.Equal(t, len(c.Records), len(tc.wantCollection.Records))
+					assert.Equal(t, c.Records[0].Key, tc.wantCollection.Records[0].Key)
+					assert.Equal(t, c.Records[0].Value, tc.wantCollection.Records[0].Value)
+				}
+			}
+		})
+	}
+}
+
+func Test_WriteCollectionToResource(t *testing.T) {
+	ctx := context.Background()
+	tests := []struct {
+		desc    string
+		setup   func() *pb.WriteCollectionRequest
+		wantErr error
+	}{}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			s := &runService{}
+			req := tc.setup()
+
+			_, err := s.WriteCollectionToResource(ctx, req)
+			if tc.wantErr != nil {
+				assert.ErrorContains(t, err, tc.wantErr.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
