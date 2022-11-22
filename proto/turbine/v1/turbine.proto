@@ -18,7 +18,7 @@ service TurbineService {
   rpc RegisterSecret(Secret) returns (google.protobuf.Empty);
   rpc HasFunctions(google.protobuf.Empty) returns (google.protobuf.BoolValue);
   rpc ListResources(google.protobuf.Empty) returns (ListResourcesResponse);
-  rpc GetSpec(google.protobuf.Empty) returns (GetSpecResponse);
+  rpc GetSpec(GetSpecRequest) returns (GetSpecResponse);
 }
 
 enum Language {
@@ -94,6 +94,10 @@ message Secret {
 
 message ListResourcesResponse {
   repeated Resource resources = 1;
+}
+
+message GetSpecRequest {
+  string image = 1;
 }
 
 message GetSpecResponse {

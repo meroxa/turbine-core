@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
@@ -470,19 +471,107 @@ func TestListResources(t *testing.T) {
 }
 
 func TestGetSpec(t *testing.T) {
+	tests := []struct {
+		description     string
+		populateService func(*recordService) *recordService
+		request         *pb.GetSpecRequest
+		want            ir.DeploymentSpec
+		wantErr         error
+	}{
+		{
+			description: "get spec with no function",
+			populateService: func(s *recordService) *recordService {
+				s.deploymentSpec = exampleDeploymentSpec()
+				return s
+			},
+			want: exampleDeploymentSpec(),
+		},
+		{
+			description: "get spec with no function, set image",
+			populateService: func(s *recordService) *recordService {
+				s.deploymentSpec = exampleDeploymentSpec()
+				return s
+			},
+			request: &pb.GetSpecRequest{
+				Image: "some/image",
+			},
+			wantErr: fmt.Errorf("cannot set function image since spec has no functions"),
+		},
+		{
+			description: "get spec with function",
+			populateService: func(s *recordService) *recordService {
+				s.deploymentSpec = exampleDeploymentSpec()
+				s.deploymentSpec.Functions = []ir.FunctionSpec{
+					{
+						Name: "function",
+					},
+				}
+				return s
+			},
+			request: &pb.GetSpecRequest{
+				Image: "some/image",
+			},
+			want: func() ir.DeploymentSpec {
+				s := exampleDeploymentSpec()
+				s.Functions = []ir.FunctionSpec{
+					{
+						Name:  "function",
+						Image: "some/image",
+					},
+				}
+				return s
+			}(),
+		},
+		{
+			description: "get spec with function, overwrite image",
+			populateService: func(s *recordService) *recordService {
+				s.deploymentSpec = exampleDeploymentSpec()
+				s.deploymentSpec.Functions = []ir.FunctionSpec{
+					{
+						Name:  "function",
+						Image: "existing/image",
+					},
+				}
+				return s
+			},
+			request: &pb.GetSpecRequest{
+				Image: "some/image",
+			},
+			want: func() ir.DeploymentSpec {
+				s := exampleDeploymentSpec()
+				s.Functions = []ir.FunctionSpec{
+					{
+						Name:  "function",
+						Image: "some/image",
+					},
+				}
+				return s
+			}(),
+		},
+	}
 
-	var (
-		ctx = context.Background()
-		s   = NewRecordService()
-	)
-	spec := ir.DeploymentSpec{
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			var (
+				ctx = context.Background()
+				s   = test.populateService(NewRecordService())
+			)
+
+			res, err := s.GetSpec(ctx, test.request)
+			require.Equal(t, test.wantErr, err)
+			if test.wantErr == nil {
+				got, err := ir.Unmarshal(res.Spec)
+				require.Nil(t, err)
+				require.Equal(t, got, &test.want)
+			}
+		})
+	}
+}
+
+func exampleDeploymentSpec() ir.DeploymentSpec {
+	return ir.DeploymentSpec{
 		Secrets: map[string]string{
 			"a secret": "with value",
-		},
-		Functions: []ir.FunctionSpec{
-			{
-				Name: "addition",
-			},
 		},
 		Connectors: []ir.ConnectorSpec{
 			{
@@ -510,12 +599,4 @@ func TestGetSpec(t *testing.T) {
 			},
 		},
 	}
-	s.deploymentSpec = spec
-
-	res, err := s.GetSpec(ctx, empty())
-	require.Nil(t, err)
-
-	got, err := ir.Unmarshal(res.Spec)
-	require.Nil(t, err)
-	require.Equal(t, got, &spec)
 }
