@@ -65,6 +65,9 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     add_message "turbine_core.ListResourcesResponse" do
       repeated :resources, :message, 1, "turbine_core.Resource"
     end
+    add_message "turbine_core.GetSpecRequest" do
+      optional :image, :string, 1
+    end
     add_message "turbine_core.GetSpecResponse" do
       optional :spec, :bytes, 1
     end
@@ -91,6 +94,7 @@ module TurbineCore
   ProcessCollectionRequest::Process = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessCollectionRequest.Process").msgclass
   Secret = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Secret").msgclass
   ListResourcesResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ListResourcesResponse").msgclass
+  GetSpecRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetSpecRequest").msgclass
   GetSpecResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetSpecResponse").msgclass
   Language = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Language").enummodule
 end
