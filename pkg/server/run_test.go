@@ -1,8 +1,10 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"io"
 	"os"
 	"path"
 	"testing"
@@ -390,17 +392,97 @@ func Test_WriteCollectionToResource(t *testing.T) {
 		desc    string
 		setup   func() *pb.WriteCollectionRequest
 		wantErr error
-	}{}
+	}{
+		{
+			desc:    "fails when resource is missing",
+			wantErr: errors.New("invalid WriteCollectionRequest.Resource: value is required"),
+			setup: func() *pb.WriteCollectionRequest {
+				return &pb.WriteCollectionRequest{}
+			},
+		},
+		{
+			desc:    "fails when source collection is missing",
+			wantErr: errors.New("invalid WriteCollectionRequest.SourceCollection: value is required"),
+			setup: func() *pb.WriteCollectionRequest {
+				return &pb.WriteCollectionRequest{
+					Resource: &pb.Resource{
+						Name: "resource",
+					},
+				}
+			},
+		},
+		{
+			desc:    "fails when target collection is missing",
+			wantErr: errors.New("invalid WriteCollectionRequest.TargetCollection: value length must be at least 1 runes"),
+			setup: func() *pb.WriteCollectionRequest {
+				return &pb.WriteCollectionRequest{
+					Resource: &pb.Resource{
+						Name: "resource",
+					},
+					SourceCollection: &pb.Collection{
+						Name:    "collection",
+						Records: []*pb.Record{},
+					},
+				}
+			},
+		},
+		{
+			desc: "success",
+			setup: func() *pb.WriteCollectionRequest {
+				return &pb.WriteCollectionRequest{
+					Resource: &pb.Resource{
+						Name: "resource",
+					},
+					SourceCollection: &pb.Collection{
+						Name: "collection",
+						Records: []*pb.Record{
+							{
+								Key:   "record-key",
+								Value: []byte(`{"1":"record-value"}`),
+							},
+						},
+					},
+					TargetCollection: "target-collection",
+				}
+			},
+		},
+	}
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
 			s := &runService{}
 			req := tc.setup()
 
-			_, err := s.WriteCollectionToResource(ctx, req)
+			// capture stdout and match if it contains what we need
+			capture := func(fn func() error) (string, error) {
+				return "", fn()
+			}
+			if tc.wantErr == nil {
+				capture = func(fn func() error) (string, error) {
+					stdout := os.Stdout
+					r, w, err := os.Pipe()
+					require.NoError(t, err)
+
+					os.Stdout = w
+					err = fn()
+					w.Close()
+					os.Stdout = stdout
+
+					var buf bytes.Buffer
+					io.Copy(&buf, r)
+					return buf.String(), err
+				}
+			}
+
+			output, err := capture(func() error {
+				_, err := s.WriteCollectionToResource(ctx, req)
+				return err
+			})
 			if tc.wantErr != nil {
 				assert.ErrorContains(t, err, tc.wantErr.Error())
 			} else {
+				assert.Contains(t, output, `{"1":"record-value"}`)
+				assert.Contains(t, output, "resource/target-collection")
 				assert.NoError(t, err)
 			}
 		})

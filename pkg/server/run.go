@@ -81,7 +81,7 @@ func (s *runService) WriteCollectionToResource(ctx context.Context, req *pb.Writ
 
 	internal.PrintRecords(
 		req.Resource.Name,
-		req.SourceCollection.Name,
+		req.TargetCollection,
 		req.SourceCollection.Records,
 	)
 
