@@ -16,19 +16,31 @@ RSpec.describe TurbineRb::Client::App do
     let(:my_process) {
       Class.new(TurbineRb::Process) do
         def call(records:)
+          records.first.value = "changedbytes"
           records
         end
       end
     }
-    it "calls the process function on the records" do
-      core_server = Mocktail.of(TurbineCore::TurbineService::Stub)
-      app = TurbineRb::Client::App.new(core_server)
-      record = TurbineCore::Record.new(key: "1", value: "somebytes")
-      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
 
+    let(:core_server) { Mocktail.of(TurbineCore::TurbineService::Stub) }
+    let(:record) { TurbineCore::Record.new(key: "1", value: "somebytes") }
+
+    it "calls the process function on the records in run mode" do
+      app = TurbineRb::Client::App.new(core_server)
+      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
       result = app.process(records: records, process: my_process.new)
 
       expect(result.pb_collection.first.key).to eq("1")
+      expect(result.pb_collection.first.value).to eq("changedbytes")
+    end
+
+    it "doesnt call the process function on the records in record mode" do
+      app = TurbineRb::Client::App.new(core_server, is_recording: true)
+      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
+      result = app.process(records: records, process: my_process.new)
+
+      expect(result.pb_collection.first.key).to eq("1")
+      expect(result.pb_collection.first.value).to eq("somebytes")
     end
   end
 

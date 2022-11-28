@@ -36,9 +36,28 @@ module TurbineRb
     end
 
     def run
+      server = init_core_server()
+      app = TurbineRb::Client::App.new(core_server)
+      TurbineRb.app.call(app)
+    end
+
+    def record
+      server = init_core_server()
+      app = TurbineRb::Client::App.new(core_server, is_recording: true)
+      TurbineRb.app.call(app)
+    end
+
+    def build
+      docker_file = File.join(File.expand_path(File.dirname(__FILE__)) , "templates", "Dockerfile")
+      dest_app = Dir.getwd
+      FileUtils.cp(docker_file, dest_app)
+    end
+
+    private
+
+    def init_core_server
       # TODO: figure out what the deal is with :this_channel_is_insecure
       core_server = TurbineCore::TurbineService::Stub.new(ENV["TURBINE_CORE_SERVER"], :this_channel_is_insecure)
-
       gitSHA = ARGV[0]
 
       req = TurbineCore::InitRequest.new(
@@ -50,18 +69,8 @@ module TurbineRb
       )
 
       core_server.init(req)
-
-      app = TurbineRb::Client::App.new(core_server)
-
-      TurbineRb.app.call(app)
+      core_server
     end
-
-    def build
-      docker_file = File.join(File.expand_path(File.dirname(__FILE__)) , "templates", "Dockerfile")
-      dest_app = Dir.getwd
-      FileUtils.cp(docker_file, dest_app)
-    end
-
   end
 
   class ProcessImpl < Io::Meroxa::Funtime::Function::Service

@@ -5,8 +5,9 @@ module TurbineRb
     class App
       attr_reader :core_server
 
-      def initialize(grpc_server)
+      def initialize(grpc_server, is_recording: false)
         @core_server = grpc_server
+        @is_recording = is_recording
       end
 
       def resource(name:)
@@ -26,8 +27,8 @@ module TurbineRb
 
         req = TurbineCore::ProcessCollectionRequest.new(collection: unwrapped_records, process: pr)
         @core_server.add_process_to_collection(req)
+        records.pb_collection = process.call(records: records.pb_collection) if not @is_recording
 
-        records.pb_collection = process.call(records: records.pb_collection)
         records
       end
 
