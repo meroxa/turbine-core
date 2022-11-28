@@ -11,8 +11,6 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-var _ pb.TurbineServiceServer = (*recordService)(nil)
-
 type recordService struct {
 	pb.UnimplementedTurbineServiceServer
 	deploymentSpec ir.DeploymentSpec
@@ -24,6 +22,10 @@ func NewRecordService() *recordService {
 }
 
 func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
+	if err := request.Validate(); err != nil {
+		return nil, err
+	}
+
 	s.deploymentSpec.Definition = ir.DefinitionSpec{
 		GitSha: request.GetGitSHA(),
 		Metadata: ir.MetadataSpec{
@@ -34,7 +36,6 @@ func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emp
 			SpecVersion: ir.LatestSpecVersion,
 		},
 	}
-
 	return empty(), nil
 }
 

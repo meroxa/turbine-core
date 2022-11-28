@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 
@@ -11,33 +12,79 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	var (
-		ctx  = context.Background()
-		s    = NewRecordService()
-		want = ir.DeploymentSpec{
-			Definition: ir.DefinitionSpec{
-				GitSha: "gitsha",
-				Metadata: ir.MetadataSpec{
-					Turbine: ir.TurbineSpec{
-						Language: "ruby",
-						Version:  "0.1.0",
+	testCases := []struct {
+		test    string
+		spec    ir.DeploymentSpec
+		request pb.InitRequest
+		want    error
+	}{
+		{
+			test: "Init successful with correct language",
+			spec: ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					GitSha: "gitsha",
+					Metadata: ir.MetadataSpec{
+						Turbine: ir.TurbineSpec{
+							Language: "ruby",
+							Version:  "0.1.0",
+						},
+						SpecVersion: ir.LatestSpecVersion,
 					},
-					SpecVersion: ir.LatestSpecVersion,
 				},
 			},
-		}
-	)
+			request: pb.InitRequest{
+				AppName:        "test-ruby",
+				ConfigFilePath: "path/to/ruby",
+				Language:       pb.Language_RUBY,
+				GitSHA:         "gitsha",
+				TurbineVersion: "0.1.0",
+			},
+			want: nil,
+		},
+		{
+			test: "Init error with incorrect language",
+			spec: ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					GitSha: "gitsha",
+					Metadata: ir.MetadataSpec{
+						Turbine: ir.TurbineSpec{
+							Language: "emoji",
+							Version:  "0.1.0",
+						},
+						SpecVersion: ir.LatestSpecVersion,
+					},
+				},
+			},
+			request: pb.InitRequest{
+				AppName:        "test-emoji",
+				ConfigFilePath: "path/to/emoji",
+				Language:       101221,
+				GitSHA:         "gitsha",
+				TurbineVersion: "0.1.0",
+			},
+			want: errors.New("invalid InitRequest.Language: value must be one of the defined enum values"),
+		},
+	}
 
-	res, err := s.Init(ctx, &pb.InitRequest{
-		AppName:        "test-ruby",
-		ConfigFilePath: "path/to/ruby",
-		Language:       pb.Language_RUBY,
-		GitSHA:         "gitsha",
-		TurbineVersion: "0.1.0",
-	})
-	require.Nil(t, err)
-	require.Equal(t, empty(), res)
-	require.Equal(t, want, s.deploymentSpec)
+	for _, test := range testCases {
+		t.Run(test.test, func(t *testing.T) {
+			var (
+				ctx = context.Background()
+				s   = NewRecordService()
+			)
+			res, err := s.Init(ctx, &test.request)
+
+			if test.want == nil {
+				require.Nil(t, err)
+				require.Equal(t, empty(), res)
+				require.Equal(t, test.spec, s.deploymentSpec)
+			} else {
+				require.ErrorContains(t, err, test.want.Error())
+			}
+
+		})
+	}
+
 }
 
 func TestGetResource(t *testing.T) {
