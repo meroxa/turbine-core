@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-
+require 'rubygems'
+require 'bundler/setup'
 require 'turbine_rb'
 
 class MyApp
