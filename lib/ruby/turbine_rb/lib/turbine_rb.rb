@@ -36,13 +36,13 @@ module TurbineRb
     end
 
     def run
-      server = init_core_server()
+      core_server = init_core_server()
       app = TurbineRb::Client::App.new(core_server)
       TurbineRb.app.call(app)
     end
 
     def record
-      server = init_core_server()
+      core_server = init_core_server()
       app = TurbineRb::Client::App.new(core_server, is_recording: true)
       TurbineRb.app.call(app)
     end
