@@ -9,6 +9,9 @@ require "turbine_rb/client"
 require 'optparse'
 require 'fileutils'
 
+require 'grpc/health/v1/health_pb'
+require 'grpc/health/checker'
+
 module TurbineRb
   class Error < StandardError; end
 
@@ -31,6 +34,7 @@ module TurbineRb
       @grpc_server = GRPC::RpcServer.new
       @grpc_server.add_http2_port(function_addr, :this_port_is_insecure)
       @grpc_server.handle(process_function_impl)
+      @grpc_server.handle(HealthCheck)
       puts "serving function #{process_function.class.name} on #{function_addr}"
       @grpc_server.run_till_terminated_or_interrupted([1, 'int', 'SIGQUIT'])
     end
@@ -90,4 +94,16 @@ module TurbineRb
       super
     end
   end
+
+  class HealthCheck < Grpc::Health::V1::Health::Service
+    def check(req, req_view)
+      checker = Grpc::Health::Checker.new
+      checker.set_status_for_services(
+          Grpc::Health::V1::HealthCheckResponse::ServingStatus::SERVING,
+          "function"
+        )
+      checker.check(req, req_view)
+    end
+  end
+
 end
