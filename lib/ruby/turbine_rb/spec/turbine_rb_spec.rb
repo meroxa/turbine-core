@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe TurbineRb do
+  let(:my_process) { Class.new(TurbineRb::Process) }
+  let(:app) { Class.new }
+
   it "has a version number" do
     expect(TurbineRb::VERSION).not_to be nil
   end
-
-  let(:app) { Class.new }
-  let(:my_process) { Class.new(TurbineRb::Process) }
 
   describe ".register" do
     it "registers the app object" do
@@ -32,7 +32,7 @@ RSpec.describe TurbineRb do
       grpc_server = Mocktail.of_next(GRPC::RpcServer)
 
       result = TurbineRb.serve
-      verify { grpc_server.add_http2_port('0.0.0.0:50500', :this_port_is_insecure)}
+      verify { grpc_server.add_http2_port("0.0.0.0:50500", :this_port_is_insecure) }
       verify { |m| grpc_server.handle(m.is_a(TurbineRb::ProcessImpl)) }
     end
   end
@@ -40,13 +40,13 @@ end
 
 RSpec.describe TurbineRb::ProcessImpl do
   describe "#process" do
-    let(:my_process) {
+    let(:my_process) do
       Class.new(TurbineRb::Process) do
         def call(records:)
           records
         end
       end
-    }
+    end
 
     it "calls the function to process the records" do
       stub_const("MyProcess", my_process)
@@ -65,6 +65,7 @@ end
 RSpec.describe TurbineRb::Process do
   describe ".inherited" do
     let(:my_process) { Class.new(TurbineRb::Process) }
+
     it "calls to register the function" do
       stub_const("MyProcess", my_process)
       MyProcess.new
@@ -72,4 +73,3 @@ RSpec.describe TurbineRb::Process do
     end
   end
 end
-

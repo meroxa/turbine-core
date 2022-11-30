@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require 'turbine_rb'
+require "turbine_rb"
 require File.join(Dir.getwd, "app")
 
 TurbineRb.run

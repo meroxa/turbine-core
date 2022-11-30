@@ -1,18 +1,19 @@
 # frozen_string_literal: true
-require 'rubygems'
-require 'bundler/setup'
-require 'turbine_rb'
+
+require "rubygems"
+require "bundler/setup"
+require "turbine_rb"
 
 class MyApp
   def call(app)
-    database = app.resource(name: 'demopg')
+    database = app.resource(name: "demopg")
 
     # ELT pipeline example
     # records = database.records(collection: 'events')
     # database.write(records: records, collection: 'events_copy')
 
     # procedural API
-    records = database.records(collection: 'events')
+    records = database.records(collection: "events")
 
     # This register the secret to be available in the turbine application
     app.register_secrets("MY_ENV_TEST")
