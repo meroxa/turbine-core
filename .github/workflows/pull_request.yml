@@ -22,6 +22,4 @@ jobs:
       - name: Run go tests
         run: make test
       - name: Run ruby tests
-        run: |
-          make setup_turbine_rb
-          make test_turbine_rb
+        run: make test_turbine_rb
