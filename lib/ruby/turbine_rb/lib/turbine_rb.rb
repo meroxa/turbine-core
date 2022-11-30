@@ -5,10 +5,12 @@ require 'turbine_services_pb'
 require "turbine_rb/collection_patch"
 require "turbine_rb/version"
 require "turbine_rb/client"
+require "turbine_rb/records"
 
 require 'optparse'
 require 'fileutils'
 
+require 'grpc'
 require 'grpc/health/v1/health_pb'
 require 'grpc/health/checker'
 
@@ -83,8 +85,15 @@ module TurbineRb
     end
 
     def process(request, _call)
-      processed_records = @process.call(records: request.records)
-      Io::Meroxa::Funtime::ProcessRecordResponse.new(records: processed_records.to_a)
+      records = TurbineRb::Records.new(request.records)
+
+      # records are processed but not in proto format
+      processed_records = @process.call(records:)
+
+      # to proto
+      serialized_records = processed_records.map { |pr| pr.serialize }
+
+      Io::Meroxa::Funtime::ProcessRecordResponse.new(records: serialized_records)
     end
   end
 
@@ -105,5 +114,4 @@ module TurbineRb
       checker.check(req, req_view)
     end
   end
-
 end

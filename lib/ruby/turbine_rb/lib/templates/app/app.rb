@@ -15,7 +15,7 @@ class MyApp
     records = database.records(collection: 'events')
 
     # This register the secret to be available in the turbine application
-    app.register_secrets("MY_ENV_TEST") 
+    app.register_secrets("MY_ENV_TEST")
 
     # you can also register several secrets at once
     # app.register_secrets(["MY_ENV_TEST", "MY_OTHER_ENV_TEST"])
@@ -35,7 +35,17 @@ end
 class Passthrough < TurbineRb::Process # might be useful to signal that this is a special Turbine call
   def call(records:)
     puts "got records: #{records}"
-    # records.map { |r| r.value = 'hi there' }
+    # to get the value of unformatted records, use record .value getter method
+    # records.map { |r| puts r.value }
+    #
+    # to transform unformatted records, use record .value setter method
+    # records.map { |r| r.value = "newdata" }
+    #
+    # to get the value of json formatted records, use record .get method
+    # records.map { |r| puts r.get("message") }
+    #
+    # to transform json formatted records, use record .set methods
+    # records.map { |r| r.set('message', 'goodbye') }
     records
   end
 end
