@@ -71,6 +71,15 @@ RSpec.describe TurbineRb::Client::App do
       end
     end
 
+    it "raises an error when secret is missing from env" do
+      expect {
+        app.register_secrets("FOOBAR")
+      }.to raise_error(
+        TurbineRb::Client::MissingSecretError,
+        /FOOBAR is not an environment variable/
+      )
+    end
+
     it "calls to grpc register_secret using a single secret" do
       user_secret = secrets[0][:name]
       app.register_secrets(user_secret)

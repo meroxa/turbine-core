@@ -2,6 +2,7 @@
 
 module TurbineRb
   module Client
+    class MissingSecretError < StandardError; end
     class App
       attr_reader :core_server
 
@@ -35,8 +36,11 @@ module TurbineRb
       # register_secrets accepts either a single string or an array of strings
       def register_secrets(secrets)
         [*secrets].map do |secret|
-            req = TurbineCore::Secret.new(name: secret, value: ENV[secret])
-            @core_server.register_secret(req)
+          unless ENV.key?(secret)
+            raise MissingSecretError, "secret #{secret} is not an environment variable"
+          end
+          req = TurbineCore::Secret.new(name: secret, value: ENV[secret])
+          @core_server.register_secret(req)
         end
       end
 
