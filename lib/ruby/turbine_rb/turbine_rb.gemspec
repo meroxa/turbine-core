@@ -5,8 +5,9 @@ require_relative "lib/turbine_rb/version"
 Gem::Specification.new do |spec|
   spec.name = "turbine_rb"
   spec.version = TurbineRb::VERSION
-  spec.authors = ["Ali Hamidi", "James Martinez"]
+  spec.authors = ["Meroxa"]
   spec.email = ["production@meroxa.io"]
+  spec.license = "LicenseRef-LICENSE.txt"
 
   spec.summary = "Meroxa data application framework for Ruby"
   spec.description = <<~DOC
@@ -14,7 +15,7 @@ Gem::Specification.new do |spec|
     server-side applications that are event-driven,
     respond to data in real-time, and scale using cloud-native best practices
   DOC
-  spec.homepage = "https://github.com/meroxa/turbine-core"
+  spec.homepage = "https://github.com/meroxa/turbine-core/tree/main/lib/ruby/turbine_rb"
   spec.required_ruby_version = ">= 2.6.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
