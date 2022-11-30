@@ -8,7 +8,7 @@ test:
 
 .PHONY: test_turbine_rb
 test_turbine_rb:
-	cd lib/ruby/turbine_rb &&
+	cd lib/ruby/turbine_rb && \
 		bundler install && \
 		bundler exec rake
 
