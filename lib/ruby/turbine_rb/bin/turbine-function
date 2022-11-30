@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 require "turbine_rb"
 require File.join(Dir.getwd, "app")
 

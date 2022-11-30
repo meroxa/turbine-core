@@ -12,26 +12,26 @@ RSpec.describe TurbineRb do
     it "registers the app object" do
       stub_const("MyApp", app)
       my_app = MyApp.new
-      TurbineRb.register(my_app)
-      expect(TurbineRb.app).to eq(my_app)
+      described_class.register(my_app)
+      expect(described_class.app).to eq(my_app)
     end
   end
 
   describe ".register_fn" do
     it "registers the function class" do
       stub_const("MyProcess", my_process)
-      TurbineRb.register_fn(MyProcess)
-      expect(TurbineRb.process_klass).to eq(MyProcess)
+      described_class.register_fn(MyProcess)
+      expect(described_class.process_klass).to eq(MyProcess)
     end
   end
 
   describe ".serve" do
     it "serves the data app for funtime" do
       stub_const("MyProcess", my_process)
-      TurbineRb.register_fn(MyProcess)
+      described_class.register_fn(MyProcess)
       grpc_server = Mocktail.of_next(GRPC::RpcServer)
 
-      result = TurbineRb.serve
+      described_class.serve
       verify { grpc_server.add_http2_port("0.0.0.0:50500", :this_port_is_insecure) }
       verify { |m| grpc_server.handle(m.is_a(TurbineRb::ProcessImpl)) }
     end
@@ -53,7 +53,7 @@ RSpec.describe TurbineRb::ProcessImpl do
       record =  Io::Meroxa::Funtime::Record.new(key: "1", value: "somebytes")
       request = Io::Meroxa::Funtime::ProcessRecordRequest.new(records: [record])
       process = MyProcess.new
-      subject = TurbineRb::ProcessImpl.new(process)
+      subject = described_class.new(process)
       result = subject.process(request, nil)
 
       expect(result).to be_instance_of(Io::Meroxa::Funtime::ProcessRecordResponse)
@@ -64,7 +64,7 @@ end
 
 RSpec.describe TurbineRb::Process do
   describe ".inherited" do
-    let(:my_process) { Class.new(TurbineRb::Process) }
+    let(:my_process) { Class.new(described_class) }
 
     it "calls to register the function" do
       stub_const("MyProcess", my_process)

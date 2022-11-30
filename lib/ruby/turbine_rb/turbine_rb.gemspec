@@ -9,7 +9,11 @@ Gem::Specification.new do |spec|
   spec.email = ["production@meroxa.io"]
 
   spec.summary = "Meroxa data application framework for Ruby"
-  spec.description = "Turbine is a data application framework for building server-side applications that are event-driven, respond to data in real-time, and scale using cloud-native best practices"
+  spec.description = <<~DOC
+    Turbine is a data application framework for building
+    server-side applications that are event-driven,
+    respond to data in real-time, and scale using cloud-native best practices
+  DOC
   spec.homepage = "https://github.com/meroxa/turbine-core"
   spec.required_ruby_version = ">= 2.6.0"
 

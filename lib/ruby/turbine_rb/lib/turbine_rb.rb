@@ -44,14 +44,12 @@ module TurbineRb
     end
 
     def run
-      core_server = init_core_server
-      app = TurbineRb::Client::App.new(core_server)
+      app = TurbineRb::Client::App.new(init_core_server)
       TurbineRb.app.call(app)
     end
 
     def record
-      core_server = init_core_server
-      app = TurbineRb::Client::App.new(core_server, is_recording: true)
+      app = TurbineRb::Client::App.new(init_core_server, is_recording: true)
       TurbineRb.app.call(app)
     end
 
@@ -66,13 +64,13 @@ module TurbineRb
     def init_core_server
       # TODO: figure out what the deal is with :this_channel_is_insecure
       core_server = TurbineCore::TurbineService::Stub.new(ENV["TURBINE_CORE_SERVER"], :this_channel_is_insecure)
-      gitSHA = ARGV[0]
+      git_sha = ARGV[0]
 
       req = TurbineCore::InitRequest.new(
         appName: app.class.name,
         configFilePath: Dir.getwd,
         language: :RUBY,
-        gitSHA: gitSHA,
+        gitSHA: git_sha,
         turbineVersion: Gem.loaded_specs["turbine_rb"].version.version
       )
 
@@ -84,6 +82,7 @@ module TurbineRb
   class ProcessImpl < Io::Meroxa::Funtime::Function::Service
     def initialize(process)
       @process = process
+      super()
     end
 
     def process(request, _call)
