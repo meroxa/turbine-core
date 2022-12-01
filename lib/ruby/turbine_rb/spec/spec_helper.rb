@@ -16,7 +16,7 @@ RSpec.configure do |config|
 
   config.include Mocktail::DSL
 
-  config.after(:each) do
+  config.after do
     Mocktail.reset
   end
 end

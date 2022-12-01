@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 RSpec.describe TurbineRb::Record do
   describe "#serialize" do
     it "serializes the object to a proto record" do
-      data = { key: "1",  value: { payload: { foo: "bar" }, schema: {} }.to_json, timestamp: Time.now.to_i}
+      data = { key: "1", value: { payload: { foo: "bar" }, schema: {} }.to_json, timestamp: Time.now.to_i }
       pb_record = Io::Meroxa::Funtime::Record.new(data)
-      subject = TurbineRb::Record.new(pb_record)
+      subject = described_class.new(pb_record)
       result = subject.serialize
 
       expect(result).to be_instance_of(Io::Meroxa::Funtime::Record)
@@ -24,7 +26,7 @@ RSpec.describe TurbineRb::Record do
           schema: {
             fields: [
               {
-                field: 'after',
+                field: "after",
                 fields: [
                   { key: "foo", optional: false, type: "string" }
                 ]
@@ -40,7 +42,7 @@ RSpec.describe TurbineRb::Record do
     describe "#get" do
       it "returns the value at the key" do
         pb_record = Io::Meroxa::Funtime::Record.new(data)
-        subject = TurbineRb::Record.new(pb_record)
+        subject = described_class.new(pb_record)
         result = subject.get("foo")
 
         expect(result).to eq("bar")
@@ -50,7 +52,7 @@ RSpec.describe TurbineRb::Record do
     describe "#set" do
       it "sets the value at the key for an existing key" do
         pb_record = Io::Meroxa::Funtime::Record.new(data)
-        subject = TurbineRb::Record.new(pb_record)
+        subject = described_class.new(pb_record)
         subject.set("foo", "baz")
         result = subject.value.payload.after.foo
 
@@ -59,14 +61,14 @@ RSpec.describe TurbineRb::Record do
 
       it "sets the value at the key and adds a schema entry for a new key" do
         pb_record = Io::Meroxa::Funtime::Record.new(data)
-        subject = TurbineRb::Record.new(pb_record)
+        subject = described_class.new(pb_record)
         subject.set("new_foo", "baz")
         value_result = subject.value.payload.after.new_foo
         schema_result = subject.value.schema
-          .fields
-          .find { |f| f.field == "after" }
-          .fields
-          .find { |f| f.field == "new_foo" }
+                               .fields
+                               .find { |f| f.field == "after" }
+                               .fields
+                               .find { |f| f.field == "new_foo" }
 
         expect(value_result).to eq("baz")
         expect(schema_result.type).to eq("string")
@@ -76,11 +78,11 @@ RSpec.describe TurbineRb::Record do
     describe "unwrap!" do
       it "unwraps cdc formatted data into non cdc format" do
         pb_record = Io::Meroxa::Funtime::Record.new(data)
-        subject = TurbineRb::Record.new(pb_record)
+        subject = described_class.new(pb_record)
         subject.unwrap!
 
         expect(subject.value.payload.foo).to eq("bar")
-        expect(subject.value.schema.has_key?("field")).to be(false)
+        expect(subject.value.schema.key?("field")).to be(false)
         expect(subject.value.schema.name).to eq("schema_name")
       end
     end
@@ -107,7 +109,7 @@ RSpec.describe TurbineRb::Record do
     describe "#get" do
       it "returns the value at the key" do
         pb_record = Io::Meroxa::Funtime::Record.new(data)
-        subject = TurbineRb::Record.new(pb_record)
+        subject = described_class.new(pb_record)
         result = subject.get("foo")
 
         expect(result).to eq("bar")
@@ -117,7 +119,7 @@ RSpec.describe TurbineRb::Record do
     describe "#set" do
       it "sets the value at the key for an existing key" do
         pb_record = Io::Meroxa::Funtime::Record.new(data)
-        subject = TurbineRb::Record.new(pb_record)
+        subject = described_class.new(pb_record)
         subject.set("foo", "baz")
         result = subject.value.payload.foo
 
@@ -126,7 +128,7 @@ RSpec.describe TurbineRb::Record do
 
       it "sets the value at the key and adds a schema entry for a new key" do
         pb_record = Io::Meroxa::Funtime::Record.new(data)
-        subject = TurbineRb::Record.new(pb_record)
+        subject = described_class.new(pb_record)
         subject.set("new_foo", "baz")
         value_result = subject.value.payload.new_foo
         schema_result = subject.value.schema.fields.find do |f|

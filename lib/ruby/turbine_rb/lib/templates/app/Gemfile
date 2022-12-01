@@ -1,3 +1,5 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
 
-gem 'turbine_rb'
+source "https://rubygems.org"
+
+gem "turbine_rb"

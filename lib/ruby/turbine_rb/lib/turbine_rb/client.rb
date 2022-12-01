@@ -3,6 +3,7 @@
 module TurbineRb
   module Client
     class MissingSecretError < StandardError; end
+
     class App
       attr_reader :core_server
 
@@ -12,15 +13,13 @@ module TurbineRb
       end
 
       def resource(name:)
-        req = TurbineCore::GetResourceRequest.new(name:)
+        req = TurbineCore::GetResourceRequest.new(name: name)
         res = @core_server.get_resource(req)
         Resource.new(res, self)
       end
 
       def process(records:, process:)
-        if records.instance_of?(Collection)
-          unwrapped_records = records.unwrap
-        end
+        unwrapped_records = records.unwrap if records.instance_of?(Collection)
 
         pr = TurbineCore::ProcessCollectionRequest::Process.new(
           name: process.class.name
@@ -28,7 +27,7 @@ module TurbineRb
 
         req = TurbineCore::ProcessCollectionRequest.new(collection: unwrapped_records, process: pr)
         @core_server.add_process_to_collection(req)
-        records.pb_collection = process.call(records: records.pb_collection) if not @is_recording
+        records.pb_collection = process.call(records: records.pb_collection) unless @is_recording
 
         records
       end
@@ -36,9 +35,8 @@ module TurbineRb
       # register_secrets accepts either a single string or an array of strings
       def register_secrets(secrets)
         [*secrets].map do |secret|
-          unless ENV.key?(secret)
-            raise MissingSecretError, "secret #{secret} is not an environment variable"
-          end
+          raise MissingSecretError, "secret #{secret} is not an environment variable" unless ENV.key?(secret)
+
           req = TurbineCore::Secret.new(name: secret, value: ENV[secret])
           @core_server.register_secret(req)
         end
@@ -53,7 +51,7 @@ module TurbineRb
         end
 
         def records(collection:, configs: nil)
-          req = TurbineCore::ReadCollectionRequest.new(resource: @pb_resource, collection:)
+          req = TurbineCore::ReadCollectionRequest.new(resource: @pb_resource, collection: collection)
           if configs
             pb_configs = configs.keys.map { |key| TurbineCore::Config.new(field: key, value: configs[key]) }
             req.configs = TurbineCore::Configs.new(config: pb_configs)
@@ -68,7 +66,7 @@ module TurbineRb
           end
 
           req = TurbineCore::WriteCollectionRequest.new(resource: @pb_resource, sourceCollection: records,
-                                                    targetCollection: collection)
+                                                        targetCollection: collection)
 
           if configs
             pb_configs = configs.keys.map { |key| TurbineCore::Config.new(field: key, value: configs[key]) }
@@ -90,16 +88,16 @@ module TurbineRb
         end
 
         def write_to(resource:, collection:, configs: nil)
-          resource.write(records: self, collection:, configs:)
+          resource.write(records: self, collection: collection, configs: configs)
         end
 
         def process_with(process:)
-          @app.process(records: self, process:)
+          @app.process(records: self, process: process)
         end
 
         def unwrap
           TurbineCore::Collection.new( # convert back to TurbineCore::Collection
-            name:,
+            name: name,
             records: pb_collection.to_a,
             stream: pb_stream
           )

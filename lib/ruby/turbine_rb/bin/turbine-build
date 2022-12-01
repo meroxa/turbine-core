@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
-require 'turbine_rb'
+# frozen_string_literal: true
+
+require "turbine_rb"
 require File.join(Dir.getwd, "app")
 
 TurbineRb.build

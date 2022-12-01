@@ -1,18 +1,19 @@
 # frozen_string_literal: true
-require 'rubygems'
-require 'bundler/setup'
-require 'turbine_rb'
+
+require "rubygems"
+require "bundler/setup"
+require "turbine_rb"
 
 class MyApp
   def call(app)
-    database = app.resource(name: 'demopg')
+    database = app.resource(name: "demopg")
 
     # ELT pipeline example
     # records = database.records(collection: 'events')
     # database.write(records: records, collection: 'events_copy')
 
     # procedural API
-    records = database.records(collection: 'events')
+    records = database.records(collection: "events")
 
     # This register the secret to be available in the turbine application
     app.register_secrets("MY_ENV_TEST")
@@ -20,7 +21,8 @@ class MyApp
     # you can also register several secrets at once
     # app.register_secrets(["MY_ENV_TEST", "MY_OTHER_ENV_TEST"])
 
-    processed_records = app.process(records: records, process: Passthrough.new) # Passthrough just has to match the signature
+    # Passthrough just has to match the signature
+    processed_records = app.process(records: records, process: Passthrough.new)
     database.write(records: processed_records, collection: "events_copy")
 
     # out_records = processed_records.join(records, key: "user_id", window: 1.day) # stream joins
@@ -32,7 +34,8 @@ class MyApp
   end
 end
 
-class Passthrough < TurbineRb::Process # might be useful to signal that this is a special Turbine call
+# might be useful to signal that this is a special Turbine call
+class Passthrough < TurbineRb::Process
   def call(records:)
     puts "got records: #{records}"
     # to get the value of unformatted records, use record .value getter method

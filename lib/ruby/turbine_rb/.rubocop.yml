@@ -1,5 +1,17 @@
+require:
+  - rubocop-rake
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 2.6
+  Exclude:
+    - lib/service_services_pb.rb
+    - lib/service_pb.rb
+    - lib/turbine_services_pb.rb
+    - lib/validate/validate_pb.rb
+    - lib/turbine_pb.rb
+Style/Documentation:
+  Enabled: false
 
 Style/StringLiterals:
   Enabled: true
@@ -11,3 +23,16 @@ Style/StringLiteralsInInterpolation:
 
 Layout/LineLength:
   Max: 120
+
+Metrics/MethodLength:
+  Max: 20
+
+RSpec/MultipleExpectations:
+  Max: 20
+
+RSpec/ExampleLength:
+  Max: 20
+
+# Enable this after refactoring spec/
+RSpec/MultipleDescribes:
+  Enabled: false
