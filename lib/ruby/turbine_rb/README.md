@@ -1,4 +1,6 @@
 # TurbineRb
+> PLEASE NOTE: TurbineRB is currently a work in progress, and the following features may or may not be ready
+
 Turbine is a data application framework for building server-side applications that are event-driven, respond to data in real-time, and scale using cloud-native best practices
 
 The benefits of using Turbine include:
@@ -17,6 +19,8 @@ The benefits of using Turbine include:
 
 
 ## Getting Started
+> PLEASE NOTE: This Meroxa CLI `init` command is not yet implemented for ruby apps, coming soon!
+
 To get started, you'll need to [download the Meroxa CLI](https://github.com/meroxa/cli#installation-guide). Once downloaded and installed, you'll need to back to your terminal and initialize a new project:
 
 ```bash
