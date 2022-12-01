@@ -1,7 +1,7 @@
 RSpec.describe TurbineRb::Record do
   describe "#serialize" do
     it "serializes the object to a proto record" do
-      data = { key: "1",  value: { payload: { foo: "bar" }, schema: {} }.to_json, timestamp: Time.now.to_i}
+      data = { key: "1", value: { payload: { foo: "bar" }, schema: {} }.to_json, timestamp: Time.now.to_i }
       pb_record = Io::Meroxa::Funtime::Record.new(data)
       subject = TurbineRb::Record.new(pb_record)
       result = subject.serialize
@@ -24,7 +24,7 @@ RSpec.describe TurbineRb::Record do
           schema: {
             fields: [
               {
-                field: 'after',
+                field: "after",
                 fields: [
                   { key: "foo", optional: false, type: "string" }
                 ]
@@ -63,10 +63,10 @@ RSpec.describe TurbineRb::Record do
         subject.set("new_foo", "baz")
         value_result = subject.value.payload.after.new_foo
         schema_result = subject.value.schema
-          .fields
-          .find { |f| f.field == "after" }
-          .fields
-          .find { |f| f.field == "new_foo" }
+                               .fields
+                               .find { |f| f.field == "after" }
+                               .fields
+                               .find { |f| f.field == "new_foo" }
 
         expect(value_result).to eq("baz")
         expect(schema_result.type).to eq("string")

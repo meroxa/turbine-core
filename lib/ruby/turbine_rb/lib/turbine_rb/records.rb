@@ -1,5 +1,5 @@
-require 'json'
-require 'hash_dot'
+require "json"
+require "hash_dot"
 
 module TurbineRb
   class Record
@@ -57,18 +57,18 @@ module TurbineRb
     end
 
     def unwrap!
-      if is_cdc_format?
-        payload = @value.send("payload")
-        schema = @value.send("schema.fields")
-        schema_fields = schema.find { |f| f.field == "after" }
-        if !schema_fields.nil?
-          schema_fields.delete("field")
-          schema_fields.name = @value.send("schema.name")
-          @value.send("schema=", schema_fields)
-        end
+      return unless is_cdc_format?
 
-        @value.send("payload=", payload.after)
+      payload = @value.send("payload")
+      schema = @value.send("schema.fields")
+      schema_fields = schema.find { |f| f.field == "after" }
+      unless schema_fields.nil?
+        schema_fields.delete("field")
+        schema_fields.name = @value.send("schema.name")
+        @value.send("schema=", schema_fields)
       end
+
+      @value.send("payload=", payload.after)
     end
 
     private
@@ -87,13 +87,13 @@ module TurbineRb
 
     def is_json_schema?
       is_value_hash? &&
-      @value.has_key?("payload") &&
-      @value.has_key?("schema")
+        @value.has_key?("payload") &&
+        @value.has_key?("schema")
     end
 
     def is_cdc_format?
       is_json_schema? &&
-      @value.payload.has_key?("source")
+        @value.payload.has_key?("source")
     end
 
     def type_of_value(value)
