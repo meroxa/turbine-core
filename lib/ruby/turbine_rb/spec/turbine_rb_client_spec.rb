@@ -204,8 +204,6 @@ RSpec.describe TurbineRb::Client::App::Collection do
     end
 
     it "delegates to the app process" do
-      # core_server = Mocktail.of(TurbineCore::TurbineService::Stub)
-      # resource = Mocktail.of(TurbineRb::Client::App::Resource)
       app = Mocktail.of_next(TurbineRb::Client::App)
 
       record = TurbineCore::Record.new(key: "1", value: "somebytes")
