@@ -11,10 +11,9 @@ require "turbine_rb/records"
 require "optparse"
 require "fileutils"
 
-require 'grpc'
+require "grpc"
 require "grpc/health/v1/health_pb"
 require "grpc/health/checker"
-
 
 module TurbineRb
   class Error < StandardError; end
@@ -89,10 +88,10 @@ module TurbineRb
       records = TurbineRb::Records.new(request.records)
 
       # records are processed but not in proto format
-      processed_records = @process.call(records:)
+      processed_records = @process.call(records: records)
 
       # to proto
-      serialized_records = processed_records.map { |pr| pr.serialize }
+      serialized_records = processed_records.map(&:serialize)
 
       Io::Meroxa::Funtime::ProcessRecordResponse.new(records: serialized_records)
     end
