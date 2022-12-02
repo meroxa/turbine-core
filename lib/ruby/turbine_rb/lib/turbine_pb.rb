@@ -19,9 +19,16 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.GetResourceRequest" do
       optional :name, :string, 1
+      repeated :description, :message, 2, "turbine_core.Description"
+    end
+    add_message "turbine_core.Description" do
+      optional :source, :bool, 1
+      optional :destination, :bool, 2
+      optional :collection, :string, 3
     end
     add_message "turbine_core.Resource" do
       optional :name, :string, 1
+      repeated :description, :message, 2, "turbine_core.Description"
     end
     add_message "turbine_core.Collection" do
       optional :name, :string, 1
@@ -83,6 +90,7 @@ end
 module TurbineCore
   InitRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.InitRequest").msgclass
   GetResourceRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetResourceRequest").msgclass
+  Description = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Description").msgclass
   Resource = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Resource").msgclass
   Collection = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Collection").msgclass
   Record = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Record").msgclass

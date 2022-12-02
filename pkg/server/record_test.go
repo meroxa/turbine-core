@@ -433,9 +433,21 @@ func TestListResources(t *testing.T) {
 				s.resources = []*pb.Resource{
 					{
 						Name: "pg",
+						Description: []*pb.Description{
+							{
+								Source:     true,
+								Collection: "in",
+							},
+						},
 					},
 					{
 						Name: "mongo",
+						Description: []*pb.Description{
+							{
+								Destination: true,
+								Collection:  "out",
+							},
+						},
 					},
 				}
 				return s
@@ -444,9 +456,21 @@ func TestListResources(t *testing.T) {
 				Resources: []*pb.Resource{
 					{
 						Name: "pg",
+						Description: []*pb.Description{
+							{
+								Source:     true,
+								Collection: "in",
+							},
+						},
 					},
 					{
 						Name: "mongo",
+						Description: []*pb.Description{
+							{
+								Destination: true,
+								Collection:  "out",
+							},
+						},
 					},
 				},
 			},

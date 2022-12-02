@@ -41,7 +41,8 @@ func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emp
 
 func (s *recordService) GetResource(ctx context.Context, request *pb.GetResourceRequest) (*pb.Resource, error) {
 	r := &pb.Resource{
-		Name: request.GetName(),
+		Name:        request.GetName(),
+		Description: request.GetDescription(),
 	}
 
 	s.resources = append(s.resources, r)
@@ -61,6 +62,15 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 		return &pb.Collection{}, fmt.Errorf("please provide a collection name to 'read'")
 	}
 
+	for i, r := range s.resources {
+		if r.Name == request.Resource.Name {
+			s.resources[i].Description = append(s.resources[i].Description, &pb.Description{
+				Source:     true,
+				Collection: request.GetCollection(),
+			})
+		}
+	}
+
 	for _, c := range s.deploymentSpec.Connectors {
 		// Only one source per app allowed.
 		if c.Type == ir.ConnectorSource {
@@ -72,7 +82,7 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 		s.deploymentSpec.Connectors,
 		ir.ConnectorSpec{
 			Collection: request.GetCollection(),
-			Resource:   request.GetResource().GetName(),
+			Resource:   request.Resource.GetName(),
 			Type:       ir.ConnectorSource,
 			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
 		},
@@ -87,11 +97,25 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 		return empty(), fmt.Errorf("please provide a collection name to 'write'")
 	}
 
+	for i, rs := range s.resources {
+		var resource pb.Resource
+		resource.Name = request.Resource.GetName()
+		resource.Description = []*pb.Description{
+			{
+				Destination: true,
+				Collection:  request.GetTargetCollection(),
+			},
+		}
+		if rs.Name == resource.Name {
+			s.resources[i].Description = append(s.resources[i].Description, resource.Description...)
+		}
+	}
+
 	s.deploymentSpec.Connectors = append(
 		s.deploymentSpec.Connectors,
 		ir.ConnectorSpec{
 			Collection: request.GetTargetCollection(),
-			Resource:   request.GetResource().GetName(),
+			Resource:   request.Resource.GetName(),
 			Type:       ir.ConnectorDestination,
 			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
 		},
