@@ -98,16 +98,11 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 	}
 
 	for i, rs := range s.resources {
-		var resource pb.Resource
-		resource.Name = request.Resource.GetName()
-		resource.Description = []*pb.Description{
-			{
+		if rs.Name == request.Resource.GetName() {
+			s.resources[i].Description = append(s.resources[i].Description, &pb.Description{
 				Destination: true,
 				Collection:  request.GetTargetCollection(),
-			},
-		}
-		if rs.Name == resource.Name {
-			s.resources[i].Description = append(s.resources[i].Description, resource.Description...)
+			})
 		}
 	}
 
