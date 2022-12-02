@@ -1,3 +1,7 @@
+## [0.1.3] - 2022-12-03
+
+- fix: set new keys on unformatted json
+
 ## [0.1.2] - 2022-12-02
 
 - fix: add record interface to local run
