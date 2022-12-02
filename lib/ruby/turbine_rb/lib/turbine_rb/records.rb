@@ -39,12 +39,14 @@ module TurbineRb
 
     def set(key, value)
       @value = value unless value_hash?
-      return unless value_hash?
+      return @value unless value_hash?
 
-      begin
-        @value.send(payload_key(key))
-      rescue NoMethodError
-        set_schema_field(key, value)
+      if json_schema?
+        begin
+          @value.send(payload_key(key))
+        rescue NoMethodError
+          set_schema_field(key, value)
+        end
       end
 
       @value.send("#{payload_key(key)}=", value)
