@@ -36,13 +36,23 @@ RSpec.describe TurbineRb::Client::App do
       expect(result.pb_collection.first.value).to eq("changedbytes")
     end
 
+    it "calls the process function with the records interface in run mode" do
+      mocked_process = Mocktail.of(my_process)
+      stubs { |m| mocked_process.call(records: m.any) }.with { [] }
+      app = described_class.new(core_server)
+      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
+      app.process(records: records, process: mocked_process)
+
+      verify { |m| mocked_process.call(records: m.is_a(TurbineRb::Records)) }
+    end
+
     it "doesnt call the process function on the records in record mode" do
+      mocked_process = Mocktail.of(my_process)
       app = described_class.new(core_server, is_recording: true)
       records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
-      result = app.process(records: records, process: my_process.new)
-
-      expect(result.pb_collection.first.key).to eq("1")
-      expect(result.pb_collection.first.value).to eq("somebytes")
+      app.process(records: records, process: mocked_process)
+      result = Mocktail.explain(mocked_process.method(:call))
+      expect(result.reference.calls.size).to eq(0)
     end
   end
 

@@ -27,7 +27,9 @@ module TurbineRb
 
         req = TurbineCore::ProcessCollectionRequest.new(collection: unwrapped_records, process: pr)
         @core_server.add_process_to_collection(req)
-        records.pb_collection = process.call(records: records.pb_collection) unless @is_recording
+        records_interface = TurbineRb::Records.new(unwrapped_records.records)
+        processed_records = process.call(records: records_interface) unless @is_recording
+        records.pb_collection = processed_records.map(&:serialize_core_record) unless @is_recording
 
         records
       end
