@@ -4,6 +4,7 @@ require "json"
 require "hash_dot"
 
 module TurbineRb
+  # rubocop:disable Metrics/ClassLength
   class Record
     attr_accessor :key, :value, :timestamp
 
@@ -21,41 +22,32 @@ module TurbineRb
     end
 
     def serialize
-      Io::Meroxa::Funtime::Record.new(key: @key, value: @value.to_json, timestamp: @timestamp)
+      Io::Meroxa::Funtime::Record.new(key: @key, value: serialize_value, timestamp: @timestamp)
+    end
+
+    def serialize_core_record
+      TurbineCore::Record.new(key: @key, value: serialize_value, timestamp: @timestamp)
     end
 
     def get(key)
       if value_string? || value_array?
         @value
-      elsif cdc_format?
-        @value.send("payload.after.#{key}")
       else
-        @value.send("payload.#{key}")
+        @value.send(payload_key(key))
       end
     end
 
     def set(key, value)
-      if !value_hash?
-        @value = value
-      else
-        payload_key = cdc_format? ? "payload.after" : "payload"
+      @value = value unless value_hash?
+      return unless value_hash?
 
-        begin
-          @value.send("#{payload_key}.#{key}")
-        rescue NoMethodError
-          schema = @value.send("schema.fields")
-          new_schema_field = { field: key, optional: true, type: "string" }.to_dot
-
-          if cdc_format?
-            schema_fields = schema.find { |f| f.field == "after" }
-            schema_fields.fields.unshift(new_schema_field)
-          else
-            schema.unshift(new_schema_field)
-          end
-        end
-
-        @value.send("#{payload_key}.#{key}=", value)
+      begin
+        @value.send(payload_key(key))
+      rescue NoMethodError
+        set_schema_field(key, value)
       end
+
+      @value.send("#{payload_key(key)}=", value)
     end
 
     def unwrap!
@@ -87,6 +79,16 @@ module TurbineRb
       @value.is_a?(Hash)
     end
 
+    def payload_key(prop_key)
+      if cdc_format?
+        "payload.after.#{prop_key}"
+      elsif json_schema?
+        "payload.#{prop_key}"
+      else
+        prop_key
+      end
+    end
+
     def json_schema?
       value_hash? &&
         @value.key?("payload") &&
@@ -112,7 +114,24 @@ module TurbineRb
         "unsupported"
       end
     end
+
+    def set_schema_field(key, value)
+      schema = @value.send("schema.fields")
+      new_schema_field = { field: key, optional: true, type: type_of_value(value) }.to_dot
+
+      schema.find { |f| f.field == "after" }.fields.unshift(new_schema_field) if cdc_format?
+      schema.unshift(new_schema_field) if json_schema?
+    end
+
+    def serialize_value
+      if value_string?
+        @value
+      else
+        @value.to_json
+      end
+    end
   end
+  # rubocop:enable Metrics/ClassLength
 
   class Records < SimpleDelegator
     def initialize(pb_records)
