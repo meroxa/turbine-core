@@ -41,10 +41,7 @@ func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emp
 
 func (s *recordService) GetResource(ctx context.Context, request *pb.GetResourceRequest) (*pb.Resource, error) {
 	r := &pb.Resource{
-		Name:        request.GetName(),
-		Source:      request.GetSource(),
-		Destination: request.GetDestination(),
-		Collection:  request.GetCollection(),
+		Name: request.GetName(),
 	}
 	return r, nil
 }
