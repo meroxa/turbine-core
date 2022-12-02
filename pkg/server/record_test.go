@@ -98,7 +98,6 @@ func TestGetResource(t *testing.T) {
 	})
 	require.Nil(t, err)
 	require.Equal(t, &pb.Resource{Name: "pg"}, res)
-	require.Equal(t, []*pb.Resource{{Name: "pg"}}, s.resources)
 }
 
 func TestReadCollection(t *testing.T) {
