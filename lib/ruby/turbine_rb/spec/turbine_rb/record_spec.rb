@@ -88,7 +88,7 @@ RSpec.describe TurbineRb::Record do
     end
   end
 
-  context "with non cdc formatted json" do
+  context "with non cdc formatted json schema" do
     let(:data) do
       {
         key: "1",
@@ -137,6 +137,48 @@ RSpec.describe TurbineRb::Record do
 
         expect(value_result).to eq("baz")
         expect(schema_result.type).to eq("string")
+      end
+    end
+  end
+
+  context "with unstructured json" do
+    let(:data) do
+      {
+        key: "1",
+        value: {
+          message: "hello"
+        }.to_json,
+        timestamp: Time.now.to_i
+      }
+    end
+
+    describe "#get" do
+      it "returns the value at the key" do
+        pb_record = Io::Meroxa::Funtime::Record.new(data)
+        subject = described_class.new(pb_record)
+        result = subject.get("message")
+
+        expect(result).to eq("hello")
+      end
+    end
+
+    describe "#set" do
+      it "sets the value at the key for an existing key" do
+        pb_record = Io::Meroxa::Funtime::Record.new(data)
+        subject = described_class.new(pb_record)
+        subject.set("message", "goodbye")
+        result = subject.value.message
+
+        expect(result).to eq("goodbye")
+      end
+
+      it "sets the value at the key and adds a schema entry for a new key" do
+        pb_record = Io::Meroxa::Funtime::Record.new(data)
+        subject = described_class.new(pb_record)
+        subject.set("new_message", "hey")
+        value_result = subject.value.new_message
+
+        expect(value_result).to eq("hey")
       end
     end
   end
