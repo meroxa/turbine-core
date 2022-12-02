@@ -38,18 +38,16 @@ message InitRequest {
 
 message GetResourceRequest {
   string name = 1 [(validate.rules).string.min_len = 1];
-  repeated Description description = 2;
-}
-
-message Description {
-  bool source = 1;
-  bool destination = 2;
-  string collection = 3;
+  bool source = 2;
+  bool destination = 3;
+  string collection = 4;
 }
 
 message Resource {
   string name = 1 [(validate.rules).string.min_len = 1];
-  repeated Description description = 2;
+  bool source = 2;
+  bool destination = 3;
+  string collection = 4;
 }
 
 message Collection {

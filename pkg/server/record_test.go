@@ -109,38 +109,15 @@ func TestReadCollection(t *testing.T) {
 		want            ir.DeploymentSpec
 		errMsg          string
 	}{
-		{
-			description: "empty request",
-			req:         &pb.ReadCollectionRequest{},
-			errMsg:      "please provide a collection name to 'read'",
-		},
-		{
-			description: "recordService has existing source connector",
-			req: &pb.ReadCollectionRequest{
-				Collection: "accounts",
-				Resource: &pb.Resource{
-					Name: "pg",
-				},
-				Configs: nil,
-			},
-			populateService: func(s *recordService) *recordService {
-				s.deploymentSpec.Connectors = []ir.ConnectorSpec{
-					{
-						Collection: "accounts",
-						Resource:   "pg",
-						Type:       ir.ConnectorSource,
-					},
-				}
-				return s
-			},
-			errMsg: "only one call to 'read' is allowed per Meroxa Data Application",
-		},
+
 		{
 			description: "successfully store source information",
 			req: &pb.ReadCollectionRequest{
 				Collection: "accounts",
 				Resource: &pb.Resource{
-					Name: "pg",
+					Name:       "pg",
+					Source:     true,
+					Collection: "accounts",
 				},
 				Configs: nil,
 			},
@@ -160,7 +137,9 @@ func TestReadCollection(t *testing.T) {
 			req: &pb.ReadCollectionRequest{
 				Collection: "accounts",
 				Resource: &pb.Resource{
-					Name: "pg",
+					Name:       "pg",
+					Source:     true,
+					Collection: "accounts",
 				},
 				Configs: &pb.Configs{
 					Config: []*pb.Config{
@@ -433,21 +412,15 @@ func TestListResources(t *testing.T) {
 				s.resources = []*pb.Resource{
 					{
 						Name: "pg",
-						Description: []*pb.Description{
-							{
-								Source:     true,
-								Collection: "in",
-							},
-						},
+
+						Source:     true,
+						Collection: "in",
 					},
 					{
 						Name: "mongo",
-						Description: []*pb.Description{
-							{
-								Destination: true,
-								Collection:  "out",
-							},
-						},
+
+						Destination: true,
+						Collection:  "out",
 					},
 				}
 				return s
@@ -456,21 +429,15 @@ func TestListResources(t *testing.T) {
 				Resources: []*pb.Resource{
 					{
 						Name: "pg",
-						Description: []*pb.Description{
-							{
-								Source:     true,
-								Collection: "in",
-							},
-						},
+
+						Source:     true,
+						Collection: "in",
 					},
 					{
 						Name: "mongo",
-						Description: []*pb.Description{
-							{
-								Destination: true,
-								Collection:  "out",
-							},
-						},
+
+						Destination: true,
+						Collection:  "out",
 					},
 				},
 			},

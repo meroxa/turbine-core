@@ -204,39 +204,11 @@ func (m *GetResourceRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	for idx, item := range m.GetDescription() {
-		_, _ = idx, item
+	// no validation rules for Source
 
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, GetResourceRequestValidationError{
-						field:  fmt.Sprintf("Description[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, GetResourceRequestValidationError{
-						field:  fmt.Sprintf("Description[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return GetResourceRequestValidationError{
-					field:  fmt.Sprintf("Description[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
+	// no validation rules for Destination
 
-	}
+	// no validation rules for Collection
 
 	if len(errors) > 0 {
 		return GetResourceRequestMultiError(errors)
@@ -318,111 +290,6 @@ var _ interface {
 	ErrorName() string
 } = GetResourceRequestValidationError{}
 
-// Validate checks the field values on Description with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *Description) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on Description with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in DescriptionMultiError, or
-// nil if none found.
-func (m *Description) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *Description) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Source
-
-	// no validation rules for Destination
-
-	// no validation rules for Collection
-
-	if len(errors) > 0 {
-		return DescriptionMultiError(errors)
-	}
-
-	return nil
-}
-
-// DescriptionMultiError is an error wrapping multiple validation errors
-// returned by Description.ValidateAll() if the designated constraints aren't met.
-type DescriptionMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m DescriptionMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m DescriptionMultiError) AllErrors() []error { return m }
-
-// DescriptionValidationError is the validation error returned by
-// Description.Validate if the designated constraints aren't met.
-type DescriptionValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e DescriptionValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e DescriptionValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e DescriptionValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e DescriptionValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e DescriptionValidationError) ErrorName() string { return "DescriptionValidationError" }
-
-// Error satisfies the builtin error interface
-func (e DescriptionValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sDescription.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = DescriptionValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = DescriptionValidationError{}
-
 // Validate checks the field values on Resource with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -456,39 +323,11 @@ func (m *Resource) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	for idx, item := range m.GetDescription() {
-		_, _ = idx, item
+	// no validation rules for Source
 
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ResourceValidationError{
-						field:  fmt.Sprintf("Description[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, ResourceValidationError{
-						field:  fmt.Sprintf("Description[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ResourceValidationError{
-					field:  fmt.Sprintf("Description[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
+	// no validation rules for Destination
 
-	}
+	// no validation rules for Collection
 
 	if len(errors) > 0 {
 		return ResourceMultiError(errors)
