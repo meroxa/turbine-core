@@ -6,13 +6,32 @@ import (
 	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
+// Alternative implementation may require us to define
+// the relationships directly
+
+/*
+	c := AddConnector()
+	f := AddFunction()
+	_ := AddStream(c, f)
+
+	type identifier interface {
+		ID() string
+	}
+
+	func AddStream(from, to identifier) {
+		d.Streams = append(d.Streams, StreamSpec{
+			FromID: from.ID(),
+			ToID: to.ID(),
+		})
+	}
+*/
 
 func main() {
 	var spec ir.DeploymentSpec
 
 	from := spec.AddSourceConnector(ir.ConnectorSpec{
-		Type: ir.ConnectorSource,
-		Resource: "source-resource",
+		Type:       ir.ConnectorSource,
+		Resource:   "source-resource",
 		Collection: "events",
 	})
 
@@ -25,14 +44,14 @@ func main() {
 	}, f1.ID)
 
 	to1 := spec.AddDestinationConnector(ir.ConnectorSpec{
-		Type: ir.ConnectorDestination,
-		Resource: "ingested-resource",
+		Type:       ir.ConnectorDestination,
+		Resource:   "ingested-resource",
 		Collection: "ingested_events",
 	}, f1.ID)
 
 	to2 := spec.AddDestinationConnector(ir.ConnectorSpec{
-		Type: ir.ConnectorDestination,
-		Resource: "digested-resource",
+		Type:       ir.ConnectorDestination,
+		Resource:   "digested-resource",
 		Collection: "digested_events",
 	}, f2.ID)
 

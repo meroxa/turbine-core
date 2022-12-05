@@ -2,8 +2,8 @@ package ir
 
 import (
 	"encoding/json"
-	"sync"
 	"fmt"
+	"sync"
 
 	"github.com/google/uuid"
 )
@@ -30,7 +30,7 @@ type DeploymentSpec struct {
 	Secrets    map[string]string `json:"secrets,omitempty"`
 	Connectors []ConnectorSpec   `json:"connectors"`
 	Functions  []FunctionSpec    `json:"functions,omitempty"`
-	Streams    []StreamSpec     `json:"streams,omitempty"`
+	Streams    []StreamSpec      `json:"streams,omitempty"`
 	Definition DefinitionSpec    `json:"definition"`
 }
 
@@ -56,7 +56,7 @@ func (d *DeploymentSpec) AddFunction(f FunctionSpec, from string) FunctionSpec {
 	if stream == nil || stream.ToID != "" {
 		d.Streams = append(d.Streams, StreamSpec{
 			FromID: from,
-			ToID: f.ID,
+			ToID:   f.ID,
 		})
 	} else {
 		stream.ToID = f.ID
@@ -65,7 +65,6 @@ func (d *DeploymentSpec) AddFunction(f FunctionSpec, from string) FunctionSpec {
 
 	return f
 }
-
 
 func (d *DeploymentSpec) AddSourceConnector(c ConnectorSpec) ConnectorSpec {
 	d.Lock()
@@ -106,7 +105,7 @@ func (d *DeploymentSpec) AddDestinationConnector(c ConnectorSpec, from string) C
 	if stream == nil || stream.ToID != "" {
 		d.Streams = append(d.Streams, StreamSpec{
 			FromID: from,
-			ToID: c.ID,
+			ToID:   c.ID,
 		})
 	} else {
 		stream.ToID = c.ID
