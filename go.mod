@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
 	github.com/google/go-cmp v0.5.9
+	github.com/google/uuid v1.3.0
 	github.com/jedib0t/go-pretty/v6 v6.4.2
 	github.com/santhosh-tekuri/jsonschema/v5 v5.0.1
 	github.com/stretchr/testify v1.8.0
