@@ -42,6 +42,9 @@ message GetResourceRequest {
 
 message Resource {
   string name = 1 [(validate.rules).string.min_len = 1];
+  bool source = 2;
+  bool destination = 3;
+  string collection = 4;
 }
 
 message Collection {

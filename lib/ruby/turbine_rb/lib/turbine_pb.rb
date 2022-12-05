@@ -22,6 +22,9 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.Resource" do
       optional :name, :string, 1
+      optional :source, :bool, 2
+      optional :destination, :bool, 3
+      optional :collection, :string, 4
     end
     add_message "turbine_core.Collection" do
       optional :name, :string, 1

@@ -98,7 +98,6 @@ func TestGetResource(t *testing.T) {
 	})
 	require.Nil(t, err)
 	require.Equal(t, &pb.Resource{Name: "pg"}, res)
-	require.Equal(t, []*pb.Resource{{Name: "pg"}}, s.resources)
 }
 
 func TestReadCollection(t *testing.T) {
@@ -109,38 +108,15 @@ func TestReadCollection(t *testing.T) {
 		want            ir.DeploymentSpec
 		errMsg          string
 	}{
-		{
-			description: "empty request",
-			req:         &pb.ReadCollectionRequest{},
-			errMsg:      "please provide a collection name to 'read'",
-		},
-		{
-			description: "recordService has existing source connector",
-			req: &pb.ReadCollectionRequest{
-				Collection: "accounts",
-				Resource: &pb.Resource{
-					Name: "pg",
-				},
-				Configs: nil,
-			},
-			populateService: func(s *recordService) *recordService {
-				s.deploymentSpec.Connectors = []ir.ConnectorSpec{
-					{
-						Collection: "accounts",
-						Resource:   "pg",
-						Type:       ir.ConnectorSource,
-					},
-				}
-				return s
-			},
-			errMsg: "only one call to 'read' is allowed per Meroxa Data Application",
-		},
+
 		{
 			description: "successfully store source information",
 			req: &pb.ReadCollectionRequest{
 				Collection: "accounts",
 				Resource: &pb.Resource{
-					Name: "pg",
+					Name:       "pg",
+					Source:     true,
+					Collection: "accounts",
 				},
 				Configs: nil,
 			},
@@ -160,7 +136,9 @@ func TestReadCollection(t *testing.T) {
 			req: &pb.ReadCollectionRequest{
 				Collection: "accounts",
 				Resource: &pb.Resource{
-					Name: "pg",
+					Name:       "pg",
+					Source:     true,
+					Collection: "accounts",
 				},
 				Configs: &pb.Configs{
 					Config: []*pb.Config{
@@ -433,9 +411,15 @@ func TestListResources(t *testing.T) {
 				s.resources = []*pb.Resource{
 					{
 						Name: "pg",
+
+						Source:     true,
+						Collection: "in",
 					},
 					{
 						Name: "mongo",
+
+						Destination: true,
+						Collection:  "out",
 					},
 				}
 				return s
@@ -444,9 +428,15 @@ func TestListResources(t *testing.T) {
 				Resources: []*pb.Resource{
 					{
 						Name: "pg",
+
+						Source:     true,
+						Collection: "in",
 					},
 					{
 						Name: "mongo",
+
+						Destination: true,
+						Collection:  "out",
 					},
 				},
 			},
