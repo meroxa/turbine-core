@@ -25,10 +25,19 @@ type DeploymentSpec struct {
 	Secrets    map[string]string `json:"secrets,omitempty"`
 	Connectors []ConnectorSpec   `json:"connectors"`
 	Functions  []FunctionSpec    `json:"functions,omitempty"`
+	Streams    []StreamSpec      `json:"streams,omitempty"`
 	Definition DefinitionSpec    `json:"definition"`
 }
 
+type StreamSpec struct {
+	ID     string `json:"id"`
+	FromID string `json:"from_id"`
+	ToID   string `json:"to_id"`
+}
+
 type ConnectorSpec struct {
+	ID    string `json:"id"`
+
 	Type       ConnectorType          `json:"type"`
 	Resource   string                 `json:"resource"`
 	Collection string                 `json:"collection"`
@@ -36,6 +45,7 @@ type ConnectorSpec struct {
 }
 
 type FunctionSpec struct {
+	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Image string `json:"image"`
 }
