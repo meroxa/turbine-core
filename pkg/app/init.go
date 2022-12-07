@@ -2,11 +2,11 @@ package app
 
 import (
 	"embed"
-	"html/template"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 )
 
 type AppInit struct {
