@@ -19,6 +19,8 @@ module TurbineRb
       end
 
       def process(records:, process:)
+      	puts "process (input records):-->"
+      	pp records
         unwrapped_records = records.unwrap if records.instance_of?(Collection)
 
         pr = TurbineCore::ProcessCollectionRequest::Process.new(
@@ -26,11 +28,13 @@ module TurbineRb
         )
 
         req = TurbineCore::ProcessCollectionRequest.new(collection: unwrapped_records, process: pr)
-        @core_server.add_process_to_collection(req)
-        records_interface = TurbineRb::Records.new(unwrapped_records.records)
+        x = @core_server.add_process_to_collection(req)
+        puts "process (output collection, records): -->"
+        pp x
+        records_interface = TurbineRb::Records.new(x.records)
         processed_records = process.call(records: records_interface) unless @is_recording
         records.pb_collection = processed_records.map(&:serialize_core_record) unless @is_recording
-
+		records.pb_stream = x.stream
         records
       end
 
@@ -53,16 +57,25 @@ module TurbineRb
         end
 
         def records(collection:, configs: nil)
+       		puts "records (input collection) -->"
+       		pp collection
+
           req = TurbineCore::ReadCollectionRequest.new(resource: @pb_resource, collection: collection)
           if configs
             pb_configs = configs.keys.map { |key| TurbineCore::Config.new(field: key, value: configs[key]) }
             req.configs = TurbineCore::Configs.new(config: pb_configs)
           end
 
-          @app.core_server.read_collection(req).wrap(@app) # wrap in Collection to enable chaining
+          x = @app.core_server.read_collection(req)
+          puts "records (output collection) -->"
+          pp x
+          x.wrap(@app) # wrap in Collection to enable chaining
         end
 
         def write(records:, collection:, configs: nil)
+        	puts "write(input records/collection): --> "
+        	pp records
+
           if records.instance_of?(Collection) # it has been processed by a function, so unwrap back to gRPC collection
             records = records.unwrap
           end

@@ -15,7 +15,7 @@ func TestInit(t *testing.T) {
 	testCases := []struct {
 		test    string
 		spec    ir.DeploymentSpec
-		request pb.InitRequest
+		request *pb.InitRequest
 		want    error
 	}{
 		{
@@ -32,7 +32,7 @@ func TestInit(t *testing.T) {
 					},
 				},
 			},
-			request: pb.InitRequest{
+			request: &pb.InitRequest{
 				AppName:        "test-ruby",
 				ConfigFilePath: "path/to/ruby",
 				Language:       pb.Language_RUBY,
@@ -55,7 +55,7 @@ func TestInit(t *testing.T) {
 					},
 				},
 			},
-			request: pb.InitRequest{
+			request: &pb.InitRequest{
 				AppName:        "test-emoji",
 				ConfigFilePath: "path/to/emoji",
 				Language:       101221,
@@ -72,7 +72,7 @@ func TestInit(t *testing.T) {
 				ctx = context.Background()
 				s   = NewRecordService()
 			)
-			res, err := s.Init(ctx, &test.request)
+			res, err := s.Init(ctx, test.request)
 
 			if test.want == nil {
 				require.Nil(t, err)
