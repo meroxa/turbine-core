@@ -1,5 +1,5 @@
 {
-    "events": [
+    "collection_name": [
         {
             "key": "1",
             "value": {"message":"hello"},
