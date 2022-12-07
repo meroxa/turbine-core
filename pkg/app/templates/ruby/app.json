@@ -1,5 +1,5 @@
 {
-    "name": "ruby-example",
+    "name": "{{.AppName}}",
     "language": "ruby",
     "environment": "common",
     "resources": {
