@@ -15,8 +15,8 @@ type AppInit struct {
 	Path     string
 }
 
-// AppInitTrait will be used to replace data evaluations provided by the user
-type AppInitTrait struct {
+// AppInitTemplate will be used to replace data evaluations provided by the user
+type AppInitTemplate struct {
 	AppName string
 }
 
@@ -59,7 +59,7 @@ func (a *AppInit) duplicateFile(fileName string) error {
 		return err
 	}
 
-	appTrait := AppInitTrait{
+	appTrait := AppInitTemplate{
 		AppName: a.AppName,
 	}
 	f, err := os.Create(filepath.Join(a.Path, a.AppName, fileName))
@@ -98,6 +98,14 @@ func (a *AppInit) listTemplateContent() ([]string, []string, error) {
 		}
 	}
 	return files, directories, nil
+}
+
+func NewAppInit(appName, language, path string) AppInit {
+	return AppInit{
+		AppName:  appName,
+		Language: language,
+		Path:     path,
+	}
 }
 
 // Init will be used from the CLI to generate a new application directory based on the existing
