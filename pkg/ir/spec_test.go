@@ -26,7 +26,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Connectors: []ir.ConnectorSpec{
 			{
-				ID:         "1",
+				ID:         "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 				Type:       ir.ConnectorSource,
 				Resource:   "mypg",
 				Collection: "user_activity",
@@ -35,7 +35,7 @@ func Test_DeploymentSpec(t *testing.T) {
 				},
 			},
 			{
-				ID:         "2",
+				ID:         "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 				Type:       ir.ConnectorDestination,
 				Resource:   "mypg",
 				Collection: "user_activity_enriched",
@@ -43,7 +43,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Functions: []ir.FunctionSpec{
 			{
-				ID:    "3",
+				ID:    "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 				Name:  "user_activity_enriched",
 				Image: "ftorres/enrich:9",
 			},
@@ -60,16 +60,16 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Streams: []ir.StreamSpec{
 			{
-				ID:     "12345",
-				Name:   "my_stream1",
-				FromID: "1",
-				ToID:   "2",
+				ID:       "12345",
+				Name:     "my_stream1",
+				FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+				ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 			},
 			{
-				ID:     "123456",
-				Name:   "my_stream2",
-				FromID: "2",
-				ToID:   "3",
+				ID:       "123456",
+				Name:     "my_stream2",
+				FromUUID: "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+				ToUUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 			},
 		},
 	}
@@ -136,33 +136,33 @@ func Test_SetImageForFunctions(t *testing.T) {
 	}
 }
 
-func Test_ValidateStreamIDs(t *testing.T) {
+func Test_ValidateStream(t *testing.T) {
 	testCases := []struct {
 		spec      ir.DeploymentSpec
 		name      string
 		wantError error
 	}{
 		{
-			name: "Proper stream ids for from_id and to_id",
+			name: "Proper stream ids for from_uuid and to_uuid",
 			spec: ir.DeploymentSpec{
 				Secrets: map[string]string{
 					"a secret": "with value",
 				},
 				Functions: []ir.FunctionSpec{
 					{
-						ID:   "1",
+						ID:   "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 						Name: "addition",
 					},
 				},
 				Connectors: []ir.ConnectorSpec{
 					{
-						ID:         "2",
+						ID:         "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 						Collection: "accounts",
 						Resource:   "mongo",
 						Type:       ir.ConnectorSource,
 					},
 					{
-						ID:         "3",
+						ID:         "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 						Collection: "accounts_copy",
 						Resource:   "pg",
 						Type:       ir.ConnectorDestination,
@@ -173,16 +173,16 @@ func Test_ValidateStreamIDs(t *testing.T) {
 				},
 				Streams: []ir.StreamSpec{
 					{
-						ID:     "12345",
-						Name:   "my_stream1",
-						FromID: "1",
-						ToID:   "2",
+						ID:       "12345",
+						Name:     "my_stream1",
+						FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 					},
 					{
-						ID:     "123456",
-						Name:   "my_stream2",
-						FromID: "2",
-						ToID:   "3",
+						ID:       "123456",
+						Name:     "my_stream2",
+						FromUUID: "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+						ToUUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 					},
 				},
 				Definition: ir.DefinitionSpec{
@@ -199,26 +199,26 @@ func Test_ValidateStreamIDs(t *testing.T) {
 			wantError: nil,
 		},
 		{
-			name: "Invalid circular stream ids for from_id and to_id",
+			name: "Invalid circular stream ids for from_uuid and to_uuid",
 			spec: ir.DeploymentSpec{
 				Secrets: map[string]string{
 					"a secret": "with value",
 				},
 				Functions: []ir.FunctionSpec{
 					{
-						ID:   "1",
+						ID:   "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 						Name: "addition",
 					},
 				},
 				Connectors: []ir.ConnectorSpec{
 					{
-						ID:         "2",
+						ID:         "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 						Collection: "accounts",
 						Resource:   "mongo",
 						Type:       ir.ConnectorSource,
 					},
 					{
-						ID:         "3",
+						ID:         "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 						Collection: "accounts_copy",
 						Resource:   "pg",
 						Type:       ir.ConnectorDestination,
@@ -229,16 +229,16 @@ func Test_ValidateStreamIDs(t *testing.T) {
 				},
 				Streams: []ir.StreamSpec{
 					{
-						ID:     "12345",
-						Name:   "my_stream",
-						FromID: "1",
-						ToID:   "1",
+						ID:       "12345",
+						Name:     "my_stream",
+						FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						ToUUID:   "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 					},
 					{
-						ID:     "12345",
-						Name:   "my_stream",
-						FromID: "1",
-						ToID:   "2",
+						ID:       "12345",
+						Name:     "my_stream",
+						FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 					},
 				},
 				Definition: ir.DefinitionSpec{
@@ -252,13 +252,13 @@ func Test_ValidateStreamIDs(t *testing.T) {
 					},
 				},
 			},
-			wantError: fmt.Errorf("for stream \"my_stream\" , ids for source (\"1\") and destination (\"1\") must be different."),
+			wantError: fmt.Errorf("for stream \"my_stream\" , ids for source (\"252bc5e1-666e-4985-a12a-42af81a5d2ab\") and destination (\"252bc5e1-666e-4985-a12a-42af81a5d2ab\") must be different."),
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotError := tc.spec.ValidateStreamIDs()
+			gotError := tc.spec.ValidateStream()
 			if tc.wantError != nil {
 				assert.Equal(t, gotError.Error(), tc.wantError.Error())
 			} else {
@@ -295,10 +295,10 @@ func Test_MarshalUnmarshal(t *testing.T) {
 		},
 		Streams: []ir.StreamSpec{
 			{
-				ID:     "12345",
-				Name:   "my_stream",
-				FromID: "1",
-				ToID:   "2",
+				ID:       "12345",
+				Name:     "my_stream",
+				FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+				ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 			},
 		},
 		Definition: ir.DefinitionSpec{

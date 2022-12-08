@@ -30,10 +30,10 @@ type DeploymentSpec struct {
 }
 
 type StreamSpec struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	FromID string `json:"from_id"`
-	ToID   string `json:"to_id"`
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	FromUUID string `json:"from_uuid"`
+	ToUUID   string `json:"to_uuid"`
 }
 
 type ConnectorSpec struct {
@@ -72,10 +72,10 @@ func ValidateSpecVersion(specVersion string) error {
 	return nil
 }
 
-func (s *DeploymentSpec) ValidateStreamIDs() error {
+func (s *DeploymentSpec) ValidateStream() error {
 	for _, stream := range s.Streams {
-		if stream.FromID == stream.ToID {
-			return fmt.Errorf("for stream %q , ids for source (%q) and destination (%q) must be different.", stream.Name, stream.FromID, stream.ToID)
+		if stream.FromUUID == stream.ToUUID {
+			return fmt.Errorf("for stream %q , ids for source (%q) and destination (%q) must be different.", stream.Name, stream.FromUUID, stream.ToUUID)
 		}
 	}
 	return nil
