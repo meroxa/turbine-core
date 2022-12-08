@@ -26,7 +26,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Connectors: []ir.ConnectorSpec{
 			{
-				ID:         "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+				UUID:       "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 				Type:       ir.ConnectorSource,
 				Resource:   "mypg",
 				Collection: "user_activity",
@@ -35,7 +35,7 @@ func Test_DeploymentSpec(t *testing.T) {
 				},
 			},
 			{
-				ID:         "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+				UUID:       "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 				Type:       ir.ConnectorDestination,
 				Resource:   "mypg",
 				Collection: "user_activity_enriched",
@@ -43,7 +43,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Functions: []ir.FunctionSpec{
 			{
-				ID:    "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+				UUID:  "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 				Name:  "user_activity_enriched",
 				Image: "ftorres/enrich:9",
 			},
@@ -60,13 +60,13 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Streams: []ir.StreamSpec{
 			{
-				ID:       "12345",
+				UUID:     "12345",
 				Name:     "my_stream1",
 				FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 				ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 			},
 			{
-				ID:       "123456",
+				UUID:     "123456",
 				Name:     "my_stream2",
 				FromUUID: "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 				ToUUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
@@ -150,19 +150,19 @@ func Test_ValidateStream(t *testing.T) {
 				},
 				Functions: []ir.FunctionSpec{
 					{
-						ID:   "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						UUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 						Name: "addition",
 					},
 				},
 				Connectors: []ir.ConnectorSpec{
 					{
-						ID:         "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+						UUID:       "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 						Collection: "accounts",
 						Resource:   "mongo",
 						Type:       ir.ConnectorSource,
 					},
 					{
-						ID:         "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+						UUID:       "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 						Collection: "accounts_copy",
 						Resource:   "pg",
 						Type:       ir.ConnectorDestination,
@@ -173,13 +173,13 @@ func Test_ValidateStream(t *testing.T) {
 				},
 				Streams: []ir.StreamSpec{
 					{
-						ID:       "12345",
+						UUID:     "12345",
 						Name:     "my_stream1",
 						FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 						ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 					},
 					{
-						ID:       "123456",
+						UUID:     "123456",
 						Name:     "my_stream2",
 						FromUUID: "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 						ToUUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
@@ -206,19 +206,19 @@ func Test_ValidateStream(t *testing.T) {
 				},
 				Functions: []ir.FunctionSpec{
 					{
-						ID:   "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						UUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 						Name: "addition",
 					},
 				},
 				Connectors: []ir.ConnectorSpec{
 					{
-						ID:         "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+						UUID:       "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 						Collection: "accounts",
 						Resource:   "mongo",
 						Type:       ir.ConnectorSource,
 					},
 					{
-						ID:         "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+						UUID:       "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 						Collection: "accounts_copy",
 						Resource:   "pg",
 						Type:       ir.ConnectorDestination,
@@ -229,13 +229,13 @@ func Test_ValidateStream(t *testing.T) {
 				},
 				Streams: []ir.StreamSpec{
 					{
-						ID:       "12345",
+						UUID:     "12345",
 						Name:     "my_stream",
 						FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 						ToUUID:   "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 					},
 					{
-						ID:       "12345",
+						UUID:     "12345",
 						Name:     "my_stream",
 						FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 						ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
@@ -295,7 +295,7 @@ func Test_MarshalUnmarshal(t *testing.T) {
 		},
 		Streams: []ir.StreamSpec{
 			{
-				ID:       "12345",
+				UUID:     "12345",
 				Name:     "my_stream",
 				FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 				ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",

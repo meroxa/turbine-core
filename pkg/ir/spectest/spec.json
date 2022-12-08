@@ -4,7 +4,7 @@
     },
     "connectors": [
         {
-            "id": "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+            "uuid": "252bc5e1-666e-4985-a12a-42af81a5d2ab",
             "collection": "user_activity",
             "type": "source",
             "resource": "mypg",
@@ -13,7 +13,7 @@
             }
         },
         {
-            "id": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+            "uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
             "collection": "user_activity_enriched",
             "type": "destination",
             "resource": "mypg"
@@ -21,7 +21,7 @@
     ],
     "functions": [
         {
-            "id": "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+            "uuid": "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
             "name": "user_activity_enriched",
             "image": "ftorres/enrich:9",
             "env_vars": {
@@ -31,13 +31,13 @@
     ],
     "streams": [
         {
-            "id": "12345",
+            "uuid": "12345",
             "name": "my_stream1",
             "from_uuid": "252bc5e1-666e-4985-a12a-42af81a5d2ab",
             "to_uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea"
         },
         {
-            "id": "123456",
+            "uuid": "123456",
             "name": "my_stream2",
             "from_uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
             "to_uuid": "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d"

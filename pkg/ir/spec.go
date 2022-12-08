@@ -30,14 +30,14 @@ type DeploymentSpec struct {
 }
 
 type StreamSpec struct {
-	ID       string `json:"id"`
+	UUID     string `json:"uuid"`
 	Name     string `json:"name"`
 	FromUUID string `json:"from_uuid"`
 	ToUUID   string `json:"to_uuid"`
 }
 
 type ConnectorSpec struct {
-	ID         string                 `json:"id"`
+	UUID       string                 `json:"uuid"`
 	Type       ConnectorType          `json:"type"`
 	Resource   string                 `json:"resource"`
 	Collection string                 `json:"collection"`
@@ -45,7 +45,7 @@ type ConnectorSpec struct {
 }
 
 type FunctionSpec struct {
-	ID    string `json:"id"`
+	UUID  string `json:"uuid"`
 	Name  string `json:"name"`
 	Image string `json:"image"`
 }

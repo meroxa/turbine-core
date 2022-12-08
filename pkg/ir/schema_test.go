@@ -26,7 +26,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
+								"uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -42,7 +42,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
+								"uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -61,7 +61,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 				"connectors": [
 					{
-						"id":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
+						"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 						"collection": "users",
 						"type": "source",
 						"resource": "pg"
@@ -83,7 +83,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -146,7 +146,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
 								"type": "some random type",
 								"resource": "pg"
@@ -171,7 +171,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
 								"type": "destination",
 								"resource": "pg"
@@ -196,7 +196,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users_processed",
 								"type": "destination",
 								"resource": "pg"
@@ -225,19 +225,19 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users_processed",
 								"type": "destination",
 								"resource": "pg"
 							},
 							{
-								"id":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
+								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users_copy",
 								"type": "destination",
 								"resource": "pg"
 							},
 							{
-								"id":   "9e9e8e88-3a56-4a2a-993e-bfe49d526d07",
+								"uuid":   "9e9e8e88-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -261,19 +261,19 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users_processed",
 								"type": "destination",
 								"resource": "pg"
 							},
 							{
-								"id":   "9839888cc-3a56-4a2a-993e-bfe49d526d07",
+								"uuid":   "9839888cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "accounts",
 								"type": "source",
 								"resource": "pg"
 							},
 							{
-								"id":   "02929383-3a56-4a2a-993e-bfe49d526d07",
+								"uuid":   "02929383-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -298,19 +298,19 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
+								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users_processed",
 								"type": "destination",
 								"resource": "pg"
 							},
 							{
-								"id":  "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
+								"uuid":  "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users_processed",
 								"type": "destination",
 								"resource": "pg"
 							},
 							{
-								"id":  "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":  "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -335,7 +335,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -360,7 +360,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -388,7 +388,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -396,7 +396,7 @@ func Test_ValidSpec(t *testing.T) {
 						],
 						"functions": [
 							{
-								"id": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
+								"uuid": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
 								"name": "enrich",
 								"image": "ftorres/enrich:9"
 							}
@@ -419,7 +419,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
 								"type": "source",
 								"resource": "pg"
@@ -427,12 +427,12 @@ func Test_ValidSpec(t *testing.T) {
 						],
 						"functions": [
 							{
-								"id": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
+								"uuid": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
 								"name": "enrich",
 								"image": "ftorres/enrich:9"
 							},
 							{
-								"id": "00d7f1a24-f7e2-4495-a8fe-df46bef32345",
+								"uuid": "00d7f1a24-f7e2-4495-a8fe-df46bef32345",
 								"name": "enrich_new",
 								"image": "ftorres/enrich:1000"
 							}
@@ -458,20 +458,20 @@ func Test_ValidSpec(t *testing.T) {
 						}, 
 						"functions": [
 							{
-								"id": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
+								"uuid": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
 								"name": "anonymize",
 								"image": "ec3b84a9-0866-4003-8e67-1492e9a3e61e"}
 						],
 						"connectors": [
 							{
-								"id":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"type": "source",
 								"config": {}, 
 								"resource": "pg", 
 								"collection": "sequences"
 							}, 
 							{
-								"id":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
+								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"type": "destination", 
 								"config": {}, 
 								"resource": "pg", 
@@ -499,21 +499,21 @@ func Test_ValidSpec(t *testing.T) {
 					},
 					"functions": [
 						{
-							"id": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
+							"uuid": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
 							"name": "anonymize",
 							"image": "ec3b84a9-0866-4003-8e67-1492e9a3e61e"
 						}
 					],
 					"connectors": [
 						{
-							"id": "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+							"uuid": "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 							"type": "source",
 							"config": {},
 							"resource": "pg",
 							"collection": "sequences"
 						},
 						{
-							"id": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
+							"uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 							"type": "destination",
 							"config": {},
 							"resource": "pg",
@@ -522,13 +522,13 @@ func Test_ValidSpec(t *testing.T) {
 					],
 					"stream": [
 						{
-							"id": "12345",
+							"uuid": "12345",
 							"to_uuid": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
 							"from_uuid": "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 							"name": "my_stream1"
 						},
 						{
-							"id": "123456",
+							"uuid": "123456",
 							"from_uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 							"to_uuid": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
 							"name": "my_stream2"

@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2019-09/schema#",
-    "$id": "https://api.meroxa.io/spec/turbine.ir.schema.json",
+    "$uuid": "https://api.meroxa.io/spec/turbine.ir.schema.json",
     "title": "Turbine intermediate representation schema",
     "type": "object",
     "properties": {
@@ -14,7 +14,7 @@
                             "type": "string",
                             "minLength": 1
                         },
-                        "id": {
+                        "uuid": {
                             "type": "string",
                             "minLength": 36,
                             "maxLength": 36
@@ -72,7 +72,7 @@
                 {
                     "type": "object",
                     "properties": {
-                        "id": {
+                        "uuid": {
                             "type": "string",
                             "minLength": 36,
                             "maxLength": 36
@@ -114,7 +114,7 @@
                             "minLength": 36,
                             "maxLength": 36
                         },
-                        "id": {
+                        "uuid": {
                             "type": "string",
                             "minLength": 36,
                             "maxLength": 36
@@ -124,7 +124,7 @@
                         "name",
                         "from_uuid",
                         "to_uuid",
-                        "id"
+                        "uuid"
                     ]
                 }
             ],
