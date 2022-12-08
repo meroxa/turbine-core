@@ -26,6 +26,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Connectors: []ir.ConnectorSpec{
 			{
+				UUID:       "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 				Type:       ir.ConnectorSource,
 				Resource:   "mypg",
 				Collection: "user_activity",
@@ -34,6 +35,7 @@ func Test_DeploymentSpec(t *testing.T) {
 				},
 			},
 			{
+				UUID:       "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 				Type:       ir.ConnectorDestination,
 				Resource:   "mypg",
 				Collection: "user_activity_enriched",
@@ -41,6 +43,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Functions: []ir.FunctionSpec{
 			{
+				UUID:  "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 				Name:  "user_activity_enriched",
 				Image: "ftorres/enrich:9",
 			},
@@ -52,7 +55,21 @@ func Test_DeploymentSpec(t *testing.T) {
 					Language: ir.GoLang,
 					Version:  "0.1.0",
 				},
-				SpecVersion: "0.1.1",
+				SpecVersion: "0.2.0",
+			},
+		},
+		Streams: []ir.StreamSpec{
+			{
+				UUID:     "12345",
+				Name:     "my_stream1",
+				FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+				ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+			},
+			{
+				UUID:     "123456",
+				Name:     "my_stream2",
+				FromUUID: "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+				ToUUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 			},
 		},
 	}
@@ -119,6 +136,138 @@ func Test_SetImageForFunctions(t *testing.T) {
 	}
 }
 
+func Test_ValidateStream(t *testing.T) {
+	testCases := []struct {
+		spec      ir.DeploymentSpec
+		name      string
+		wantError error
+	}{
+		{
+			name: "Proper stream ids for from_uuid and to_uuid",
+			spec: ir.DeploymentSpec{
+				Secrets: map[string]string{
+					"a secret": "with value",
+				},
+				Functions: []ir.FunctionSpec{
+					{
+						UUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						Name: "addition",
+					},
+				},
+				Connectors: []ir.ConnectorSpec{
+					{
+						UUID:       "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+						Collection: "accounts",
+						Resource:   "mongo",
+						Type:       ir.ConnectorSource,
+					},
+					{
+						UUID:       "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+						Collection: "accounts_copy",
+						Resource:   "pg",
+						Type:       ir.ConnectorDestination,
+						Config: map[string]interface{}{
+							"config": "value",
+						},
+					},
+				},
+				Streams: []ir.StreamSpec{
+					{
+						UUID:     "12345",
+						Name:     "my_stream1",
+						FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+					},
+					{
+						UUID:     "123456",
+						Name:     "my_stream2",
+						FromUUID: "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+						ToUUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+					},
+				},
+				Definition: ir.DefinitionSpec{
+					GitSha: "gitsh",
+					Metadata: ir.MetadataSpec{
+						SpecVersion: "0.2.1",
+						Turbine: ir.TurbineSpec{
+							Language: ir.GoLang,
+							Version:  "10",
+						},
+					},
+				},
+			},
+			wantError: nil,
+		},
+		{
+			name: "Invalid circular stream ids for from_uuid and to_uuid",
+			spec: ir.DeploymentSpec{
+				Secrets: map[string]string{
+					"a secret": "with value",
+				},
+				Functions: []ir.FunctionSpec{
+					{
+						UUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						Name: "addition",
+					},
+				},
+				Connectors: []ir.ConnectorSpec{
+					{
+						UUID:       "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+						Collection: "accounts",
+						Resource:   "mongo",
+						Type:       ir.ConnectorSource,
+					},
+					{
+						UUID:       "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+						Collection: "accounts_copy",
+						Resource:   "pg",
+						Type:       ir.ConnectorDestination,
+						Config: map[string]interface{}{
+							"config": "value",
+						},
+					},
+				},
+				Streams: []ir.StreamSpec{
+					{
+						UUID:     "12345",
+						Name:     "my_stream",
+						FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						ToUUID:   "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+					},
+					{
+						UUID:     "12345",
+						Name:     "my_stream",
+						FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+						ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+					},
+				},
+				Definition: ir.DefinitionSpec{
+					GitSha: "gitsh",
+					Metadata: ir.MetadataSpec{
+						SpecVersion: "0.2.1",
+						Turbine: ir.TurbineSpec{
+							Language: ir.GoLang,
+							Version:  "10",
+						},
+					},
+				},
+			},
+			wantError: fmt.Errorf("for stream \"my_stream\" , ids for source (\"252bc5e1-666e-4985-a12a-42af81a5d2ab\") and destination (\"252bc5e1-666e-4985-a12a-42af81a5d2ab\") must be different."),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			gotError := tc.spec.ValidateStream()
+			if tc.wantError != nil {
+				assert.Equal(t, gotError.Error(), tc.wantError.Error())
+			} else {
+				assert.NoError(t, gotError)
+			}
+		})
+	}
+}
+
 func Test_MarshalUnmarshal(t *testing.T) {
 	spec := &ir.DeploymentSpec{
 		Secrets: map[string]string{
@@ -144,10 +293,18 @@ func Test_MarshalUnmarshal(t *testing.T) {
 				},
 			},
 		},
+		Streams: []ir.StreamSpec{
+			{
+				UUID:     "12345",
+				Name:     "my_stream",
+				FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+				ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+			},
+		},
 		Definition: ir.DefinitionSpec{
 			GitSha: "gitsh",
 			Metadata: ir.MetadataSpec{
-				SpecVersion: "0.1.1",
+				SpecVersion: "0.2.1",
 				Turbine: ir.TurbineSpec{
 					Language: ir.GoLang,
 					Version:  "10",
