@@ -4,6 +4,7 @@
     },
     "connectors": [
         {
+            "id":"1",
             "collection": "user_activity",
             "type": "source",
             "resource": "mypg",
@@ -12,6 +13,7 @@
             }
         },
         {
+            "id":"2",
             "collection": "user_activity_enriched",
             "type": "destination",
             "resource": "mypg"
@@ -19,11 +21,26 @@
     ],
     "functions": [
         {
+            "id":"3",
             "name": "user_activity_enriched",
             "image": "ftorres/enrich:9",
             "env_vars": {
                 "CLEARBIT_API_KEY": "token-1"
             }
+        }
+    ],
+    "streams":[
+        {
+            "id": "12345",
+            "name": "my_stream1",
+            "from_id":"1",
+            "to_id":"2"
+        },
+        {
+            "id": "123456",
+            "name": "my_stream2",
+            "from_id":"2",
+            "to_id":"3"
         }
     ],
     "definition": {
@@ -33,7 +50,7 @@
                 "language": "golang",
                 "version": "0.1.0"
             },
-            "spec_version": "0.1.1"
+            "spec_version": "0.2.0"
         }
     }
 }

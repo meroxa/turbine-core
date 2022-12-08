@@ -26,6 +26,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Connectors: []ir.ConnectorSpec{
 			{
+				ID:         "1",
 				Type:       ir.ConnectorSource,
 				Resource:   "mypg",
 				Collection: "user_activity",
@@ -34,6 +35,7 @@ func Test_DeploymentSpec(t *testing.T) {
 				},
 			},
 			{
+				ID:         "2",
 				Type:       ir.ConnectorDestination,
 				Resource:   "mypg",
 				Collection: "user_activity_enriched",
@@ -41,6 +43,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Functions: []ir.FunctionSpec{
 			{
+				ID:    "3",
 				Name:  "user_activity_enriched",
 				Image: "ftorres/enrich:9",
 			},
@@ -52,7 +55,21 @@ func Test_DeploymentSpec(t *testing.T) {
 					Language: ir.GoLang,
 					Version:  "0.1.0",
 				},
-				SpecVersion: "0.1.1",
+				SpecVersion: "0.2.0",
+			},
+		},
+		Streams: []ir.StreamSpec{
+			{
+				ID:     "12345",
+				Name:   "my_stream1",
+				FromID: "1",
+				ToID:   "2",
+			},
+			{
+				ID:     "123456",
+				Name:   "my_stream2",
+				FromID: "2",
+				ToID:   "3",
 			},
 		},
 	}
@@ -119,6 +136,138 @@ func Test_SetImageForFunctions(t *testing.T) {
 	}
 }
 
+func Test_ValidateStreamIDs(t *testing.T) {
+	testCases := []struct {
+		spec      ir.DeploymentSpec
+		name      string
+		wantError error
+	}{
+		{
+			name: "Proper stream ids for from_id and to_id",
+			spec: ir.DeploymentSpec{
+				Secrets: map[string]string{
+					"a secret": "with value",
+				},
+				Functions: []ir.FunctionSpec{
+					{
+						ID:   "1",
+						Name: "addition",
+					},
+				},
+				Connectors: []ir.ConnectorSpec{
+					{
+						ID:         "2",
+						Collection: "accounts",
+						Resource:   "mongo",
+						Type:       ir.ConnectorSource,
+					},
+					{
+						ID:         "3",
+						Collection: "accounts_copy",
+						Resource:   "pg",
+						Type:       ir.ConnectorDestination,
+						Config: map[string]interface{}{
+							"config": "value",
+						},
+					},
+				},
+				Streams: []ir.StreamSpec{
+					{
+						ID:     "12345",
+						Name:   "my_stream1",
+						FromID: "1",
+						ToID:   "2",
+					},
+					{
+						ID:     "123456",
+						Name:   "my_stream2",
+						FromID: "2",
+						ToID:   "3",
+					},
+				},
+				Definition: ir.DefinitionSpec{
+					GitSha: "gitsh",
+					Metadata: ir.MetadataSpec{
+						SpecVersion: "0.2.1",
+						Turbine: ir.TurbineSpec{
+							Language: ir.GoLang,
+							Version:  "10",
+						},
+					},
+				},
+			},
+			wantError: nil,
+		},
+		{
+			name: "Invalid circular stream ids for from_id and to_id",
+			spec: ir.DeploymentSpec{
+				Secrets: map[string]string{
+					"a secret": "with value",
+				},
+				Functions: []ir.FunctionSpec{
+					{
+						ID:   "1",
+						Name: "addition",
+					},
+				},
+				Connectors: []ir.ConnectorSpec{
+					{
+						ID:         "2",
+						Collection: "accounts",
+						Resource:   "mongo",
+						Type:       ir.ConnectorSource,
+					},
+					{
+						ID:         "3",
+						Collection: "accounts_copy",
+						Resource:   "pg",
+						Type:       ir.ConnectorDestination,
+						Config: map[string]interface{}{
+							"config": "value",
+						},
+					},
+				},
+				Streams: []ir.StreamSpec{
+					{
+						ID:     "12345",
+						Name:   "my_stream",
+						FromID: "1",
+						ToID:   "1",
+					},
+					{
+						ID:     "12345",
+						Name:   "my_stream",
+						FromID: "1",
+						ToID:   "2",
+					},
+				},
+				Definition: ir.DefinitionSpec{
+					GitSha: "gitsh",
+					Metadata: ir.MetadataSpec{
+						SpecVersion: "0.2.1",
+						Turbine: ir.TurbineSpec{
+							Language: ir.GoLang,
+							Version:  "10",
+						},
+					},
+				},
+			},
+			wantError: fmt.Errorf("for stream \"my_stream\" , ids for source (\"1\") and destination (\"1\") must be different."),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			gotError := tc.spec.ValidateStreamIDs()
+			if tc.wantError != nil {
+				assert.Equal(t, gotError.Error(), tc.wantError.Error())
+			} else {
+				assert.NoError(t, gotError)
+			}
+		})
+	}
+}
+
 func Test_MarshalUnmarshal(t *testing.T) {
 	spec := &ir.DeploymentSpec{
 		Secrets: map[string]string{
@@ -144,10 +293,18 @@ func Test_MarshalUnmarshal(t *testing.T) {
 				},
 			},
 		},
+		Streams: []ir.StreamSpec{
+			{
+				ID:     "12345",
+				Name:   "my_stream",
+				FromID: "1",
+				ToID:   "2",
+			},
+		},
 		Definition: ir.DefinitionSpec{
 			GitSha: "gitsh",
 			Metadata: ir.MetadataSpec{
-				SpecVersion: "0.1.1",
+				SpecVersion: "0.2.1",
 				Turbine: ir.TurbineSpec{
 					Language: ir.GoLang,
 					Version:  "10",

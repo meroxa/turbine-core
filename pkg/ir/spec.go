@@ -18,17 +18,26 @@ const (
 	ConnectorSource      ConnectorType = "source"
 	ConnectorDestination ConnectorType = "destination"
 
-	LatestSpecVersion = "0.1.1"
+	LatestSpecVersion = "0.2.0"
 )
 
 type DeploymentSpec struct {
 	Secrets    map[string]string `json:"secrets,omitempty"`
 	Connectors []ConnectorSpec   `json:"connectors"`
 	Functions  []FunctionSpec    `json:"functions,omitempty"`
+	Streams    []StreamSpec      `json:"streams,omitempty"`
 	Definition DefinitionSpec    `json:"definition"`
 }
 
+type StreamSpec struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	FromID string `json:"from_id"`
+	ToID   string `json:"to_id"`
+}
+
 type ConnectorSpec struct {
+	ID         string                 `json:"id"`
 	Type       ConnectorType          `json:"type"`
 	Resource   string                 `json:"resource"`
 	Collection string                 `json:"collection"`
@@ -36,6 +45,7 @@ type ConnectorSpec struct {
 }
 
 type FunctionSpec struct {
+	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Image string `json:"image"`
 }
@@ -58,6 +68,15 @@ type TurbineSpec struct {
 func ValidateSpecVersion(specVersion string) error {
 	if specVersion != LatestSpecVersion {
 		return fmt.Errorf("spec version %q is not a supported. use version %q instead", specVersion, LatestSpecVersion)
+	}
+	return nil
+}
+
+func (s *DeploymentSpec) ValidateStreamIDs() error {
+	for _, stream := range s.Streams {
+		if stream.FromID == stream.ToID {
+			return fmt.Errorf("for stream %q , ids for source (%q) and destination (%q) must be different.", stream.Name, stream.FromID, stream.ToID)
+		}
 	}
 	return nil
 }
