@@ -24,35 +24,52 @@ RSpec.describe TurbineRb::Client::App do
       end
     end
 
+    let(:records) { TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app) }
     let(:core_server) { Mocktail.of(TurbineCore::TurbineService::Stub) }
     let(:record) { TurbineCore::Record.new(key: "1", value: "somebytes") }
+    let(:app) { described_class.new(core_server) }
 
-    it "calls the process function on the records in run mode" do
-      app = described_class.new(core_server)
-      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
-      result = app.process(records: records, process: my_process.new)
+    context "when recording" do
+      let(:app) { described_class.new(core_server, recording: false) }
 
-      expect(result.pb_collection.first.key).to eq("1")
-      expect(result.pb_collection.first.value).to eq("changedbytes")
+      it "doesnt call the process function on the records in record mode" do
+        mocked_process = Mocktail.of(my_process)
+
+        app = described_class.new(core_server, recording: true)
+        app.process(records: records, process: mocked_process)
+
+        result = Mocktail.explain(mocked_process.method(:call))
+        expect(result.reference.calls.size).to eq(0)
+      end
     end
 
-    it "calls the process function with the records interface in run mode" do
-      mocked_process = Mocktail.of(my_process)
-      stubs { |m| mocked_process.call(records: m.any) }.with { [] }
-      app = described_class.new(core_server)
-      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
-      app.process(records: records, process: mocked_process)
+    context "when running" do
+      let(:app) { described_class.new(core_server, recording: false) }
 
-      verify { |m| mocked_process.call(records: m.is_a(TurbineRb::Records)) }
-    end
+      it "calls the process function on the records in run mode" do
+        expect(core_server).
+          to receive(:add_process_to_collection).
+               and_return(records.unwrap)
 
-    it "doesnt call the process function on the records in record mode" do
-      mocked_process = Mocktail.of(my_process)
-      app = described_class.new(core_server, is_recording: true)
-      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
-      app.process(records: records, process: mocked_process)
-      result = Mocktail.explain(mocked_process.method(:call))
-      expect(result.reference.calls.size).to eq(0)
+        result = app.process(records: records, process: my_process.new)
+
+        expect(result.pb_collection.first.key).to eq("1")
+        expect(result.pb_collection.first.value).to eq("changedbytes")
+        expect(result.pb_stream).to eq(records.pb_stream)
+      end
+
+      it "calls the process function with the records interface in run mode" do
+        mocked_process = Mocktail.of(my_process)
+        stubs { |m| mocked_process.call(records: m.any) }.with { [] }
+
+        expect(core_server).
+          to receive(:add_process_to_collection).
+               and_return(records.unwrap)
+
+        app.process(records: records, process: mocked_process)
+
+        verify { |m| mocked_process.call(records: m.is_a(TurbineRb::Records)) }
+      end
     end
   end
 
@@ -166,8 +183,8 @@ RSpec.describe TurbineRb::Client::App::Resource do
       verify { |m| core_server.write_collection_to_resource(m.that { |arg| arg.resource == pb_resource }) }
       verify do |m|
         core_server.write_collection_to_resource(m.that do |arg|
-                                                   arg.targetCollection == "goodbyecollection"
-                                                 end)
+          arg.targetCollection == "goodbyecollection"
+        end)
       end
     end
 
@@ -175,13 +192,13 @@ RSpec.describe TurbineRb::Client::App::Resource do
       collection.write(records: records, collection: "goodbyecollection", configs: { "some.key" => "some.value" })
       verify do |m|
         core_server.write_collection_to_resource(m.that do |arg|
-                                                   arg.configs.config.first.field == "some.key"
-                                                 end)
+          arg.configs.config.first.field == "some.key"
+        end)
       end
       verify do |m|
         core_server.write_collection_to_resource(m.that do |arg|
-                                                   arg.configs.config.first.value == "some.value"
-                                                 end)
+          arg.configs.config.first.value == "some.value"
+        end)
       end
     end
   end

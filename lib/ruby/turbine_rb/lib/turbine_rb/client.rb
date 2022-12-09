@@ -5,11 +5,12 @@ module TurbineRb
     class MissingSecretError < StandardError; end
 
     class App
-      attr_reader :core_server
+      attr_reader :core_server, :recording
+      alias_method :recording?, :recording
 
-      def initialize(grpc_server, is_recording: false)
+      def initialize(grpc_server, recording: false)
         @core_server = grpc_server
-        @is_recording = is_recording
+        @recording = recording
       end
 
       def resource(name:)
@@ -21,31 +22,32 @@ module TurbineRb
       def process(records:, process:)
         unwrapped_records = records.unwrap if records.instance_of?(Collection)
 
-        pr = TurbineCore::ProcessCollectionRequest::Process.new(
-          name: process.class.name
-        )
-
+        pr = TurbineCore::ProcessCollectionRequest::Process.new(name: process.class.name)
         req = TurbineCore::ProcessCollectionRequest.new(collection: unwrapped_records, process: pr)
-        @core_server.add_process_to_collection(req)
-        records_interface = TurbineRb::Records.new(unwrapped_records.records)
-        processed_records = process.call(records: records_interface) unless @is_recording
-        records.pb_collection = processed_records.map(&:serialize_core_record) unless @is_recording
+        collection = core_server.add_process_to_collection(req)
+
+        unless recording?
+          processed_records = process.
+            call(records: TurbineRb::Records.new(collection.records))
+          records.pb_collection = processed_records.map(&:serialize_core_record)
+          records.pb_stream = collection.stream
+        end
 
         records
       end
 
       # register_secrets accepts either a single string or an array of strings
       def register_secrets(secrets)
-        [*secrets].map do |secret|
+        [secrets].flatten.map do |secret|
           raise MissingSecretError, "secret #{secret} is not an environment variable" unless ENV.key?(secret)
 
           req = TurbineCore::Secret.new(name: secret, value: ENV[secret])
-          @core_server.register_secret(req)
+          core_server.register_secret(req)
         end
       end
 
       class Resource
-        attr_reader :pb_resource
+        attr_reader :pb_resource, :app
 
         def initialize(res, app)
           @pb_resource = res
@@ -59,7 +61,9 @@ module TurbineRb
             req.configs = TurbineCore::Configs.new(config: pb_configs)
           end
 
-          @app.core_server.read_collection(req).wrap(@app) # wrap in Collection to enable chaining
+          app.core_server.
+            read_collection(req).
+            wrap(app) # wrap in Collection to enable chaining
         end
 
         def write(records:, collection:, configs: nil)
@@ -67,20 +71,23 @@ module TurbineRb
             records = records.unwrap
           end
 
-          req = TurbineCore::WriteCollectionRequest.new(resource: @pb_resource, sourceCollection: records,
-                                                        targetCollection: collection)
+          req = TurbineCore::WriteCollectionRequest.new(
+            resource: @pb_resource,
+            sourceCollection: records,
+            targetCollection: collection,
+          )
 
           if configs
             pb_configs = configs.keys.map { |key| TurbineCore::Config.new(field: key, value: configs[key]) }
             req.configs = TurbineCore::Configs.new(config: pb_configs)
           end
 
-          @app.core_server.write_collection_to_resource(req)
+          app.core_server.write_collection_to_resource(req)
         end
       end
 
       class Collection
-        attr_accessor :pb_collection, :pb_stream, :name
+        attr_accessor :pb_collection, :pb_stream, :name, :app
 
         def initialize(name, collection, stream, app)
           @name = name
@@ -94,14 +101,14 @@ module TurbineRb
         end
 
         def process_with(process:)
-          @app.process(records: self, process: process)
+          app.process(records: self, process: process)
         end
 
         def unwrap
           TurbineCore::Collection.new( # convert back to TurbineCore::Collection
             name: name,
             records: pb_collection.to_a,
-            stream: pb_stream
+            stream: pb_stream,
           )
         end
       end
