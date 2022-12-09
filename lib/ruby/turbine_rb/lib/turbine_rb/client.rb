@@ -5,12 +5,15 @@ module TurbineRb
     class MissingSecretError < StandardError; end
 
     class App
-      attr_reader :core_server, :recording
-      alias_method :recording?, :recording
+      attr_reader :core_server
 
       def initialize(grpc_server, recording: false)
         @core_server = grpc_server
         @recording = recording
+      end
+
+      def recording?
+        @recording
       end
 
       def resource(name:)
@@ -20,20 +23,21 @@ module TurbineRb
       end
 
       def process(records:, process:)
-        unwrapped_records = records.unwrap if records.instance_of?(Collection)
+        return records if recording?
 
-        pr = TurbineCore::ProcessCollectionRequest::Process.new(name: process.class.name)
-        req = TurbineCore::ProcessCollectionRequest.new(collection: unwrapped_records, process: pr)
-        collection = core_server.add_process_to_collection(req)
-
-        unless recording?
-          processed_records = process.
-            call(records: TurbineRb::Records.new(collection.records))
-          records.pb_collection = processed_records.map(&:serialize_core_record)
-          records.pb_stream = collection.stream
+        collection = core_server.add_process_to_collection(
+          TurbineCore::ProcessCollectionRequest.new(
+            collection: Collection.unwrap(records),
+            process: TurbineCore::ProcessCollectionRequest::Process.new(name: process.class.name)
+          )
+        )
+        processed_records = process.call(
+          records: TurbineRb::Records.new(collection.records)
+        )
+        records.tap do |r|
+          r.pb_collection = processed_records.map(&:serialize_core_record)
+          r.pb_stream = collection.stream
         end
-
-        records
       end
 
       # register_secrets accepts either a single string or an array of strings
@@ -61,9 +65,9 @@ module TurbineRb
             req.configs = TurbineCore::Configs.new(config: pb_configs)
           end
 
-          app.core_server.
-            read_collection(req).
-            wrap(app) # wrap in Collection to enable chaining
+          app.core_server
+             .read_collection(req)
+             .wrap(app) # wrap in Collection to enable chaining
         end
 
         def write(records:, collection:, configs: nil)
@@ -74,7 +78,7 @@ module TurbineRb
           req = TurbineCore::WriteCollectionRequest.new(
             resource: @pb_resource,
             sourceCollection: records,
-            targetCollection: collection,
+            targetCollection: collection
           )
 
           if configs
@@ -88,6 +92,12 @@ module TurbineRb
 
       class Collection
         attr_accessor :pb_collection, :pb_stream, :name, :app
+
+        def self.unwrap(collection)
+          return collection.unwrap if collection.instance_of?(Collection)
+
+          collection
+        end
 
         def initialize(name, collection, stream, app)
           @name = name
@@ -108,7 +118,7 @@ module TurbineRb
           TurbineCore::Collection.new( # convert back to TurbineCore::Collection
             name: name,
             records: pb_collection.to_a,
-            stream: pb_stream,
+            stream: pb_stream
           )
         end
       end

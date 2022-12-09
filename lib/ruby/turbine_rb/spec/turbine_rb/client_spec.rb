@@ -23,19 +23,22 @@ RSpec.describe TurbineRb::Client::App do
         end
       end
     end
-
-    let(:records) { TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app) }
-    let(:core_server) { Mocktail.of(TurbineCore::TurbineService::Stub) }
-    let(:record) { TurbineCore::Record.new(key: "1", value: "somebytes") }
+    let(:records) do
+      TurbineRb::Client::App::Collection.new(
+        "a_name",
+        [TurbineCore::Record.new(key: "1", value: "somebytes")],
+        "a_stream",
+        app
+      )
+    end
+    let(:core_server) { instance_double(TurbineCore::TurbineService::Stub) }
     let(:app) { described_class.new(core_server) }
+    let(:mocked_process) { Mocktail.of(my_process) }
 
     context "when recording" do
-      let(:app) { described_class.new(core_server, recording: false) }
+      let(:app) { described_class.new(core_server, recording: true) }
 
       it "doesnt call the process function on the records in record mode" do
-        mocked_process = Mocktail.of(my_process)
-
-        app = described_class.new(core_server, recording: true)
         app.process(records: records, process: mocked_process)
 
         result = Mocktail.explain(mocked_process.method(:call))
@@ -47,9 +50,9 @@ RSpec.describe TurbineRb::Client::App do
       let(:app) { described_class.new(core_server, recording: false) }
 
       it "calls the process function on the records in run mode" do
-        expect(core_server).
-          to receive(:add_process_to_collection).
-               and_return(records.unwrap)
+        allow(core_server)
+          .to receive(:add_process_to_collection)
+          .and_return(records.unwrap)
 
         result = app.process(records: records, process: my_process.new)
 
@@ -59,12 +62,11 @@ RSpec.describe TurbineRb::Client::App do
       end
 
       it "calls the process function with the records interface in run mode" do
-        mocked_process = Mocktail.of(my_process)
         stubs { |m| mocked_process.call(records: m.any) }.with { [] }
 
-        expect(core_server).
-          to receive(:add_process_to_collection).
-               and_return(records.unwrap)
+        allow(core_server)
+          .to receive(:add_process_to_collection)
+          .and_return(records.unwrap)
 
         app.process(records: records, process: mocked_process)
 
