@@ -23,21 +23,24 @@ module TurbineRb
       end
 
       def process(records:, process:)
-        return records if recording?
-
-        collection = core_server.add_process_to_collection(
+        pb_collection = core_server.add_process_to_collection(
           TurbineCore::ProcessCollectionRequest.new(
             collection: Collection.unwrap(records),
             process: TurbineCore::ProcessCollectionRequest::Process.new(name: process.class.name)
           )
         )
-        processed_records = process.call(
-          records: TurbineRb::Records.new(collection.records)
-        )
         records.tap do |r|
-          r.pb_collection = processed_records.map(&:serialize_core_record)
-          r.pb_stream = collection.stream
+          r.pb_collection = process_call(process: process, pb_collection: pb_collection)
+          r.pb_stream = pb_collection.stream
         end
+      end
+
+      def process_call(process:, pb_collection:)
+        return pb_collection if recording?
+
+        process
+          .call(records: TurbineRb::Records.new(pb_collection.records))
+          .map(&:serialize_core_record)
       end
 
       # register_secrets accepts either a single string or an array of strings

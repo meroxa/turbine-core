@@ -35,6 +35,12 @@ RSpec.describe TurbineRb::Client::App do
     let(:app) { described_class.new(core_server) }
     let(:mocked_process) { Mocktail.of(my_process) }
 
+    before do
+      allow(core_server)
+        .to receive(:add_process_to_collection)
+        .and_return(records.unwrap)
+    end
+
     context "when recording" do
       let(:app) { described_class.new(core_server, recording: true) }
 
@@ -50,10 +56,6 @@ RSpec.describe TurbineRb::Client::App do
       let(:app) { described_class.new(core_server, recording: false) }
 
       it "calls the process function on the records in run mode" do
-        allow(core_server)
-          .to receive(:add_process_to_collection)
-          .and_return(records.unwrap)
-
         result = app.process(records: records, process: my_process.new)
 
         expect(result.pb_collection.first.key).to eq("1")
@@ -64,12 +66,7 @@ RSpec.describe TurbineRb::Client::App do
       it "calls the process function with the records interface in run mode" do
         stubs { |m| mocked_process.call(records: m.any) }.with { [] }
 
-        allow(core_server)
-          .to receive(:add_process_to_collection)
-          .and_return(records.unwrap)
-
         app.process(records: records, process: mocked_process)
-
         verify { |m| mocked_process.call(records: m.is_a(TurbineRb::Records)) }
       end
     end
