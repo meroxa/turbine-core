@@ -7,7 +7,7 @@ module TurbineRb
     class App
       attr_reader :core_server
 
-      def initialize(grpc_server, recording: false)
+      def initialize(grpc_server, recording:)
         @core_server = grpc_server
         @recording = recording
       end
