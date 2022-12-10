@@ -6,7 +6,7 @@ RSpec.describe TurbineRb::Client::App do
       core_server = Mocktail.of(TurbineCore::TurbineService::Stub)
       stubs { |m| core_server.get_resource(m.is_a(TurbineCore::GetResourceRequest)) }.with { :resource }
 
-      subject = described_class.new(core_server)
+      subject = described_class.new(core_server, recording: false)
       result = subject.resource(name: "hey")
 
       expect(result.pb_resource).to eq(:resource)
@@ -32,7 +32,7 @@ RSpec.describe TurbineRb::Client::App do
       )
     end
     let(:core_server) { instance_double(TurbineCore::TurbineService::Stub) }
-    let(:app) { described_class.new(core_server) }
+    let(:app) { described_class.new(core_server, recording: false) }
     let(:mocked_process) { Mocktail.of(my_process) }
 
     before do
@@ -82,7 +82,7 @@ RSpec.describe TurbineRb::Client::App do
     end
 
     let(:app) do
-      described_class.new(core_server)
+      described_class.new(core_server, recording: false)
     end
 
     before do
@@ -139,7 +139,7 @@ RSpec.describe TurbineRb::Client::App::Resource do
     let(:core_server) { Mocktail.of(TurbineCore::TurbineService::Stub) }
     let(:collection) { Mocktail.of_next(TurbineCore::Collection) }
     let(:pb_resource) { TurbineCore::Resource.new }
-    let(:app) { TurbineRb::Client::App.new(core_server) }
+    let(:app) { TurbineRb::Client::App.new(core_server, recording: false) }
     let(:resource) do
       req = stubs do |m|
         core_server.read_collection(m.is_a(TurbineCore::ReadCollectionRequest))
@@ -169,7 +169,7 @@ RSpec.describe TurbineRb::Client::App::Resource do
     let(:core_server) { Mocktail.of(TurbineCore::TurbineService::Stub) }
     let(:records) { Mocktail.of(TurbineRb::Client::App::Collection) }
     let(:pb_resource) { TurbineCore::Resource.new }
-    let(:app) { TurbineRb::Client::App.new(core_server) }
+    let(:app) { TurbineRb::Client::App.new(core_server, recording: false) }
     let(:collection) do
       stubs { records.unwrap }.with { TurbineCore::Collection.new }
       described_class.new(pb_resource, app)
@@ -209,7 +209,7 @@ RSpec.describe TurbineRb::Client::App::Collection do
       core_server = Mocktail.of(TurbineCore::TurbineService::Stub)
       resource = Mocktail.of(TurbineRb::Client::App::Resource)
 
-      app = TurbineRb::Client::App.new(core_server)
+      app = TurbineRb::Client::App.new(core_server, recording: false)
       record = TurbineCore::Record.new(key: "1", value: "somebytes")
 
       subject = described_class.new("a_name", [record], "a_stream", app)
