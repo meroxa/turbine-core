@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/google/uuid"
+	"github.com/heimdalr/dag"
 )
 
 type ConnectorType string
@@ -25,22 +25,19 @@ const (
 )
 
 type DeploymentSpec struct {
-	mu            sync.Mutex
-	DeploymentMap DeploymentMap
-	Secrets       map[string]string `json:"secrets,omitempty"`
-	Connectors    []ConnectorSpec   `json:"connectors"`
-	Functions     []FunctionSpec    `json:"functions,omitempty"`
-	Streams       []StreamSpec      `json:"streams,omitempty"`
-	Definition    DefinitionSpec    `json:"definition"`
+	mu         sync.Mutex
+	turbineDAG turbineDAG
+	Secrets    map[string]string `json:"secrets,omitempty"`
+	Connectors []ConnectorSpec   `json:"connectors"`
+	Functions  []FunctionSpec    `json:"functions,omitempty"`
+	Streams    []StreamSpec      `json:"streams,omitempty"`
+	Definition DefinitionSpec    `json:"definition"`
 }
 
-type DeploymentMap struct {
-	Source *ConnectorSpec
-	Nodes  []Node
-}
-type Node struct {
-	UUID  string
-	Edges map[string]string
+type turbineDAG struct {
+	dag    *dag.DAG
+	source *ConnectorSpec
+	nodes  map[string]string
 }
 
 type StreamSpec struct {
@@ -79,6 +76,10 @@ type TurbineSpec struct {
 	Version  string `json:"version"`
 }
 
+type idInterface interface {
+	ID() string
+}
+
 func ValidateSpecVersion(specVersion string) error {
 	if specVersion != LatestSpecVersion {
 		return fmt.Errorf("spec version %q is not a supported. use version %q instead", specVersion, LatestSpecVersion)
@@ -86,23 +87,14 @@ func ValidateSpecVersion(specVersion string) error {
 	return nil
 }
 
-func (s *DeploymentSpec) ValidateStream() error {
-	for _, stream := range s.Streams {
-		if stream.FromUUID == stream.ToUUID {
-			return fmt.Errorf("for stream %q , ids for source (%q) and destination (%q) must be different.", stream.Name, stream.FromUUID, stream.ToUUID)
-		}
-	}
-	return nil
-}
-
-func (s *DeploymentSpec) SetImageForFunctions(image string) {
-	for i := range s.Functions {
-		s.Functions[i].Image = image
+func (d *DeploymentSpec) SetImageForFunctions(image string) {
+	for i := range d.Functions {
+		d.Functions[i].Image = image
 	}
 }
 
-func (s *DeploymentSpec) Marshal() ([]byte, error) {
-	return json.Marshal(s)
+func (d *DeploymentSpec) Marshal() ([]byte, error) {
+	return json.Marshal(d)
 }
 
 func Unmarshal(data []byte) (*DeploymentSpec, error) {
@@ -116,112 +108,88 @@ func Unmarshal(data []byte) (*DeploymentSpec, error) {
 func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-
 	// check if spec is source
-	if d.DeploymentMap.Source != nil {
-		return fmt.Errorf("source connector (%s) already exists", d.DeploymentMap.Source.UUID)
+	if d.turbineDAG.source != nil {
+		return fmt.Errorf("source connector (%s) already exists", d.turbineDAG.source.UUID)
 	}
 
-	for _, node := range d.DeploymentMap.Nodes {
-		if node.Item.UUID == c.UUID {
-			return fmt.Errorf("connector (%s) already added", c.UUID)
-		}
+	if source := d.turbineDAG.nodes[c.UUID]; source != "" {
+		return fmt.Errorf("connector with uuid %s already exists", c.UUID)
 	}
-
 	d.Connectors = append(d.Connectors, *c)
-	d.DeploymentMap.Nodes = append(d.DeploymentMap.Nodes, Node{
-		Item:  c,
-		Edges: make(map[string]string),
-	})
-	//track source connector spec
-	d.DeploymentMap.Source = c
+	d.turbineDAG.source = c
+	src, err := d.turbineDAG.dag.AddVertex(&c)
+	if err != nil {
+		return err
+	}
+	d.turbineDAG.nodes[c.UUID] = src
+	return nil
+}
 
+func (d *DeploymentSpec) AddFunction(f *FunctionSpec) error {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if function := d.turbineDAG.nodes[f.UUID]; function != "" {
+		return fmt.Errorf("function with uuid %s already exists", f.UUID)
+	}
+	d.Functions = append(d.Functions, *f)
+	fun, err := d.turbineDAG.dag.AddVertex(&f)
+	if err != nil {
+		return err
+	}
+	d.turbineDAG.nodes[f.UUID] = fun
 	return nil
 }
 
 func (d *DeploymentSpec) AddDestination(c *ConnectorSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-
-	for i, node := range d.DeploymentMap.Nodes {
-		if node == c.UUID {
-			return fmt.Errorf("connector (%s) already added", c.UUID)
-		}
-	}
-
 	d.Connectors = append(d.Connectors, *c)
-	d.DeploymentMap.Nodes = append(d.DeploymentMap.Nodes, Node{
-		UUID:  c.UUID,
-		Edges: make(map[string]interface{}),
-	})
+	if dest := d.turbineDAG.nodes[c.UUID]; dest != "" {
+		return fmt.Errorf("connector with uuid %s already exists", c.UUID)
+	}
+	dest, err := d.turbineDAG.dag.AddVertex(&c)
+	if err != nil {
+		return err
+	}
+	d.turbineDAG.nodes[c.UUID] = dest
 	return nil
 }
 
-// .. similarly for functions
-
-func (d *DeploymentSpec) AddStream(fromUUID, toUUID string) error {
+func (d *DeploymentSpec) AddStream(s *StreamSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-
-	// check if stream exists based on ID
-	// check if from id / to id are valid
-
-	for _, node := range d.DeploymentMap.Nodes {
-		if node.UUID == fromUUID {
-			return fmt.Errorf("connector (%s) already added", c.UUID)
-		}
+	source, ok := d.turbineDAG.nodes[s.FromUUID]
+	if !ok {
+		return fmt.Errorf("source node (%s) does not exist", s.FromUUID)
 	}
 
-	d.Streams = append(d.Streams, StreamSpec{
-		UUID:     uuid.New(),
-		FromUUID: fromUUID,
-		ToUUID:   toUUID,
-		Name:     fromUUID + "_" + toUUID,
-	})
-	// TODO: cache edges
+	dest, ok := d.turbineDAG.nodes[s.ToUUID]
+
+	if !ok {
+		return fmt.Errorf("destination node (%s) does not exist", s.ToUUID)
+	}
+
+	d.Streams = append(d.Streams, *s)
+	if err := d.turbineDAG.dag.AddEdge(source, dest); err != nil {
+		return err
+	}
 	return nil
 }
 
-func (d *DeploymentSpec) BuildDAG() error {
-
-	//add all functions as nodes
-	for _, f := range d.Functions {
-		d.DeploymentMap.Nodes = append(d.DeploymentMap.Nodes, Node{
-			UUID:  f.UUID,
-			Edges: make(map[string]interface{}),
-		})
+func (d *DeploymentSpec) InitDag() {
+	d.turbineDAG = turbineDAG{
+		nodes: make(map[string]string),
+		dag:   dag.NewDAG(),
 	}
-
-	//add all streams as nodes
-	for _, s := range d.Streams {
-		d.DeploymentMap.Nodes = append(d.DeploymentMap.Nodes, Node{
-			UUID:  s.UUID,
-			Edges: make(map[string]interface{}),
-		})
-	}
-	//connectors are already added so no need
-
-	// walk all connectors and add them to the d.nodes
-	// ensure single source
-	// walk all functions and add them to the d.nodes
-	// walk all streams and add them to d.nodes
-	// return error on:
-	// * more than one source
-	// * ID collision for streams/functions/connectors
-	// * stream FromID/ToID
-
-	if d.DeploymentMap.Source == nil {
-
-	}
-
-	//if err := spec.BuildDAG(); err != nil {
-	//}
-	// failed to build the dag
-	return nil
 }
 
-func (d *DeploymentSpec) AddEdge(node1, node2 Node) error {
-	d.DeploymentMap.Nodes[node1.UUID].Edges[node2.UUID]
-	g.nodes[n1].edges[n2] = w
-	return nil
+func (f FunctionSpec) ID() string {
+	return f.UUID
+}
+func (s StreamSpec) ID() string {
+	return s.UUID
+}
+func (c ConnectorSpec) ID() string {
+	return c.UUID
 }
