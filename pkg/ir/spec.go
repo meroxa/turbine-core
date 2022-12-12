@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-
-	"github.com/google/uuid"
 )
 
 type ConnectorType string
@@ -36,11 +34,8 @@ type DeploymentSpec struct {
 
 type DeploymentMap struct {
 	Source *ConnectorSpec
-	Nodes  []Node
-}
-type Node struct {
-	UUID  string
-	Edges map[string]string
+	Nodes  map[string]interface{}
+	Edges  map[string]map[string]interface{}
 }
 
 type StreamSpec struct {
@@ -77,6 +72,10 @@ type MetadataSpec struct {
 type TurbineSpec struct {
 	Language Lang   `json:"language"`
 	Version  string `json:"version"`
+}
+
+type IDInterface interface {
+	ID() string
 }
 
 func ValidateSpecVersion(specVersion string) error {
@@ -123,105 +122,191 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 	}
 
 	for _, node := range d.DeploymentMap.Nodes {
-		if node.Item.UUID == c.UUID {
-			return fmt.Errorf("connector (%s) already added", c.UUID)
+		if id, ok := node.(IDInterface); ok {
+			if id.ID() == c.UUID {
+				return fmt.Errorf("connector (%s) already added", c.UUID)
+			}
 		}
 	}
 
 	d.Connectors = append(d.Connectors, *c)
-	d.DeploymentMap.Nodes = append(d.DeploymentMap.Nodes, Node{
-		Item:  c,
-		Edges: make(map[string]string),
-	})
-	//track source connector spec
-	d.DeploymentMap.Source = c
+	d.DeploymentMap.Nodes[c.UUID] = c
+	return nil
+}
 
+func (d *DeploymentSpec) AddFunction(f *FunctionSpec) error {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	for _, node := range d.DeploymentMap.Nodes {
+		if id, ok := node.(IDInterface); ok {
+			if id.ID() == f.UUID {
+				return fmt.Errorf("function (%s) already added", f.UUID)
+			}
+		}
+	}
+
+	d.Functions = append(d.Functions, *f)
+	d.DeploymentMap.Nodes[f.UUID] = f
 	return nil
 }
 
 func (d *DeploymentSpec) AddDestination(c *ConnectorSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-
-	for i, node := range d.DeploymentMap.Nodes {
-		if node == c.UUID {
-			return fmt.Errorf("connector (%s) already added", c.UUID)
+	for _, node := range d.DeploymentMap.Nodes {
+		if id, ok := node.(IDInterface); ok {
+			if id.ID() == c.UUID {
+				return fmt.Errorf("connector (%s) already added", c.UUID)
+			}
 		}
 	}
-
 	d.Connectors = append(d.Connectors, *c)
-	d.DeploymentMap.Nodes = append(d.DeploymentMap.Nodes, Node{
-		UUID:  c.UUID,
-		Edges: make(map[string]interface{}),
-	})
+	d.DeploymentMap.Nodes[c.UUID] = c
 	return nil
 }
 
 // .. similarly for functions
 
-func (d *DeploymentSpec) AddStream(fromUUID, toUUID string) error {
+func (d *DeploymentSpec) AddStream(s *StreamSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
-	// check if stream exists based on ID
-	// check if from id / to id are valid
-
-	for _, node := range d.DeploymentMap.Nodes {
-		if node.UUID == fromUUID {
-			return fmt.Errorf("connector (%s) already added", c.UUID)
-		}
+	if _, ok := d.DeploymentMap.Nodes[s.FromUUID]; !ok {
+		return fmt.Errorf("source node (%s) does not exist", s.FromUUID)
 	}
 
-	d.Streams = append(d.Streams, StreamSpec{
-		UUID:     uuid.New(),
-		FromUUID: fromUUID,
-		ToUUID:   toUUID,
-		Name:     fromUUID + "_" + toUUID,
-	})
-	// TODO: cache edges
+	if _, ok := d.DeploymentMap.Nodes[s.ToUUID]; !ok {
+		return fmt.Errorf("destination node (%s) does not exist", s.ToUUID)
+	}
+
+	if err := d.ValidateStream(); err != nil {
+		return err
+	}
+
+	d.DeploymentMap.Nodes[s.UUID] = s
+	d.Streams = append(d.Streams, *s)
+
+	if err := d.AddEdge(s.FromUUID, s.UUID, *s); err != nil {
+		return err
+	}
+	if err := d.AddEdge(s.UUID, s.ToUUID, *s); err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func (d *DeploymentSpec) InitDag() *DeploymentMap {
+	return &DeploymentMap{
+		Nodes: make(map[string]interface{}),
+		Edges: make(map[string]map[string]interface{}),
+		//Source: d.DeploymentMap.Source,
+	}
 }
 
 func (d *DeploymentSpec) BuildDAG() error {
+	// add all connectors as nodes
+	// also get and set source
+
+	var source ConnectorSpec
+	for _, c := range d.Connectors {
+		d.DeploymentMap.Nodes[c.UUID] = c
+		if c.Type == ConnectorSource {
+			if source.UUID == "" {
+				source = c
+			} else {
+				return fmt.Errorf("found more than one source, cannot add source with UUID %s as source with UUID %s already exists", c.UUID, source.UUID)
+			}
+		}
+	}
+
+	d.DeploymentMap.Source = &source
+
+	fmt.Println("Source:")
+	fmt.Println(d.DeploymentMap.Source)
 
 	//add all functions as nodes
 	for _, f := range d.Functions {
-		d.DeploymentMap.Nodes = append(d.DeploymentMap.Nodes, Node{
-			UUID:  f.UUID,
-			Edges: make(map[string]interface{}),
-		})
+		d.DeploymentMap.Nodes[f.UUID] = f
 	}
 
-	//add all streams as nodes
-	for _, s := range d.Streams {
-		d.DeploymentMap.Nodes = append(d.DeploymentMap.Nodes, Node{
-			UUID:  s.UUID,
-			Edges: make(map[string]interface{}),
-		})
+	fmt.Println("------")
+	fmt.Println("Print all edges")
+
+	for i, f := range d.DeploymentMap.Edges {
+		fmt.Println("Edge")
+		fmt.Println(i)
+		fmt.Println(f)
 	}
-	//connectors are already added so no need
+	fmt.Println("------")
 
-	// walk all connectors and add them to the d.nodes
-	// ensure single source
-	// walk all functions and add them to the d.nodes
-	// walk all streams and add them to d.nodes
-	// return error on:
-	// * more than one source
-	// * ID collision for streams/functions/connectors
-	// * stream FromID/ToID
-
-	if d.DeploymentMap.Source == nil {
-
+	sourceNode, _ := d.DeploymentMap.Nodes[source.UUID]
+	var visited map[string]bool
+	var stack map[string]bool
+	if result := d.IsCyclic(sourceNode, visited, stack); result == true {
+		return fmt.Errorf("bad dag, cannot have cycles")
 	}
-
-	//if err := spec.BuildDAG(); err != nil {
-	//}
-	// failed to build the dag
 	return nil
 }
 
-func (d *DeploymentSpec) AddEdge(node1, node2 Node) error {
-	d.DeploymentMap.Nodes[node1.UUID].Edges[node2.UUID]
-	g.nodes[n1].edges[n2] = w
+func (d *DeploymentSpec) AddEdge(FromUUID, ToUUID string, s StreamSpec) error {
+	if d.DeploymentMap.Edges[FromUUID] == nil {
+		d.DeploymentMap.Edges[FromUUID] = make(map[string]interface{})
+	}
+	for _, to := range d.DeploymentMap.Edges[FromUUID] {
+		if to == ToUUID {
+			return fmt.Errorf("Edge exists")
+		}
+	}
+	d.DeploymentMap.Edges[FromUUID][ToUUID] = s
+
 	return nil
+}
+
+func (d *DeploymentSpec) IsCyclic(node interface{}, visited, stack map[string]bool) bool {
+	fmt.Println("Visiting node")
+	fmt.Println(node)
+	fmt.Println(visited)
+	fmt.Println(stack)
+
+	var nodeID string
+	if id, ok := node.(IDInterface); ok {
+		fmt.Println(id.ID())
+		nodeID = id.ID()
+	}
+	if visited == nil {
+		visited = map[string]bool{}
+	}
+	if stack == nil {
+		stack = map[string]bool{}
+	}
+	visited[nodeID] = true
+	stack[nodeID] = true
+
+	for i, nb := range d.DeploymentMap.Edges[nodeID] {
+		fmt.Println("Child node")
+		fmt.Println(d.DeploymentMap.Nodes[i])
+		search := d.DeploymentMap.Nodes[i]
+		if visited[search.(IDInterface).ID()] == false {
+			if d.IsCyclic(search, visited, stack) == true {
+				return true
+			}
+		} else if stack[nb.(IDInterface).ID()] == true {
+			return true
+		}
+	}
+
+	stack[nodeID] = false
+	return false
+}
+
+func (f FunctionSpec) ID() string {
+	return f.UUID
+}
+func (s StreamSpec) ID() string {
+	return s.UUID
+}
+func (c ConnectorSpec) ID() string {
+	return c.UUID
 }
