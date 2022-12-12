@@ -6,7 +6,7 @@ RSpec.describe TurbineRb::Client::App do
       core_server = Mocktail.of(TurbineCore::TurbineService::Stub)
       stubs { |m| core_server.get_resource(m.is_a(TurbineCore::GetResourceRequest)) }.with { :resource }
 
-      subject = described_class.new(core_server)
+      subject = described_class.new(core_server, recording: false)
       result = subject.resource(name: "hey")
 
       expect(result.pb_resource).to eq(:resource)
@@ -23,36 +23,52 @@ RSpec.describe TurbineRb::Client::App do
         end
       end
     end
+    let(:records) do
+      TurbineRb::Client::App::Collection.new(
+        "a_name",
+        [TurbineCore::Record.new(key: "1", value: "somebytes")],
+        "a_stream",
+        app
+      )
+    end
+    let(:core_server) { instance_double(TurbineCore::TurbineService::Stub) }
+    let(:app) { described_class.new(core_server, recording: false) }
+    let(:mocked_process) { Mocktail.of(my_process) }
 
-    let(:core_server) { Mocktail.of(TurbineCore::TurbineService::Stub) }
-    let(:record) { TurbineCore::Record.new(key: "1", value: "somebytes") }
-
-    it "calls the process function on the records in run mode" do
-      app = described_class.new(core_server)
-      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
-      result = app.process(records: records, process: my_process.new)
-
-      expect(result.pb_collection.first.key).to eq("1")
-      expect(result.pb_collection.first.value).to eq("changedbytes")
+    before do
+      allow(core_server)
+        .to receive(:add_process_to_collection)
+        .and_return(records.unwrap)
     end
 
-    it "calls the process function with the records interface in run mode" do
-      mocked_process = Mocktail.of(my_process)
-      stubs { |m| mocked_process.call(records: m.any) }.with { [] }
-      app = described_class.new(core_server)
-      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
-      app.process(records: records, process: mocked_process)
+    context "when recording" do
+      let(:app) { described_class.new(core_server, recording: true) }
 
-      verify { |m| mocked_process.call(records: m.is_a(TurbineRb::Records)) }
+      it "doesnt call the process function on the records in record mode" do
+        app.process(records: records, process: mocked_process)
+
+        result = Mocktail.explain(mocked_process.method(:call))
+        expect(result.reference.calls.size).to eq(0)
+      end
     end
 
-    it "doesnt call the process function on the records in record mode" do
-      mocked_process = Mocktail.of(my_process)
-      app = described_class.new(core_server, is_recording: true)
-      records = TurbineRb::Client::App::Collection.new("a_name", [record], "a_stream", app)
-      app.process(records: records, process: mocked_process)
-      result = Mocktail.explain(mocked_process.method(:call))
-      expect(result.reference.calls.size).to eq(0)
+    context "when running" do
+      let(:app) { described_class.new(core_server, recording: false) }
+
+      it "calls the process function on the records in run mode" do
+        result = app.process(records: records, process: my_process.new)
+
+        expect(result.pb_collection.first.key).to eq("1")
+        expect(result.pb_collection.first.value).to eq("changedbytes")
+        expect(result.pb_stream).to eq(records.pb_stream)
+      end
+
+      it "calls the process function with the records interface in run mode" do
+        stubs { |m| mocked_process.call(records: m.any) }.with { [] }
+
+        app.process(records: records, process: mocked_process)
+        verify { |m| mocked_process.call(records: m.is_a(TurbineRb::Records)) }
+      end
     end
   end
 
@@ -66,7 +82,7 @@ RSpec.describe TurbineRb::Client::App do
     end
 
     let(:app) do
-      described_class.new(core_server)
+      described_class.new(core_server, recording: false)
     end
 
     before do
@@ -123,7 +139,7 @@ RSpec.describe TurbineRb::Client::App::Resource do
     let(:core_server) { Mocktail.of(TurbineCore::TurbineService::Stub) }
     let(:collection) { Mocktail.of_next(TurbineCore::Collection) }
     let(:pb_resource) { TurbineCore::Resource.new }
-    let(:app) { TurbineRb::Client::App.new(core_server) }
+    let(:app) { TurbineRb::Client::App.new(core_server, recording: false) }
     let(:resource) do
       req = stubs do |m|
         core_server.read_collection(m.is_a(TurbineCore::ReadCollectionRequest))
@@ -153,7 +169,7 @@ RSpec.describe TurbineRb::Client::App::Resource do
     let(:core_server) { Mocktail.of(TurbineCore::TurbineService::Stub) }
     let(:records) { Mocktail.of(TurbineRb::Client::App::Collection) }
     let(:pb_resource) { TurbineCore::Resource.new }
-    let(:app) { TurbineRb::Client::App.new(core_server) }
+    let(:app) { TurbineRb::Client::App.new(core_server, recording: false) }
     let(:collection) do
       stubs { records.unwrap }.with { TurbineCore::Collection.new }
       described_class.new(pb_resource, app)
@@ -166,8 +182,8 @@ RSpec.describe TurbineRb::Client::App::Resource do
       verify { |m| core_server.write_collection_to_resource(m.that { |arg| arg.resource == pb_resource }) }
       verify do |m|
         core_server.write_collection_to_resource(m.that do |arg|
-                                                   arg.targetCollection == "goodbyecollection"
-                                                 end)
+          arg.targetCollection == "goodbyecollection"
+        end)
       end
     end
 
@@ -175,13 +191,13 @@ RSpec.describe TurbineRb::Client::App::Resource do
       collection.write(records: records, collection: "goodbyecollection", configs: { "some.key" => "some.value" })
       verify do |m|
         core_server.write_collection_to_resource(m.that do |arg|
-                                                   arg.configs.config.first.field == "some.key"
-                                                 end)
+          arg.configs.config.first.field == "some.key"
+        end)
       end
       verify do |m|
         core_server.write_collection_to_resource(m.that do |arg|
-                                                   arg.configs.config.first.value == "some.value"
-                                                 end)
+          arg.configs.config.first.value == "some.value"
+        end)
       end
     end
   end
@@ -193,7 +209,7 @@ RSpec.describe TurbineRb::Client::App::Collection do
       core_server = Mocktail.of(TurbineCore::TurbineService::Stub)
       resource = Mocktail.of(TurbineRb::Client::App::Resource)
 
-      app = TurbineRb::Client::App.new(core_server)
+      app = TurbineRb::Client::App.new(core_server, recording: false)
       record = TurbineCore::Record.new(key: "1", value: "somebytes")
 
       subject = described_class.new("a_name", [record], "a_stream", app)
