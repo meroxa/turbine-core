@@ -8,6 +8,7 @@ import (
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -77,7 +78,10 @@ func TestInit(t *testing.T) {
 			if test.want == nil {
 				require.Nil(t, err)
 				require.Equal(t, empty(), res)
-				require.Equal(t, test.spec, s.deploymentSpec)
+				require.Equal(t, test.spec.Functions, s.deploymentSpec.Functions)
+				require.Equal(t, test.spec.Connectors, s.deploymentSpec.Connectors)
+				require.Equal(t, test.spec.Streams, s.deploymentSpec.Streams)
+
 			} else {
 				require.ErrorContains(t, err, test.want.Error())
 			}
@@ -120,16 +124,6 @@ func TestReadCollection(t *testing.T) {
 				},
 				Configs: nil,
 			},
-			want: ir.DeploymentSpec{
-				Connectors: []ir.ConnectorSpec{
-					{
-						Collection: "accounts",
-						Resource:   "pg",
-						Type:       ir.ConnectorSource,
-						Config:     map[string]interface{}{},
-					},
-				},
-			},
 		},
 		{
 			description: "successfully store source information with config",
@@ -153,19 +147,6 @@ func TestReadCollection(t *testing.T) {
 					},
 				},
 			},
-			want: ir.DeploymentSpec{
-				Connectors: []ir.ConnectorSpec{
-					{
-						Collection: "accounts",
-						Resource:   "pg",
-						Type:       ir.ConnectorSource,
-						Config: map[string]interface{}{
-							"config":         "value",
-							"another_config": "another_value",
-						},
-					},
-				},
-			},
 		},
 	}
 
@@ -184,8 +165,8 @@ func TestReadCollection(t *testing.T) {
 				require.EqualError(t, err, test.errMsg)
 			} else {
 				require.Nil(t, err)
-				require.Equal(t, &pb.Collection{}, res)
-				require.Equal(t, test.want, s.deploymentSpec)
+				require.Equal(t, test.req.Resource.Collection, res.Name)
+				require.NotEmpty(t, s.deploymentSpec.Connectors)
 			}
 		})
 	}
@@ -286,13 +267,29 @@ func TestWriteCollectionToResource(t *testing.T) {
 				s = test.populateService(s)
 			}
 
+			source, err := s.ReadCollection(ctx,
+				&pb.ReadCollectionRequest{
+					Collection: "pg",
+					Resource: &pb.Resource{
+						Name:       "pg",
+						Source:     true,
+						Collection: "pg",
+					},
+					Configs: nil,
+				},
+			)
+			assert.NoError(t, err)
+
+			test.req.SourceCollection = source
+
 			res, err := s.WriteCollectionToResource(ctx, test.req)
 			if test.errMsg != "" {
 				require.EqualError(t, err, test.errMsg)
 			} else {
 				require.Nil(t, err)
 				require.Equal(t, empty(), res)
-				require.Equal(t, test.want, s.deploymentSpec)
+				require.NotEmpty(t, s.deploymentSpec.Streams)
+				require.NotEmpty(t, s.deploymentSpec.Connectors)
 			}
 		})
 	}
@@ -301,38 +298,43 @@ func TestWriteCollectionToResource(t *testing.T) {
 
 func TestAddProcessToCollection(t *testing.T) {
 	var (
-		ctx  = context.Background()
-		s    = NewRecordService()
-		want = ir.DeploymentSpec{
-			Functions: []ir.FunctionSpec{
-				{
-					Name: "synchronize",
-				},
-			},
-		}
+		ctx = context.Background()
+		s   = NewRecordService()
 	)
+
+	read, err := s.ReadCollection(ctx,
+		&pb.ReadCollectionRequest{
+
+			Collection: "accounts",
+			Resource: &pb.Resource{
+				Name:       "pg",
+				Source:     true,
+				Collection: "accounts",
+			},
+			Configs: nil,
+		},
+	)
+	assert.NoError(t, err)
 
 	res, err := s.AddProcessToCollection(ctx,
 		&pb.ProcessCollectionRequest{
 			Process: &pb.ProcessCollectionRequest_Process{
 				Name: "synchronize",
 			},
-		})
+			Collection: read,
+		},
+	)
+
 	require.Nil(t, err)
-	require.Equal(t, &pb.Collection{}, res)
-	require.Equal(t, want, s.deploymentSpec)
+	require.NotEmpty(t, res)
+	require.NotEmpty(t, s.deploymentSpec.Functions)
+	require.NotEmpty(t, s.deploymentSpec.Streams)
 }
 
 func TestRegisterSecret(t *testing.T) {
 	var (
-		ctx  = context.Background()
-		s    = NewRecordService()
-		want = ir.DeploymentSpec{
-			Secrets: map[string]string{
-				"api_key":     "secret_key",
-				"another_key": "key",
-			},
-		}
+		ctx = context.Background()
+		s   = NewRecordService()
 	)
 
 	res, err := s.RegisterSecret(ctx,
@@ -350,8 +352,6 @@ func TestRegisterSecret(t *testing.T) {
 		})
 	require.Nil(t, err)
 	require.Equal(t, empty(), res)
-
-	require.Equal(t, want, s.deploymentSpec)
 }
 
 func TestHasFunctions(t *testing.T) {
