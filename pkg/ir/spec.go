@@ -35,8 +35,7 @@ type DeploymentSpec struct {
 }
 
 type turbineDAG struct {
-	dag   *dag.DAG
-	nodes map[string]string
+	dag *dag.DAG
 }
 
 type StreamSpec struct {
@@ -75,10 +74,6 @@ type TurbineSpec struct {
 	Version  string `json:"version"`
 }
 
-type identifier interface {
-	ID() string
-}
-
 func ValidateSpecVersion(specVersion string) error {
 	if specVersion != LatestSpecVersion {
 		return fmt.Errorf("spec version %q is not a supported. use version %q instead", specVersion, LatestSpecVersion)
@@ -112,11 +107,10 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 		return fmt.Errorf("source connector already exists, can only add one per application")
 	}
 	d.Connectors = append(d.Connectors, *c)
-	src, err := d.turbineDAG.dag.AddVertex(&c)
+	err := d.turbineDAG.dag.AddVertexByID(c.UUID, &c)
 	if err != nil {
 		return err
 	}
-	d.turbineDAG.nodes[c.UUID] = src
 	return nil
 }
 
@@ -124,11 +118,10 @@ func (d *DeploymentSpec) AddFunction(f *FunctionSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.Functions = append(d.Functions, *f)
-	fun, err := d.turbineDAG.dag.AddVertex(&f)
+	err := d.turbineDAG.dag.AddVertexByID(f.UUID, &f)
 	if err != nil {
 		return err
 	}
-	d.turbineDAG.nodes[f.UUID] = fun
 	return nil
 }
 
@@ -136,30 +129,28 @@ func (d *DeploymentSpec) AddDestination(c *ConnectorSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.Connectors = append(d.Connectors, *c)
-	dest, err := d.turbineDAG.dag.AddVertex(&c)
+	err := d.turbineDAG.dag.AddVertexByID(c.UUID, &c)
 	if err != nil {
 		return err
 	}
-	d.turbineDAG.nodes[c.UUID] = dest
-
 	return nil
 }
 
 func (d *DeploymentSpec) AddStream(s *StreamSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	source, ok := d.turbineDAG.nodes[s.FromUUID]
-	if !ok {
+	source, _ := d.turbineDAG.dag.GetVertex(s.FromUUID)
+	if source == nil {
 		return fmt.Errorf("source node (%s) does not exist", s.FromUUID)
 	}
 
-	dest, ok := d.turbineDAG.nodes[s.ToUUID]
-	if !ok {
+	dest, _ := d.turbineDAG.dag.GetVertex(s.ToUUID)
+	if dest == nil {
 		return fmt.Errorf("destination node (%s) does not exist", s.ToUUID)
 	}
 
 	d.Streams = append(d.Streams, *s)
-	if err := d.turbineDAG.dag.AddEdge(source, dest); err != nil {
+	if err := d.turbineDAG.dag.AddEdge(s.FromUUID, s.ToUUID); err != nil {
 		return err
 	}
 	return nil
@@ -167,17 +158,6 @@ func (d *DeploymentSpec) AddStream(s *StreamSpec) error {
 
 func (d *DeploymentSpec) InitDag() {
 	d.turbineDAG = turbineDAG{
-		nodes: make(map[string]string),
-		dag:   dag.NewDAG(),
+		dag: dag.NewDAG(),
 	}
-}
-
-func (f FunctionSpec) ID() string {
-	return f.UUID
-}
-func (s StreamSpec) ID() string {
-	return s.UUID
-}
-func (c ConnectorSpec) ID() string {
-	return c.UUID
 }
