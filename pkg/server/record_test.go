@@ -81,7 +81,6 @@ func TestInit(t *testing.T) {
 				require.Equal(t, test.spec.Functions, s.deploymentSpec.Functions)
 				require.Equal(t, test.spec.Connectors, s.deploymentSpec.Connectors)
 				require.Equal(t, test.spec.Streams, s.deploymentSpec.Streams)
-
 			} else {
 				require.ErrorContains(t, err, test.want.Error())
 			}
@@ -167,6 +166,9 @@ func TestReadCollection(t *testing.T) {
 				require.Nil(t, err)
 				require.Equal(t, test.req.Resource.Collection, res.Name)
 				require.NotEmpty(t, s.deploymentSpec.Connectors)
+				require.Equal(t, s.deploymentSpec.Connectors[0].Collection, res.Name)
+				require.Equal(t, s.deploymentSpec.Connectors[0].UUID, res.Stream)
+				require.Equal(t, s.deploymentSpec.Connectors[0].Type, ir.ConnectorType("source"))
 			}
 		})
 	}
@@ -190,20 +192,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 			description: "recordService has existing connector",
 			req: &pb.WriteCollectionRequest{
 				TargetCollection: "accounts_copy",
-				Resource: &pb.Resource{
-					Name: "pg",
-				},
-				Configs: nil,
-			},
-			populateService: func(s *recordService) *recordService {
-				s.deploymentSpec.Connectors = []ir.ConnectorSpec{
-					{
-						Collection: "accounts",
-						Resource:   "mongo",
-						Type:       ir.ConnectorDestination,
-					},
-				}
-				return s
+				Configs:          nil,
 			},
 			want: ir.DeploymentSpec{
 				Connectors: []ir.ConnectorSpec{
@@ -225,9 +214,6 @@ func TestWriteCollectionToResource(t *testing.T) {
 			description: "successfully store destination information with config",
 			req: &pb.WriteCollectionRequest{
 				TargetCollection: "accounts_copy",
-				Resource: &pb.Resource{
-					Name: "pg",
-				},
 				Configs: &pb.Configs{
 					Config: []*pb.Config{
 						{
@@ -263,17 +249,14 @@ func TestWriteCollectionToResource(t *testing.T) {
 				ctx = context.Background()
 				s   = NewRecordService()
 			)
-			if test.populateService != nil {
-				s = test.populateService(s)
-			}
 
 			source, err := s.ReadCollection(ctx,
 				&pb.ReadCollectionRequest{
-					Collection: "pg",
+					Collection: "pg_2",
 					Resource: &pb.Resource{
-						Name:       "pg",
+						Name:       "pg_2",
 						Source:     true,
-						Collection: "pg",
+						Collection: "pg_2",
 					},
 					Configs: nil,
 				},
@@ -286,10 +269,13 @@ func TestWriteCollectionToResource(t *testing.T) {
 			if test.errMsg != "" {
 				require.EqualError(t, err, test.errMsg)
 			} else {
+
 				require.Nil(t, err)
 				require.Equal(t, empty(), res)
 				require.NotEmpty(t, s.deploymentSpec.Streams)
 				require.NotEmpty(t, s.deploymentSpec.Connectors)
+				require.Equal(t, s.deploymentSpec.Streams[0].FromUUID, source.Stream)
+				require.Equal(t, s.deploymentSpec.Streams[0].ToUUID, s.deploymentSpec.Connectors[1].UUID)
 			}
 		})
 	}
@@ -298,8 +284,15 @@ func TestWriteCollectionToResource(t *testing.T) {
 
 func TestAddProcessToCollection(t *testing.T) {
 	var (
-		ctx = context.Background()
-		s   = NewRecordService()
+		ctx  = context.Background()
+		s    = NewRecordService()
+		want = ir.DeploymentSpec{
+			Functions: []ir.FunctionSpec{
+				{
+					Name: "synchronize",
+				},
+			},
+		}
 	)
 
 	read, err := s.ReadCollection(ctx,
@@ -328,13 +321,22 @@ func TestAddProcessToCollection(t *testing.T) {
 	require.Nil(t, err)
 	require.NotEmpty(t, res)
 	require.NotEmpty(t, s.deploymentSpec.Functions)
-	require.NotEmpty(t, s.deploymentSpec.Streams)
+	require.Equal(t, s.deploymentSpec.Functions[0].Name, want.Functions[0].Name)
+	require.Equal(t, s.deploymentSpec.Streams[0].FromUUID, read.Stream)
+	require.Equal(t, s.deploymentSpec.Streams[0].ToUUID, res.Stream)
+
 }
 
 func TestRegisterSecret(t *testing.T) {
 	var (
-		ctx = context.Background()
-		s   = NewRecordService()
+		ctx  = context.Background()
+		s    = NewRecordService()
+		want = ir.DeploymentSpec{
+			Secrets: map[string]string{
+				"api_key":     "secret_key",
+				"another_key": "key",
+			},
+		}
 	)
 
 	res, err := s.RegisterSecret(ctx,
@@ -352,6 +354,8 @@ func TestRegisterSecret(t *testing.T) {
 		})
 	require.Nil(t, err)
 	require.Equal(t, empty(), res)
+	require.Equal(t, want.Secrets, s.deploymentSpec.Secrets)
+
 }
 
 func TestHasFunctions(t *testing.T) {

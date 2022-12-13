@@ -35,9 +35,8 @@ type DeploymentSpec struct {
 }
 
 type turbineDAG struct {
-	dag    *dag.DAG
-	source *ConnectorSpec
-	nodes  map[string]string
+	dag   *dag.DAG
+	nodes map[string]string
 }
 
 type StreamSpec struct {
@@ -76,7 +75,7 @@ type TurbineSpec struct {
 	Version  string `json:"version"`
 }
 
-type idInterface interface {
+type identifier interface {
 	ID() string
 }
 
@@ -108,16 +107,11 @@ func Unmarshal(data []byte) (*DeploymentSpec, error) {
 func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	// check if spec is source
-	if d.turbineDAG.source != nil {
-		return fmt.Errorf("source connector (%s) already exists", d.turbineDAG.source.UUID)
-	}
 
-	if source := d.turbineDAG.nodes[c.UUID]; source != "" {
-		return fmt.Errorf("connector with uuid %s already exists", c.UUID)
+	if len(d.turbineDAG.dag.GetRoots()) >= 1 {
+		return fmt.Errorf("source connector already exists, can only add one per application")
 	}
 	d.Connectors = append(d.Connectors, *c)
-	d.turbineDAG.source = c
 	src, err := d.turbineDAG.dag.AddVertex(&c)
 	if err != nil {
 		return err
@@ -129,9 +123,6 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 func (d *DeploymentSpec) AddFunction(f *FunctionSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	if function := d.turbineDAG.nodes[f.UUID]; function != "" {
-		return fmt.Errorf("function with uuid %s already exists", f.UUID)
-	}
 	d.Functions = append(d.Functions, *f)
 	fun, err := d.turbineDAG.dag.AddVertex(&f)
 	if err != nil {
@@ -145,14 +136,12 @@ func (d *DeploymentSpec) AddDestination(c *ConnectorSpec) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.Connectors = append(d.Connectors, *c)
-	if dest := d.turbineDAG.nodes[c.UUID]; dest != "" {
-		return fmt.Errorf("connector with uuid %s already exists", c.UUID)
-	}
 	dest, err := d.turbineDAG.dag.AddVertex(&c)
 	if err != nil {
 		return err
 	}
 	d.turbineDAG.nodes[c.UUID] = dest
+
 	return nil
 }
 
@@ -165,7 +154,6 @@ func (d *DeploymentSpec) AddStream(s *StreamSpec) error {
 	}
 
 	dest, ok := d.turbineDAG.nodes[s.ToUUID]
-
 	if !ok {
 		return fmt.Errorf("destination node (%s) does not exist", s.ToUUID)
 	}
