@@ -62,8 +62,6 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 		return &pb.Collection{}, fmt.Errorf("please provide a collection name to 'read'")
 	}
 
-	s.deploymentSpec.InitDag()
-
 	s.resources = append(s.resources, &pb.Resource{
 		Name:       request.GetResource().GetName(),
 		Source:     true,
