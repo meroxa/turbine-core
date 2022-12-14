@@ -26,7 +26,7 @@ const (
 
 type DeploymentSpec struct {
 	mu          sync.Mutex
-	turbineDag  dag.DAG
+	turbineDag  *dag.DAG
 	dagInitOnce sync.Once
 	Secrets     map[string]string `json:"secrets,omitempty"`
 	Connectors  []ConnectorSpec   `json:"connectors"`
@@ -169,6 +169,6 @@ func (d *DeploymentSpec) BuildDAG() string {
 
 func (d *DeploymentSpec) init() {
 	d.dagInitOnce.Do(func() {
-		d.turbineDag = *dag.NewDAG()
+		d.turbineDag = dag.NewDAG()
 	})
 }
