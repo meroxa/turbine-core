@@ -19,9 +19,7 @@ type recordService struct {
 }
 
 func NewRecordService() *recordService {
-	service := &recordService{}
-	service.deploymentSpec.InitDag()
-	return service
+	return &recordService{}
 }
 
 func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
@@ -183,6 +181,10 @@ func (s *recordService) GetSpec(ctx context.Context, in *pb.GetSpecRequest) (*pb
 			return nil, fmt.Errorf("cannot set function image since spec has no functions")
 		}
 		s.deploymentSpec.SetImageForFunctions(image)
+	}
+
+	if err := s.deploymentSpec.ValidateDag(); err != nil {
+		return nil, err
 	}
 
 	spec, err := s.deploymentSpec.Marshal()

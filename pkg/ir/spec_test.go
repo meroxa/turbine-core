@@ -187,7 +187,6 @@ func Test_MarshalUnmarshal(t *testing.T) {
 
 func Test_EnsureSingleSource(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
 			UUID:       "1",
@@ -219,7 +218,6 @@ func Test_EnsureSingleSource(t *testing.T) {
 // ( src_con ) → (stream) → (function) → (stream) → (dest1)
 func Test_Scenario1(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -276,9 +274,10 @@ func Test_Scenario1(t *testing.T) {
 			ToUUID:   "3",
 		},
 	)
-
 	require.NoError(t, err)
 
+	err = spec.ValidateDag()
+	require.NoError(t, err)
 }
 
 // Scenario 2 - DAG with two Destinations from 1 function
@@ -288,7 +287,6 @@ func Test_Scenario1(t *testing.T) {
 // 						    (stream) → (dest2)
 func Test_DAGScenario2(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -370,19 +368,20 @@ func Test_DAGScenario2(t *testing.T) {
 			ToUUID:   "4",
 		},
 	)
-
 	require.NoError(t, err)
 
+	err = spec.ValidateDag()
+	require.NoError(t, err)
 }
 
-// Scenario 3 - DAG, trying to write from one function to two destinations
+// Scenario 3 - Not a DAG, trying to write from one function back to the other creates a loop
 //source → (fn) → dest[n]
-//    ( src_con ) → (stream) → (function) → (stream) →  → (dest1)
+//                                  ↓   ←      ←      ←      ↑
+//    ( src_con ) → (stream) → (function) → (stream) →  (function)
 //									↓
 // 						    	(stream) →	(dest2)
 func Test_DAGScenario3(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -440,24 +439,20 @@ func Test_DAGScenario3(t *testing.T) {
 		},
 	)
 
-	err = spec.AddDestination(
-		&ir.ConnectorSpec{
-			UUID:       "4",
-			Collection: "accounts_copy",
-			Resource:   "pg",
-			Type:       ir.ConnectorDestination,
-			Config: map[string]interface{}{
-				"config": "value",
-			},
+	require.NoError(t, err)
+
+	err = spec.AddFunction(
+		&ir.FunctionSpec{
+			UUID: "4",
+			Name: "addition",
 		},
 	)
-
 	require.NoError(t, err)
 
 	err = spec.AddStream(
 		&ir.StreamSpec{
 			UUID:     "2_4",
-			Name:     "my_stream4",
+			Name:     "my_stream3",
 			FromUUID: "2",
 			ToUUID:   "4",
 		},
@@ -465,6 +460,17 @@ func Test_DAGScenario3(t *testing.T) {
 
 	require.NoError(t, err)
 
+	err = spec.AddStream(
+		&ir.StreamSpec{
+			UUID:     "4_2",
+			Name:     "my_stream3",
+			FromUUID: "4",
+			ToUUID:   "2",
+		},
+	)
+
+	require.Error(t, err)
+	assert.Equal(t, err.Error(), "edge between '4' and '2' would create a loop")
 }
 
 // Scenario 4 - Not acyclic, trying to write from one function back to source
@@ -473,7 +479,6 @@ func Test_DAGScenario3(t *testing.T) {
 // 		    ←  ←  ← (stream) ← ← ← ←
 func Test_DAGScenario4(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -516,8 +521,8 @@ func Test_DAGScenario4(t *testing.T) {
 			ToUUID:   "1",
 		},
 	)
-	require.Contains(t, err.Error(), "would create a loop")
 	require.Error(t, err)
+	require.Contains(t, err.Error(), "would create a loop")
 }
 
 // Scenario 5 - DAG, multuple functions, 1 destination
@@ -525,7 +530,6 @@ func Test_DAGScenario4(t *testing.T) {
 //    ( src_con ) → (stream) → (function 1) → (stream) → (function2)  → (dest1)
 func Test_DAGScenario5(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -600,9 +604,10 @@ func Test_DAGScenario5(t *testing.T) {
 			ToUUID:   "4",
 		},
 	)
-
 	require.NoError(t, err)
 
+	err = spec.ValidateDag()
+	require.NoError(t, err)
 }
 
 // Scenario 6 - DAG with many functions and destinations
@@ -618,7 +623,6 @@ func Test_DAGScenario5(t *testing.T) {
 //								(dest 3)
 func Test_DAGScenario6(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -758,6 +762,8 @@ func Test_DAGScenario6(t *testing.T) {
 	)
 	require.NoError(t, err)
 
+	err = spec.ValidateDag()
+	require.NoError(t, err)
 }
 
 // Scenario 7 - DAG with destination from 1 function and with source data going to second destination
@@ -767,7 +773,6 @@ func Test_DAGScenario6(t *testing.T) {
 // 	(stream) → (dest2)
 func Test_DAGScenario7(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -849,17 +854,17 @@ func Test_DAGScenario7(t *testing.T) {
 			ToUUID:   "4",
 		},
 	)
-
 	require.NoError(t, err)
 
+	err = spec.ValidateDag()
+	require.NoError(t, err)
 }
 
 // Scenario 8 - Just source to function, no destination
 // source → fn
-// ( src_con ) → (stream) → (function)
+// ( src_con ) → (stream) → (func)
 func Test_Scenario8(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -891,7 +896,9 @@ func Test_Scenario8(t *testing.T) {
 			ToUUID:   "2",
 		},
 	)
+	require.NoError(t, err)
 
+	err = spec.ValidateDag()
 	require.NoError(t, err)
 }
 
@@ -900,7 +907,6 @@ func Test_Scenario8(t *testing.T) {
 // ( src_con ) → (stream) → (destination)
 func Test_Scenario9(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.InitDag()
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -921,7 +927,7 @@ func Test_Scenario9(t *testing.T) {
 			UUID:       "2",
 			Collection: "accounts",
 			Resource:   "mongo",
-			Type:       ir.ConnectorSource,
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -937,6 +943,87 @@ func Test_Scenario9(t *testing.T) {
 			ToUUID:   "2",
 		},
 	)
+	require.NoError(t, err)
+
+	err = spec.ValidateDag()
+	require.NoError(t, err)
+}
+
+// Scenario 10 - Disconnected Graph
+//src -> fn[0]
+//fn[1] -> dst
+func Test_Scenario10(t *testing.T) {
+	var spec ir.DeploymentSpec
+
+	err := spec.AddSource(
+		&ir.ConnectorSpec{
+			UUID:       "1",
+			Collection: "accounts",
+			Resource:   "mongo",
+			Type:       ir.ConnectorSource,
+			Config: map[string]interface{}{
+				"config": "value",
+			},
+		},
+	)
 
 	require.NoError(t, err)
+
+	err = spec.AddFunction(
+		&ir.FunctionSpec{
+			UUID:  "2",
+			Name:  "function",
+			Image: "test",
+		},
+	)
+
+	require.NoError(t, err)
+
+	err = spec.AddStream(
+		&ir.StreamSpec{
+			UUID:     "1_2",
+			Name:     "my_stream1",
+			FromUUID: "1",
+			ToUUID:   "2",
+		},
+	)
+
+	require.NoError(t, err)
+
+	err = spec.AddFunction(
+		&ir.FunctionSpec{
+			UUID:  "3",
+			Name:  "function2",
+			Image: "test",
+		},
+	)
+
+	require.NoError(t, err)
+
+	err = spec.AddDestination(
+		&ir.ConnectorSpec{
+			UUID:       "4",
+			Collection: "accounts",
+			Resource:   "mongo",
+			Type:       ir.ConnectorDestination,
+			Config: map[string]interface{}{
+				"config": "value",
+			},
+		},
+	)
+	require.NoError(t, err)
+
+	err = spec.AddStream(
+		&ir.StreamSpec{
+			UUID:     "3_4",
+			Name:     "my_stream1",
+			FromUUID: "3",
+			ToUUID:   "4",
+		},
+	)
+	require.NoError(t, err)
+
+	err = spec.ValidateDag()
+	require.Error(t, err)
+	assert.Equal(t, err.Error(), "more than one source / root detected, can only add one per application. please ensure your resources are connected.")
 }
