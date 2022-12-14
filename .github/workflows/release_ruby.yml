@@ -44,11 +44,11 @@ jobs:
           gem push *.gem
 
       - name: Tag
-        with:
-          tag: ${{ format('turbine_rb@{0}', steps.check_local.outputs.local_version) }}
+        env:
+          TAG: ${{ format('turbine_rb@{0}', steps.check_local.outputs.local_version) }}
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git tag -a $INPUT_TAG -m "release: $INPUT_TAG"
-          git push origin $INPUT_TAG
+          git tag -a $TAG -m "release: $TAG"
+          git push origin $TAG
 
