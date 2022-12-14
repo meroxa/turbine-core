@@ -19,3 +19,5 @@ group :test do
   gem "mocktail"
   gem "rspec", "~> 3.0"
 end
+
+gem "bump", "~> 0.10.0"
