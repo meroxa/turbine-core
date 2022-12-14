@@ -213,6 +213,66 @@ func Test_EnsureSingleSource(t *testing.T) {
 	require.EqualError(t, err, fmt.Errorf("source connector already exists, can only add one per application").Error())
 }
 
+func Test_BadStream(t *testing.T) {
+	var spec ir.DeploymentSpec
+	err := spec.AddSource(
+		&ir.ConnectorSpec{
+			UUID:       "1",
+			Collection: "accounts",
+			Resource:   "mongo",
+			Type:       ir.ConnectorSource,
+			Config: map[string]interface{}{
+				"config": "value",
+			},
+		},
+	)
+	require.NoError(t, err)
+	err = spec.AddStream(
+		&ir.StreamSpec{
+			UUID:     "1_2",
+			Name:     "my_stream1",
+			FromUUID: "1",
+			ToUUID:   "2",
+		},
+	)
+	require.Error(t, err)
+	require.Equal(t, err.Error(), "destination with UUID - (2) does not exist")
+}
+
+func Test_WrongSourceConnector(t *testing.T) {
+	var spec ir.DeploymentSpec
+	err := spec.AddSource(
+		&ir.ConnectorSpec{
+			UUID:       "1",
+			Collection: "accounts",
+			Resource:   "mongo",
+			Type:       ir.ConnectorDestination,
+			Config: map[string]interface{}{
+				"config": "value",
+			},
+		},
+	)
+	require.Error(t, err)
+	require.Equal(t, err.Error(), "connector type isn't a source, please check you are reading from a source connector.")
+}
+
+func Test_WrongDestinationConnector(t *testing.T) {
+	var spec ir.DeploymentSpec
+	err := spec.AddDestination(
+		&ir.ConnectorSpec{
+			UUID:       "1",
+			Collection: "accounts",
+			Resource:   "mongo",
+			Type:       ir.ConnectorSource,
+			Config: map[string]interface{}{
+				"config": "value",
+			},
+		},
+	)
+	require.Error(t, err)
+	require.Equal(t, err.Error(), "connector type isn't a destination, please check you are writing to destination connector.")
+}
+
 // Scenario 1 - Simple DAG
 // source → fn -> dest
 // ( src_con ) → (stream) → (function) → (stream) → (dest1)

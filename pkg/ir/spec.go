@@ -105,7 +105,7 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 		return fmt.Errorf("source connector already exists, can only add one per application")
 	}
 	if c.Type != ConnectorSource {
-		return fmt.Errorf("connector type isn't a destination, please check you are writing to destination connector.")
+		return fmt.Errorf("connector type isn't a source, please check you are reading from a source connector.")
 	}
 	d.Connectors = append(d.Connectors, *c)
 	return d.turbineDag.AddVertexByID(c.UUID, &c)
@@ -141,14 +141,12 @@ func (d *DeploymentSpec) AddStream(s *StreamSpec) error {
 	defer d.mu.Unlock()
 	d.init()
 
-	source, _ := d.turbineDag.GetVertex(s.FromUUID)
-	if source == nil {
-		return fmt.Errorf("source node (%s) does not exist", s.FromUUID)
+	if _, err := d.turbineDag.GetVertex(s.FromUUID); err != nil {
+		return fmt.Errorf("source with UUID - (%s) does not exist", s.FromUUID)
 	}
 
-	dest, _ := d.turbineDag.GetVertex(s.ToUUID)
-	if dest == nil {
-		return fmt.Errorf("destination node (%s) does not exist", s.ToUUID)
+	if _, err := d.turbineDag.GetVertex(s.ToUUID); err != nil {
+		return fmt.Errorf("destination with UUID - (%s) does not exist", s.ToUUID)
 	}
 
 	d.Streams = append(d.Streams, *s)
