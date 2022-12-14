@@ -44,6 +44,7 @@ jobs:
           gem push *.gem
 
       - name: Tag
+        if: steps.check_published.outputs.published_version != null && (steps.check_local.outputs.local_version > steps.check_published.outputs.published_version)
         env:
           TAG: ${{ format('turbine_rb@{0}', steps.check_local.outputs.local_version) }}
         run: |
