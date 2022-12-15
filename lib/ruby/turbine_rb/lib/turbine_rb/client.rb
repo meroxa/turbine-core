@@ -117,10 +117,16 @@ module TurbineRb
           app.process(records: self, process: process)
         end
 
+        def records
+          return pb_records.to_a if pb_records.respond_to?(:to_a)
+
+          [pb_records].compact.flatten
+        end
+
         def unwrap
           TurbineCore::Collection.new( # convert back to TurbineCore::Collection
             name: name,
-            records: pb_records.respond_to?(:to_a) ? pb_records.to_a : pb_records,
+            records: records,
             stream: pb_stream
           )
         end
