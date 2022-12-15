@@ -30,7 +30,7 @@ module TurbineRb
           )
         )
         records.tap do |r|
-          r.pb_collection = process_call(process: process, pb_collection: pb_collection)
+          r.pb_records = process_call(process: process, pb_collection: pb_collection)
           r.pb_stream = pb_collection.stream
         end
       end
@@ -94,7 +94,7 @@ module TurbineRb
       end
 
       class Collection
-        attr_accessor :pb_collection, :pb_stream, :name, :app
+        attr_accessor :pb_records, :pb_stream, :name, :app
 
         def self.unwrap(collection)
           return collection.unwrap if collection.instance_of?(Collection)
@@ -102,9 +102,9 @@ module TurbineRb
           collection
         end
 
-        def initialize(name, collection, stream, app)
+        def initialize(name, records, stream, app)
           @name = name
-          @pb_collection = collection
+          @pb_records = records
           @pb_stream = stream
           @app = app
         end
@@ -120,7 +120,7 @@ module TurbineRb
         def unwrap
           TurbineCore::Collection.new( # convert back to TurbineCore::Collection
             name: name,
-            records: pb_collection.to_a,
+            records: pb_records.respond_to?(:to_a) ? pb_records.to_a : pb_records,
             stream: pb_stream
           )
         end
