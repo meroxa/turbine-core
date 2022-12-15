@@ -58,8 +58,8 @@ RSpec.describe TurbineRb::Client::App do
       it "calls the process function on the records in run mode" do
         result = app.process(records: records, process: my_process.new)
 
-        expect(result.pb_collection.first.key).to eq("1")
-        expect(result.pb_collection.first.value).to eq("changedbytes")
+        expect(result.pb_records.first.key).to eq("1")
+        expect(result.pb_records.first.value).to eq("changedbytes")
         expect(result.pb_stream).to eq(records.pb_stream)
       end
 
