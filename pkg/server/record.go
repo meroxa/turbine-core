@@ -134,7 +134,6 @@ func (s *recordService) AddProcessToCollection(ctx context.Context, request *pb.
 	p := request.GetProcess()
 
 	collection := request.GetCollection()
-
 	function := ir.FunctionSpec{
 		Name: strings.ToLower(p.GetName()),
 		UUID: uuid.New().String(),
@@ -183,7 +182,7 @@ func (s *recordService) GetSpec(ctx context.Context, in *pb.GetSpecRequest) (*pb
 		s.deploymentSpec.SetImageForFunctions(image)
 	}
 
-	if err := s.deploymentSpec.ValidateDag(); err != nil {
+	if err := s.deploymentSpec.ValidateDAG(); err != nil {
 		return nil, err
 	}
 

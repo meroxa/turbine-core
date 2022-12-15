@@ -476,14 +476,37 @@ func TestGetSpec(t *testing.T) {
 			description: "get spec with no function",
 			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec = exampleDeploymentSpec()
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "1_3",
+					FromUUID: "1",
+					ToUUID:   "3",
+					Name:     "1_3",
+				})
+
 				return s
 			},
-			want: exampleDeploymentSpec(),
+			want: func() ir.DeploymentSpec {
+				s := exampleDeploymentSpec()
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "1_3",
+					FromUUID: "1",
+					ToUUID:   "3",
+					Name:     "1_3",
+				})
+				return s
+			}(),
+			wantErr: nil,
 		},
 		{
 			description: "get spec with no function, set image",
 			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec = exampleDeploymentSpec()
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "1_3",
+					FromUUID: "1",
+					ToUUID:   "3",
+					Name:     "1_3",
+				})
 				return s
 			},
 			request: &pb.GetSpecRequest{
@@ -495,11 +518,23 @@ func TestGetSpec(t *testing.T) {
 			description: "get spec with function",
 			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec = exampleDeploymentSpec()
-				s.deploymentSpec.Functions = []ir.FunctionSpec{
-					{
-						Name: "function",
-					},
-				}
+				s.deploymentSpec.Functions = append(s.deploymentSpec.Functions, ir.FunctionSpec{
+					UUID:  "2",
+					Name:  "function",
+					Image: "some/image",
+				})
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "1_2",
+					FromUUID: "1",
+					ToUUID:   "2",
+					Name:     "1_2",
+				})
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "2_3",
+					FromUUID: "2",
+					ToUUID:   "3",
+					Name:     "2_3",
+				})
 				return s
 			},
 			request: &pb.GetSpecRequest{
@@ -507,25 +542,51 @@ func TestGetSpec(t *testing.T) {
 			},
 			want: func() ir.DeploymentSpec {
 				s := exampleDeploymentSpec()
-				s.Functions = []ir.FunctionSpec{
-					{
+				s.AddFunction(
+					&ir.FunctionSpec{
+						UUID:  "2",
 						Name:  "function",
 						Image: "some/image",
 					},
-				}
+				)
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "1_2",
+					FromUUID: "1",
+					ToUUID:   "2",
+					Name:     "1_2",
+				})
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "2_3",
+					FromUUID: "2",
+					ToUUID:   "3",
+					Name:     "2_3",
+				})
+
 				return s
 			}(),
+			wantErr: nil,
 		},
 		{
 			description: "get spec with function, overwrite image",
 			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec = exampleDeploymentSpec()
-				s.deploymentSpec.Functions = []ir.FunctionSpec{
-					{
-						Name:  "function",
-						Image: "existing/image",
-					},
-				}
+				s.deploymentSpec.Functions = append(s.deploymentSpec.Functions, ir.FunctionSpec{
+					UUID:  "2",
+					Name:  "function",
+					Image: "some/image",
+				})
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "1_2",
+					FromUUID: "1",
+					ToUUID:   "2",
+					Name:     "1_2",
+				})
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "2_3",
+					FromUUID: "2",
+					ToUUID:   "3",
+					Name:     "2_3",
+				})
 				return s
 			},
 			request: &pb.GetSpecRequest{
@@ -533,14 +594,30 @@ func TestGetSpec(t *testing.T) {
 			},
 			want: func() ir.DeploymentSpec {
 				s := exampleDeploymentSpec()
-				s.Functions = []ir.FunctionSpec{
-					{
+				s.AddFunction(
+					&ir.FunctionSpec{
+						UUID:  "2",
 						Name:  "function",
 						Image: "some/image",
 					},
-				}
+				)
+
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "1_2",
+					FromUUID: "1",
+					ToUUID:   "2",
+					Name:     "1_2",
+				})
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "2_3",
+					FromUUID: "2",
+					ToUUID:   "3",
+					Name:     "2_3",
+				})
+
 				return s
 			}(),
+			wantErr: nil,
 		},
 	}
 
@@ -548,15 +625,19 @@ func TestGetSpec(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			var (
 				ctx = context.Background()
-				s   = test.populateService(NewRecordService())
 			)
-
+			s := test.populateService(NewRecordService())
 			res, err := s.GetSpec(ctx, test.request)
-			require.Equal(t, test.wantErr, err)
-			if test.wantErr == nil {
+			if test.wantErr == nil && err == nil {
 				got, err := ir.Unmarshal(res.Spec)
-				require.Nil(t, err)
-				require.Equal(t, got, &test.want)
+				require.NoError(t, err)
+				require.Equal(t, test.want.Connectors, got.Connectors)
+				require.Equal(t, test.want.Functions, got.Functions)
+				require.Equal(t, test.want.Secrets, got.Secrets)
+				require.Equal(t, test.want.Streams, got.Streams)
+			} else {
+				require.Error(t, err)
+				require.Equal(t, test.wantErr, err)
 			}
 		})
 	}
@@ -569,11 +650,13 @@ func exampleDeploymentSpec() ir.DeploymentSpec {
 		},
 		Connectors: []ir.ConnectorSpec{
 			{
+				UUID:       "1",
 				Collection: "accounts",
 				Resource:   "mongo",
 				Type:       ir.ConnectorSource,
 			},
 			{
+				UUID:       "3",
 				Collection: "accounts_copy",
 				Resource:   "pg",
 				Type:       ir.ConnectorDestination,

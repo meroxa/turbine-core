@@ -132,23 +132,25 @@ func Test_SetImageForFunctions(t *testing.T) {
 }
 
 func Test_MarshalUnmarshal(t *testing.T) {
-
 	spec := &ir.DeploymentSpec{
 		Secrets: map[string]string{
 			"a secret": "with value",
 		},
 		Functions: []ir.FunctionSpec{
 			{
+				UUID: "3",
 				Name: "addition",
 			},
 		},
 		Connectors: []ir.ConnectorSpec{
 			{
+				UUID:       "1",
 				Collection: "accounts",
 				Resource:   "mongo",
 				Type:       ir.ConnectorSource,
 			},
 			{
+				UUID:       "2",
 				Collection: "accounts_copy",
 				Resource:   "pg",
 				Type:       ir.ConnectorDestination,
@@ -161,8 +163,14 @@ func Test_MarshalUnmarshal(t *testing.T) {
 			{
 				UUID:     "12345",
 				Name:     "my_stream",
-				FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
-				ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+				FromUUID: "1",
+				ToUUID:   "2",
+			},
+			{
+				UUID:     "12345",
+				Name:     "my_stream2",
+				FromUUID: "2",
+				ToUUID:   "3",
 			},
 		},
 		Definition: ir.DefinitionSpec{
@@ -210,7 +218,7 @@ func Test_EnsureSingleSource(t *testing.T) {
 			},
 		},
 	)
-	require.EqualError(t, err, fmt.Errorf("source connector already exists, can only add one per application").Error())
+	require.EqualError(t, err, fmt.Errorf("can only add one source connector per application").Error())
 }
 
 func Test_BadStream(t *testing.T) {
@@ -236,7 +244,7 @@ func Test_BadStream(t *testing.T) {
 		},
 	)
 	require.Error(t, err)
-	require.Equal(t, err.Error(), "destination with UUID - (2) does not exist")
+	require.Equal(t, err.Error(), "destination 2 does not exist")
 }
 
 func Test_WrongSourceConnector(t *testing.T) {
@@ -253,7 +261,7 @@ func Test_WrongSourceConnector(t *testing.T) {
 		},
 	)
 	require.Error(t, err)
-	require.Equal(t, err.Error(), "connector type isn't a source, please check you are reading from a source connector.")
+	require.Equal(t, err.Error(), "not a source connector.")
 }
 
 func Test_WrongDestinationConnector(t *testing.T) {
@@ -270,7 +278,7 @@ func Test_WrongDestinationConnector(t *testing.T) {
 		},
 	)
 	require.Error(t, err)
-	require.Equal(t, err.Error(), "connector type isn't a destination, please check you are writing to destination connector.")
+	require.Equal(t, err.Error(), "not a destination connector.")
 }
 
 // Scenario 1 - Simple DAG
@@ -336,7 +344,7 @@ func Test_Scenario1(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDag()
+	err = spec.ValidateDAG()
 	require.NoError(t, err)
 }
 
@@ -430,7 +438,7 @@ func Test_DAGScenario2(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDag()
+	err = spec.ValidateDAG()
 	require.NoError(t, err)
 }
 
@@ -666,7 +674,7 @@ func Test_DAGScenario5(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDag()
+	err = spec.ValidateDAG()
 	require.NoError(t, err)
 }
 
@@ -822,7 +830,7 @@ func Test_DAGScenario6(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDag()
+	err = spec.ValidateDAG()
 	require.NoError(t, err)
 }
 
@@ -916,7 +924,7 @@ func Test_DAGScenario7(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDag()
+	err = spec.ValidateDAG()
 	require.NoError(t, err)
 }
 
@@ -957,8 +965,7 @@ func Test_Scenario8(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-
-	err = spec.ValidateDag()
+	err = spec.ValidateDAG()
 	require.NoError(t, err)
 }
 
@@ -1005,7 +1012,7 @@ func Test_Scenario9(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDag()
+	err = spec.ValidateDAG()
 	require.NoError(t, err)
 }
 
@@ -1082,8 +1089,7 @@ func Test_Scenario10(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-
-	err = spec.ValidateDag()
+	err = spec.ValidateDAG()
 	require.Error(t, err)
-	assert.Equal(t, err.Error(), "more than one source / root detected, can only add one per application. please ensure your resources are connected.")
+	assert.Equal(t, err.Error(), "too many source connectors")
 }

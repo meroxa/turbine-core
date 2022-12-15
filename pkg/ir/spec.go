@@ -24,9 +24,12 @@ const (
 	LatestSpecVersion = "0.2.0"
 )
 
+type idInterface interface {
+	ID() string
+}
 type DeploymentSpec struct {
 	mu          sync.Mutex
-	turbineDag  *dag.DAG
+	turbineDag  dag.DAG
 	dagInitOnce sync.Once
 	Secrets     map[string]string `json:"secrets,omitempty"`
 	Connectors  []ConnectorSpec   `json:"connectors"`
@@ -85,6 +88,9 @@ func (d *DeploymentSpec) SetImageForFunctions(image string) {
 }
 
 func (d *DeploymentSpec) Marshal() ([]byte, error) {
+	if err := d.ValidateDAG(); err != nil {
+		return nil, err
+	}
 	return json.Marshal(d)
 }
 
@@ -102,10 +108,10 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 	d.init()
 
 	if len(d.turbineDag.GetRoots()) >= 1 {
-		return fmt.Errorf("source connector already exists, can only add one per application")
+		return fmt.Errorf("can only add one source connector per application")
 	}
 	if c.Type != ConnectorSource {
-		return fmt.Errorf("connector type isn't a source, please check you are reading from a source connector.")
+		return fmt.Errorf("not a source connector.")
 	}
 	d.Connectors = append(d.Connectors, *c)
 	return d.turbineDag.AddVertexByID(c.UUID, &c)
@@ -117,11 +123,7 @@ func (d *DeploymentSpec) AddFunction(f *FunctionSpec) error {
 	d.init()
 
 	d.Functions = append(d.Functions, *f)
-	err := d.turbineDag.AddVertexByID(f.UUID, &f)
-	if err != nil {
-		return err
-	}
-	return nil
+	return d.turbineDag.AddVertexByID(f.UUID, &f)
 }
 
 func (d *DeploymentSpec) AddDestination(c *ConnectorSpec) error {
@@ -130,7 +132,7 @@ func (d *DeploymentSpec) AddDestination(c *ConnectorSpec) error {
 	d.init()
 
 	if c.Type != ConnectorDestination {
-		return fmt.Errorf("connector type isn't a destination, please check you are writing to destination connector.")
+		return fmt.Errorf("not a destination connector.")
 	}
 	d.Connectors = append(d.Connectors, *c)
 	return d.turbineDag.AddVertexByID(c.UUID, &c)
@@ -142,33 +144,58 @@ func (d *DeploymentSpec) AddStream(s *StreamSpec) error {
 	d.init()
 
 	if _, err := d.turbineDag.GetVertex(s.FromUUID); err != nil {
-		return fmt.Errorf("source with UUID - (%s) does not exist", s.FromUUID)
+		return fmt.Errorf("source %s does not exist", s.FromUUID)
 	}
 
 	if _, err := d.turbineDag.GetVertex(s.ToUUID); err != nil {
-		return fmt.Errorf("destination with UUID - (%s) does not exist", s.ToUUID)
+		return fmt.Errorf("destination %s does not exist", s.ToUUID)
 	}
 
 	d.Streams = append(d.Streams, *s)
-	if err := d.turbineDag.AddEdge(s.FromUUID, s.ToUUID); err != nil {
+	return d.turbineDag.AddEdge(s.FromUUID, s.ToUUID)
+}
+
+func (d *DeploymentSpec) ValidateDAG() error {
+	turbineDag, err := d.BuildDAG()
+	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func (d *DeploymentSpec) ValidateDag() error {
-	if len(d.turbineDag.GetRoots()) > 1 {
-		return fmt.Errorf("more than one source / root detected, can only add one per application. please ensure your resources are connected.")
+	if turbineDag == nil {
+		return fmt.Errorf("unable to build dag, no resources found")
+	}
+	if len(turbineDag.GetRoots()) > 1 {
+		return fmt.Errorf("too many source connectors")
+	}
+	if len(turbineDag.GetRoots()) == 0 {
+		return fmt.Errorf("no source connector found.")
 	}
 	return nil
 }
 
-func (d *DeploymentSpec) BuildDAG() string {
-	return d.turbineDag.String()
+func (d *DeploymentSpec) BuildDAG() (*dag.DAG, error) {
+	turbineDag := dag.NewDAG()
+	for _, con := range d.Connectors {
+		cont := &con
+		if err := turbineDag.AddVertexByID(con.UUID, &cont); err != nil {
+			return nil, err
+		}
+	}
+	for _, fun := range d.Functions {
+		funn := &fun
+		if err := turbineDag.AddVertexByID(fun.UUID, &funn); err != nil {
+			return nil, err
+		}
+	}
+	for _, stream := range d.Streams {
+		if err := turbineDag.AddEdge(stream.FromUUID, stream.ToUUID); err != nil {
+			return nil, err
+		}
+	}
+	return turbineDag, nil
 }
 
 func (d *DeploymentSpec) init() {
 	d.dagInitOnce.Do(func() {
-		d.turbineDag = dag.NewDAG()
+		d.turbineDag = *dag.NewDAG()
 	})
 }
