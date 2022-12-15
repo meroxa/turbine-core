@@ -171,15 +171,15 @@ func (d *DeploymentSpec) ValidateDAG() error {
 
 func (d *DeploymentSpec) BuildDAG() (*dag.DAG, error) {
 	turbineDag := dag.NewDAG()
-	for _, con := range d.Connectors {
-		cont := &con
-		if err := turbineDag.AddVertexByID(con.UUID, &cont); err != nil {
+	for i := range d.Connectors {
+		con := &d.Connectors[i]
+		if err := turbineDag.AddVertexByID(con.UUID, con); err != nil {
 			return nil, err
 		}
 	}
-	for _, fun := range d.Functions {
-		funn := &fun
-		if err := turbineDag.AddVertexByID(fun.UUID, &funn); err != nil {
+	for i := range d.Functions {
+		fun := &d.Functions[i]
+		if err := turbineDag.AddVertexByID(fun.UUID, fun); err != nil {
 			return nil, err
 		}
 	}
