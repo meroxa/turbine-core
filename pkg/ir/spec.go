@@ -24,9 +24,6 @@ const (
 	LatestSpecVersion = "0.2.0"
 )
 
-type idInterface interface {
-	ID() string
-}
 type DeploymentSpec struct {
 	mu          sync.Mutex
 	turbineDag  dag.DAG
