@@ -8,6 +8,7 @@ import (
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -77,7 +78,9 @@ func TestInit(t *testing.T) {
 			if test.want == nil {
 				require.Nil(t, err)
 				require.Equal(t, empty(), res)
-				require.Equal(t, test.spec, s.deploymentSpec)
+				require.Equal(t, test.spec.Functions, s.deploymentSpec.Functions)
+				require.Equal(t, test.spec.Connectors, s.deploymentSpec.Connectors)
+				require.Equal(t, test.spec.Streams, s.deploymentSpec.Streams)
 			} else {
 				require.ErrorContains(t, err, test.want.Error())
 			}
@@ -120,16 +123,6 @@ func TestReadCollection(t *testing.T) {
 				},
 				Configs: nil,
 			},
-			want: ir.DeploymentSpec{
-				Connectors: []ir.ConnectorSpec{
-					{
-						Collection: "accounts",
-						Resource:   "pg",
-						Type:       ir.ConnectorSource,
-						Config:     map[string]interface{}{},
-					},
-				},
-			},
 		},
 		{
 			description: "successfully store source information with config",
@@ -153,19 +146,6 @@ func TestReadCollection(t *testing.T) {
 					},
 				},
 			},
-			want: ir.DeploymentSpec{
-				Connectors: []ir.ConnectorSpec{
-					{
-						Collection: "accounts",
-						Resource:   "pg",
-						Type:       ir.ConnectorSource,
-						Config: map[string]interface{}{
-							"config":         "value",
-							"another_config": "another_value",
-						},
-					},
-				},
-			},
 		},
 	}
 
@@ -184,8 +164,11 @@ func TestReadCollection(t *testing.T) {
 				require.EqualError(t, err, test.errMsg)
 			} else {
 				require.Nil(t, err)
-				require.Equal(t, &pb.Collection{}, res)
-				require.Equal(t, test.want, s.deploymentSpec)
+				require.Equal(t, test.req.Resource.Collection, res.Name)
+				require.NotEmpty(t, s.deploymentSpec.Connectors)
+				require.Equal(t, s.deploymentSpec.Connectors[0].Collection, res.Name)
+				require.Equal(t, s.deploymentSpec.Connectors[0].UUID, res.Stream)
+				require.Equal(t, s.deploymentSpec.Connectors[0].Type, ir.ConnectorType("source"))
 			}
 		})
 	}
@@ -209,20 +192,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 			description: "recordService has existing connector",
 			req: &pb.WriteCollectionRequest{
 				TargetCollection: "accounts_copy",
-				Resource: &pb.Resource{
-					Name: "pg",
-				},
-				Configs: nil,
-			},
-			populateService: func(s *recordService) *recordService {
-				s.deploymentSpec.Connectors = []ir.ConnectorSpec{
-					{
-						Collection: "accounts",
-						Resource:   "mongo",
-						Type:       ir.ConnectorDestination,
-					},
-				}
-				return s
+				Configs:          nil,
 			},
 			want: ir.DeploymentSpec{
 				Connectors: []ir.ConnectorSpec{
@@ -244,9 +214,6 @@ func TestWriteCollectionToResource(t *testing.T) {
 			description: "successfully store destination information with config",
 			req: &pb.WriteCollectionRequest{
 				TargetCollection: "accounts_copy",
-				Resource: &pb.Resource{
-					Name: "pg",
-				},
 				Configs: &pb.Configs{
 					Config: []*pb.Config{
 						{
@@ -282,17 +249,33 @@ func TestWriteCollectionToResource(t *testing.T) {
 				ctx = context.Background()
 				s   = NewRecordService()
 			)
-			if test.populateService != nil {
-				s = test.populateService(s)
-			}
+
+			source, err := s.ReadCollection(ctx,
+				&pb.ReadCollectionRequest{
+					Collection: "pg_2",
+					Resource: &pb.Resource{
+						Name:       "pg_2",
+						Source:     true,
+						Collection: "pg_2",
+					},
+					Configs: nil,
+				},
+			)
+			assert.NoError(t, err)
+
+			test.req.SourceCollection = source
 
 			res, err := s.WriteCollectionToResource(ctx, test.req)
 			if test.errMsg != "" {
 				require.EqualError(t, err, test.errMsg)
 			} else {
+
 				require.Nil(t, err)
 				require.Equal(t, empty(), res)
-				require.Equal(t, test.want, s.deploymentSpec)
+				require.NotEmpty(t, s.deploymentSpec.Streams)
+				require.NotEmpty(t, s.deploymentSpec.Connectors)
+				require.Equal(t, s.deploymentSpec.Streams[0].FromUUID, source.Stream)
+				require.Equal(t, s.deploymentSpec.Streams[0].ToUUID, s.deploymentSpec.Connectors[1].UUID)
 			}
 		})
 	}
@@ -312,15 +295,36 @@ func TestAddProcessToCollection(t *testing.T) {
 		}
 	)
 
+	read, err := s.ReadCollection(ctx,
+		&pb.ReadCollectionRequest{
+
+			Collection: "accounts",
+			Resource: &pb.Resource{
+				Name:       "pg",
+				Source:     true,
+				Collection: "accounts",
+			},
+			Configs: nil,
+		},
+	)
+	assert.NoError(t, err)
+
 	res, err := s.AddProcessToCollection(ctx,
 		&pb.ProcessCollectionRequest{
 			Process: &pb.ProcessCollectionRequest_Process{
 				Name: "synchronize",
 			},
-		})
+			Collection: read,
+		},
+	)
+
 	require.Nil(t, err)
-	require.Equal(t, &pb.Collection{}, res)
-	require.Equal(t, want, s.deploymentSpec)
+	require.NotEmpty(t, res)
+	require.NotEmpty(t, s.deploymentSpec.Functions)
+	require.Equal(t, s.deploymentSpec.Functions[0].Name, want.Functions[0].Name)
+	require.Equal(t, s.deploymentSpec.Streams[0].FromUUID, read.Stream)
+	require.Equal(t, s.deploymentSpec.Streams[0].ToUUID, res.Stream)
+
 }
 
 func TestRegisterSecret(t *testing.T) {
@@ -350,8 +354,8 @@ func TestRegisterSecret(t *testing.T) {
 		})
 	require.Nil(t, err)
 	require.Equal(t, empty(), res)
+	require.Equal(t, want.Secrets, s.deploymentSpec.Secrets)
 
-	require.Equal(t, want, s.deploymentSpec)
 }
 
 func TestHasFunctions(t *testing.T) {
@@ -472,14 +476,37 @@ func TestGetSpec(t *testing.T) {
 			description: "get spec with no function",
 			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec = exampleDeploymentSpec()
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "1_3",
+					FromUUID: "1",
+					ToUUID:   "3",
+					Name:     "1_3",
+				})
+
 				return s
 			},
-			want: exampleDeploymentSpec(),
+			want: func() ir.DeploymentSpec {
+				s := exampleDeploymentSpec()
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "1_3",
+					FromUUID: "1",
+					ToUUID:   "3",
+					Name:     "1_3",
+				})
+				return s
+			}(),
+			wantErr: nil,
 		},
 		{
 			description: "get spec with no function, set image",
 			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec = exampleDeploymentSpec()
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "1_3",
+					FromUUID: "1",
+					ToUUID:   "3",
+					Name:     "1_3",
+				})
 				return s
 			},
 			request: &pb.GetSpecRequest{
@@ -491,11 +518,23 @@ func TestGetSpec(t *testing.T) {
 			description: "get spec with function",
 			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec = exampleDeploymentSpec()
-				s.deploymentSpec.Functions = []ir.FunctionSpec{
-					{
-						Name: "function",
-					},
-				}
+				s.deploymentSpec.Functions = append(s.deploymentSpec.Functions, ir.FunctionSpec{
+					UUID:  "2",
+					Name:  "function",
+					Image: "some/image",
+				})
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "1_2",
+					FromUUID: "1",
+					ToUUID:   "2",
+					Name:     "1_2",
+				})
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "2_3",
+					FromUUID: "2",
+					ToUUID:   "3",
+					Name:     "2_3",
+				})
 				return s
 			},
 			request: &pb.GetSpecRequest{
@@ -503,25 +542,51 @@ func TestGetSpec(t *testing.T) {
 			},
 			want: func() ir.DeploymentSpec {
 				s := exampleDeploymentSpec()
-				s.Functions = []ir.FunctionSpec{
-					{
+				s.AddFunction(
+					&ir.FunctionSpec{
+						UUID:  "2",
 						Name:  "function",
 						Image: "some/image",
 					},
-				}
+				)
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "1_2",
+					FromUUID: "1",
+					ToUUID:   "2",
+					Name:     "1_2",
+				})
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "2_3",
+					FromUUID: "2",
+					ToUUID:   "3",
+					Name:     "2_3",
+				})
+
 				return s
 			}(),
+			wantErr: nil,
 		},
 		{
 			description: "get spec with function, overwrite image",
 			populateService: func(s *recordService) *recordService {
 				s.deploymentSpec = exampleDeploymentSpec()
-				s.deploymentSpec.Functions = []ir.FunctionSpec{
-					{
-						Name:  "function",
-						Image: "existing/image",
-					},
-				}
+				s.deploymentSpec.Functions = append(s.deploymentSpec.Functions, ir.FunctionSpec{
+					UUID:  "2",
+					Name:  "function",
+					Image: "some/image",
+				})
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "1_2",
+					FromUUID: "1",
+					ToUUID:   "2",
+					Name:     "1_2",
+				})
+				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+					UUID:     "2_3",
+					FromUUID: "2",
+					ToUUID:   "3",
+					Name:     "2_3",
+				})
 				return s
 			},
 			request: &pb.GetSpecRequest{
@@ -529,14 +594,30 @@ func TestGetSpec(t *testing.T) {
 			},
 			want: func() ir.DeploymentSpec {
 				s := exampleDeploymentSpec()
-				s.Functions = []ir.FunctionSpec{
-					{
+				s.AddFunction(
+					&ir.FunctionSpec{
+						UUID:  "2",
 						Name:  "function",
 						Image: "some/image",
 					},
-				}
+				)
+
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "1_2",
+					FromUUID: "1",
+					ToUUID:   "2",
+					Name:     "1_2",
+				})
+				s.Streams = append(s.Streams, ir.StreamSpec{
+					UUID:     "2_3",
+					FromUUID: "2",
+					ToUUID:   "3",
+					Name:     "2_3",
+				})
+
 				return s
 			}(),
+			wantErr: nil,
 		},
 	}
 
@@ -544,15 +625,19 @@ func TestGetSpec(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			var (
 				ctx = context.Background()
-				s   = test.populateService(NewRecordService())
 			)
-
+			s := test.populateService(NewRecordService())
 			res, err := s.GetSpec(ctx, test.request)
-			require.Equal(t, test.wantErr, err)
-			if test.wantErr == nil {
+			if test.wantErr == nil && err == nil {
 				got, err := ir.Unmarshal(res.Spec)
-				require.Nil(t, err)
-				require.Equal(t, got, &test.want)
+				require.NoError(t, err)
+				require.Equal(t, test.want.Connectors, got.Connectors)
+				require.Equal(t, test.want.Functions, got.Functions)
+				require.Equal(t, test.want.Secrets, got.Secrets)
+				require.Equal(t, test.want.Streams, got.Streams)
+			} else {
+				require.Error(t, err)
+				require.Equal(t, test.wantErr, err)
 			}
 		})
 	}
@@ -565,11 +650,13 @@ func exampleDeploymentSpec() ir.DeploymentSpec {
 		},
 		Connectors: []ir.ConnectorSpec{
 			{
+				UUID:       "1",
 				Collection: "accounts",
 				Resource:   "mongo",
 				Type:       ir.ConnectorSource,
 			},
 			{
+				UUID:       "3",
 				Collection: "accounts_copy",
 				Resource:   "pg",
 				Type:       ir.ConnectorDestination,
