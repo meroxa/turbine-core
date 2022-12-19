@@ -85,28 +85,32 @@ func Test_DeploymentSpec(t *testing.T) {
 func Test_ValidateVersion(t *testing.T) {
 	testCases := []struct {
 		name        string
-		specVersion string
+		specVersions []string
 		wantError   error
 	}{
 		{
 			name:        "using valid spec version",
-			specVersion: ir.LatestSpecVersion,
+			specVersions: []string{"0.1.1", "0.2.0"},
 			wantError:   nil,
 		},
 		{
+		},
+		{
 			name:        "using invalid spec version",
-			specVersion: "0.0.0",
-			wantError:   fmt.Errorf("spec version \"0.0.0\" is not a supported. use version %q instead", ir.LatestSpecVersion),
+			specVersions: []string{"0.0.0"},
+			wantError:   fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: 0.1.1, 0.2.0"),
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotError := ir.ValidateSpecVersion(tc.specVersion)
-			if tc.wantError != nil {
-				assert.Equal(t, gotError.Error(), tc.wantError.Error())
-			} else {
-				assert.NoError(t, gotError)
+			for _, v := range tc.specVersions {
+				err := ir.ValidateSpecVersion(v)
+				if tc.wantError != nil {
+					assert.Equal(t, err.Error(), tc.wantError.Error())
+				} else {
+					assert.NoError(t, err)
+				}
 			}
 		})
 	}
@@ -351,8 +355,9 @@ func Test_Scenario1(t *testing.T) {
 // Scenario 2 - DAG with two Destinations from 1 function
 // source → fn -> dest[n]
 // ( src_con ) → (stream) → (function) → (stream) → (dest1)
-//								↓
-// 						    (stream) → (dest2)
+//
+//			↓
+//	    (stream) → (dest2)
 func Test_DAGScenario2(t *testing.T) {
 	var spec ir.DeploymentSpec
 
@@ -443,11 +448,12 @@ func Test_DAGScenario2(t *testing.T) {
 }
 
 // Scenario 3 - Not a DAG, trying to write from one function back to the other creates a loop
-//source → (fn) → dest[n]
-//                                  ↓   ←      ←      ←      ↑
-//    ( src_con ) → (stream) → (function) → (stream) →  (function)
-//									↓
-// 						    	(stream) →	(dest2)
+// source → (fn) → dest[n]
+//
+//	                                 ↓   ←      ←      ←      ↑
+//	   ( src_con ) → (stream) → (function) → (stream) →  (function)
+//										↓
+//							    	(stream) →	(dest2)
 func Test_DAGScenario3(t *testing.T) {
 	var spec ir.DeploymentSpec
 
@@ -542,9 +548,10 @@ func Test_DAGScenario3(t *testing.T) {
 }
 
 // Scenario 4 - Not acyclic, trying to write from one function back to source
-//    ( src_con ) → (stream) → (function 1)
-//			↑					    ↓
-// 		    ←  ←  ← (stream) ← ← ← ←
+//
+//	   ( src_con ) → (stream) → (function 1)
+//				↑					    ↓
+//			    ←  ←  ← (stream) ← ← ← ←
 func Test_DAGScenario4(t *testing.T) {
 	var spec ir.DeploymentSpec
 
@@ -594,8 +601,9 @@ func Test_DAGScenario4(t *testing.T) {
 }
 
 // Scenario 5 - DAG, multuple functions, 1 destination
-//  source → (fn) → (fn)… → dest
-//    ( src_con ) → (stream) → (function 1) → (stream) → (function2)  → (dest1)
+//
+//	source → (fn) → (fn)… → dest
+//	  ( src_con ) → (stream) → (function 1) → (stream) → (function2)  → (dest1)
 func Test_DAGScenario5(t *testing.T) {
 	var spec ir.DeploymentSpec
 
@@ -680,15 +688,16 @@ func Test_DAGScenario5(t *testing.T) {
 
 // Scenario 6 - DAG with many functions and destinations
 // source → (fn) → (fn)… → dest[n]
-//    ( src_con ) → (stream) → (function 1) → (stream) → (function2)  → (dest1)
-//								    ↓
-//								 (stream)  → (dest2)
-//								    ↓
-//								(function 3)
-//									↓
-//								(stream)
-//   								↓
-//								(dest 3)
+//
+//	   ( src_con ) → (stream) → (function 1) → (stream) → (function2)  → (dest1)
+//									    ↓
+//									 (stream)  → (dest2)
+//									    ↓
+//									(function 3)
+//										↓
+//									(stream)
+//	  								↓
+//									(dest 3)
 func Test_DAGScenario6(t *testing.T) {
 	var spec ir.DeploymentSpec
 
@@ -837,8 +846,9 @@ func Test_DAGScenario6(t *testing.T) {
 // Scenario 7 - DAG with destination from 1 function and with source data going to second destination
 // source → dest[0] | (fn)→ dest[1]
 // ( src_con ) → (stream) → (function) → (stream) → (dest1)
+//
 //		↓
-// 	(stream) → (dest2)
+//	(stream) → (dest2)
 func Test_DAGScenario7(t *testing.T) {
 	var spec ir.DeploymentSpec
 
@@ -1017,8 +1027,8 @@ func Test_Scenario9(t *testing.T) {
 }
 
 // Scenario 10 - Disconnected Graph
-//src -> fn[0]
-//fn[1] -> dst
+// src -> fn[0]
+// fn[1] -> dst
 func Test_Scenario10(t *testing.T) {
 	var spec ir.DeploymentSpec
 
