@@ -36,7 +36,7 @@ module TurbineRb
       end
 
       def process_call(process:, pb_collection:)
-        return pb_collection if recording?
+        return pb_collection.records if recording?
 
         process
           .call(records: TurbineRb::Records.new(pb_collection.records))
