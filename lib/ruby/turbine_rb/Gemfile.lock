@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    turbine_rb (0.2.1)
+    turbine_rb (0.2.3)
       grpc (~> 1.48)
       hash_dot (~> 2.5.0)
 
@@ -14,9 +14,9 @@ GEM
     diff-lcs (1.5.0)
     ffi (1.15.5)
     formatador (1.1.0)
-    google-protobuf (3.21.11)
-    google-protobuf (3.21.11-x86_64-darwin)
-    google-protobuf (3.21.11-x86_64-linux)
+    google-protobuf (3.21.12)
+    google-protobuf (3.21.12-x86_64-darwin)
+    google-protobuf (3.21.12-x86_64-linux)
     googleapis-common-protos-types (1.4.0)
       google-protobuf (~> 3.14)
     grpc (1.50.0)
