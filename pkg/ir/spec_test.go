@@ -14,7 +14,7 @@ import (
 )
 
 func Test_DeploymentSpec(t *testing.T) {
-	jsonSpec, err := os.ReadFile(path.Join("spectest", "spec.json"))
+	jsonSpec, err := os.ReadFile(path.Join("spectest", "0.2.0", "spec.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,21 +84,20 @@ func Test_DeploymentSpec(t *testing.T) {
 
 func Test_ValidateVersion(t *testing.T) {
 	testCases := []struct {
-		name        string
+		name         string
 		specVersions []string
-		wantError   error
+		wantError    error
 	}{
 		{
-			name:        "using valid spec version",
+			name:         "using valid spec version",
 			specVersions: []string{"0.1.1", "0.2.0"},
-			wantError:   nil,
+			wantError:    nil,
 		},
+		{},
 		{
-		},
-		{
-			name:        "using invalid spec version",
+			name:         "using invalid spec version",
 			specVersions: []string{"0.0.0"},
-			wantError:   fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: 0.1.1, 0.2.0"),
+			wantError:    fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: 0.1.1, 0.2.0"),
 		},
 	}
 
@@ -348,7 +347,7 @@ func Test_Scenario1(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -443,7 +442,7 @@ func Test_DAGScenario2(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -682,7 +681,7 @@ func Test_DAGScenario5(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -839,7 +838,7 @@ func Test_DAGScenario6(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -934,7 +933,7 @@ func Test_DAGScenario7(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -975,7 +974,7 @@ func Test_Scenario8(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -1022,7 +1021,7 @@ func Test_Scenario9(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -1099,7 +1098,7 @@ func Test_Scenario10(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.Error(t, err)
 	assert.Equal(t, err.Error(), "too many source connectors")
 }
