@@ -2,6 +2,7 @@ package ir
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"strings"
@@ -175,11 +176,18 @@ func (d *DeploymentSpec) ValidateDAG(turbineDag *dag.DAG) error {
 	}
 
 	if len(turbineDag.GetRoots()) > 1 {
-		return fmt.Errorf("too many source connectors")
+		return fmt.Errorf("invalid DAG, too many sources")
 	}
+
 	if len(turbineDag.GetRoots()) == 0 {
-		return fmt.Errorf("no source connector found")
+		return fmt.Errorf("invalid DAG, no sources found")
 	}
+
+	// No edges
+	if turbineDag.GetSize() == 0 {
+		return fmt.Errorf("invalid DAG, there has to be at least one source and one destination")
+	}
+
 	return nil
 }
 
@@ -223,23 +231,28 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 		return nil
 	}
 
-	if (d.getSpecVersion() != SpecVersion_0_1_1) || (LatestSpecVersion != SpecVersion_0_2_0) {
+	if d.getSpecVersion() == "" {
+		return fmt.Errorf("cannot upgrade to the latest version. spec version is not specified")
+	}
+
+	if d.getSpecVersion() != SpecVersion_0_1_1 || LatestSpecVersion != SpecVersion_0_2_0 {
 		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
 	}
 
-	// assign UUIDs to all connectors
 	var sources, destinations []ConnectorSpec
 
-	for _, c := range d.Connectors {
+	// assign UUIDs to all connectors
+	for i, c := range d.Connectors {
+		if c.UUID == "" {
+			c.UUID = uuid.New().String()
+			d.Connectors[i].UUID = c.UUID
+		}
+
 		switch c.Type {
 		case ConnectorSource:
 			sources = append(sources, c)
 		case ConnectorDestination:
 			destinations = append(destinations, c)
-		}
-
-		if c.UUID == "" {
-			c.UUID = uuid.New().String()
 		}
 	}
 
@@ -253,10 +266,15 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 		}
 	}
 
+	if len(sources) == 0 {
+		return errors.New("not sources found in spec")
+	}
+
 	// assign UUIDs to all functions
-	for _, fn := range d.Functions {
+	for i, fn := range d.Functions {
 		if fn.UUID == "" {
 			fn.UUID = uuid.New().String()
+			d.Functions[i].UUID = fn.UUID
 		}
 	}
 
@@ -270,7 +288,6 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 				ToUUID:   dest.UUID,
 			})
 		}
-		return nil
 	}
 
 	// s -> f -> n(d)
@@ -290,9 +307,7 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 				ToUUID:   dest.UUID,
 			})
 		}
-		return nil
 	}
-
 	return nil
 }
 

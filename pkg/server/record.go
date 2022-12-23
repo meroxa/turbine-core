@@ -182,7 +182,7 @@ func (s *recordService) GetSpec(_ context.Context, in *pb.GetSpecRequest) (*pb.G
 		s.deploymentSpec.SetImageForFunctions(image)
 	}
 
-	if err := s.deploymentSpec.ValidateDAG(); err != nil {
+	if _, err := s.deploymentSpec.BuildDAG(); err != nil {
 		return nil, err
 	}
 
