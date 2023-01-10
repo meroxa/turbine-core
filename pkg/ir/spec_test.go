@@ -707,7 +707,11 @@ func Test_DAGScenario4(t *testing.T) {
 //	source → (fn) → (fn)… → dest
 //	  ( src_con ) → (stream) → (function 1) → (stream) → (function2)  → (dest1)
 func Test_DAGScenario5(t *testing.T) {
-	var spec ir.DeploymentSpec
+	spec := ir.DeploymentSpec{
+		Definition: ir.DefinitionSpec{
+			Metadata: ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+		},
+	}
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -801,7 +805,11 @@ func Test_DAGScenario5(t *testing.T) {
 //	  								↓
 //									(dest 3)
 func Test_DAGScenario6(t *testing.T) {
-	var spec ir.DeploymentSpec
+	spec := ir.DeploymentSpec{
+		Definition: ir.DefinitionSpec{
+			Metadata: ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+		},
+	}
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1135,7 +1143,11 @@ func Test_Scenario9(t *testing.T) {
 // src -> fn[0]
 // fn[1] -> dst
 func Test_Scenario10(t *testing.T) {
-	var spec ir.DeploymentSpec
+	spec := ir.DeploymentSpec{
+		Definition: ir.DefinitionSpec{
+			Metadata: ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+		},
+	}
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1229,6 +1241,11 @@ func Test_ValidateDAG(t *testing.T) {
 		{
 			name: "too many sources",
 			spec: ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					Metadata: ir.MetadataSpec{
+						SpecVersion: ir.SpecVersion_0_1_1,
+					},
+				},
 				Connectors: []ir.ConnectorSpec{
 					{
 						Type: ir.ConnectorSource,
@@ -1238,11 +1255,16 @@ func Test_ValidateDAG(t *testing.T) {
 					},
 				},
 			},
-			wantError: fmt.Errorf("invalid DAG, too many sources"),
+			wantError: fmt.Errorf("unsupported number of sources in spec version %q", ir.SpecVersion_0_1_1),
 		},
 		{
 			name: "only one source",
 			spec: ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					Metadata: ir.MetadataSpec{
+						SpecVersion: ir.SpecVersion_0_1_1,
+					},
+				},
 				Connectors: []ir.ConnectorSpec{
 					{
 						Type: ir.ConnectorSource,
