@@ -40,7 +40,7 @@ func TestDeploymentSpec_BuildDAG_EmptySpec(t *testing.T) {
 	}
 
 	_, err = spec.BuildDAG()
-	assert.ErrorContains(t, err, "cannot upgrade to the latest version. previous spec version is not specified")
+	assert.ErrorContains(t, err, "cannot upgrade to the latest version. spec version is not specified")
 }
 
 func TestDeploymentSpec_BuildDAG_0_1_1(t *testing.T) {

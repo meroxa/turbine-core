@@ -239,8 +239,8 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
 	}
 
-	if d.getSpecVersion() == "" {
-		return fmt.Errorf("cannot upgrade to the latest version. previous spec version is not specified")
+	if d.getSpecVersion() != SpecVersion_0_1_1 || LatestSpecVersion != SpecVersion_0_2_0 {
+		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
 	}
 
 	var sources, destinations []ConnectorSpec
