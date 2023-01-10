@@ -239,6 +239,10 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
 	}
 
+	if d.getSpecVersion() == "" {
+		return fmt.Errorf("cannot upgrade to the latest version. previous spec version is not specified")
+	}
+
 	var sources, destinations []ConnectorSpec
 
 	// assign UUIDs to all connectors

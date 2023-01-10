@@ -28,6 +28,21 @@ func TestDeploymentSpec_BuildDAG_UnsupportedUpgrade(t *testing.T) {
 	assert.ErrorContains(t, err, fmt.Sprintf("unsupported upgrade from spec version \"0.0.0\" to %q", ir.LatestSpecVersion))
 }
 
+func TestDeploymentSpec_BuildDAG_EmptySpec(t *testing.T) {
+	jsonSpec, err := os.ReadFile(path.Join("spectest", "empty", "spec.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var spec ir.DeploymentSpec
+	if err := json.Unmarshal(jsonSpec, &spec); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = spec.BuildDAG()
+	assert.ErrorContains(t, err, "cannot upgrade to the latest version. previous spec version is not specified")
+}
+
 func TestDeploymentSpec_BuildDAG_0_1_1(t *testing.T) {
 	jsonSpec, err := os.ReadFile(path.Join("spectest", "0.1.1", "spec.json"))
 	if err != nil {
