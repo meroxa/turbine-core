@@ -23,13 +23,14 @@ module TurbineRb
       end
 
       def process(records:, process:)
+        newrcords = records.dup
         pb_collection = core_server.add_process_to_collection(
           TurbineCore::ProcessCollectionRequest.new(
-            collection: Collection.unwrap(records),
+            collection: Collection.unwrap(newrcords),
             process: TurbineCore::ProcessCollectionRequest::Process.new(name: process.class.name)
           )
         )
-        records.tap do |r|
+        newrcords.tap do |r|
           r.pb_records = process_call(process: process, pb_collection: pb_collection)
           r.pb_stream = pb_collection.stream
         end
@@ -74,13 +75,14 @@ module TurbineRb
         end
 
         def write(records:, collection:, configs: nil)
+          newrcords = records.dup
           if records.instance_of?(Collection) # it has been processed by a function, so unwrap back to gRPC collection
-            records = records.unwrap
+            newrcords = records.unwrap
           end
 
           req = TurbineCore::WriteCollectionRequest.new(
             resource: @pb_resource,
-            sourceCollection: records,
+            sourceCollection: newrcords,
             targetCollection: collection
           )
 
