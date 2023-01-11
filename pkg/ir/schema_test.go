@@ -417,38 +417,40 @@ func Test_ValidSpec(t *testing.T) {
 			desc:        "two functions",
 			specVersion: "0.2.0",
 			spec: `{
-						"connectors": [
-							{
-								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
-								"collection": "users",
-								"type": "source",
-								"resource": "pg"
-							}
-						],
-						"functions": [
-							{
-								"uuid": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
-								"name": "enrich",
-								"image": "ftorres/enrich:9"
-							},
-							{
-								"uuid": "00d7f1a24-f7e2-4495-a8fe-df46bef32345",
-								"name": "enrich_new",
-								"image": "ftorres/enrich:1000"
-							}
-						],
-						"definition": {
-							"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
-							"metadata": {
-								"turbine": {
-									"language": "golang",
-									"version": "0.19"
-								},
-								"spec_version": "0.2.0"
-							}
-						}
-					}`,
+				"connectors": [
+					{
+						"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
+						"collection": "users",
+						"type": "source",
+						"resource": "pg"
+					}
+				],
+				"functions": [
+					{
+						"uuid": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
+						"name": "enrich",
+						"image": "ftorres/enrich:9"
+					},
+					{
+						"uuid": "00d7f1a24-f7e2-4495-a8fe-df46bef32345",
+						"name": "enrich_new",
+						"image": "ftorres/enrich:1000"
+					}
+				],
+				"definition": {
+					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
+					"metadata": {
+						"turbine": {
+							"language": "golang",
+							"version": "0.19"
+						},
+						"spec_version": "0.2.0"
+					}
+				}
+			}`,
+			err: "\"/functions\" field fails /properties/functions/maxItems validation: maximum 1 items required, but found 2 items",
 		},
+
 		{
 			desc:        "maximum spec",
 			specVersion: "0.2.0",

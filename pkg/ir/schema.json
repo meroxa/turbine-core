@@ -92,6 +92,8 @@
                     ]
                 }
             ],
+            "minItems": 0,
+			"maxItems": 1,
             "uniqueItems": true
         },
         "streams": {
