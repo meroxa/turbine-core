@@ -13,8 +13,109 @@ import (
 	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
+func TestDeploymentSpec_BuildDAG_UnsupportedUpgrade(t *testing.T) {
+	jsonSpec, err := os.ReadFile(path.Join("spectest", "0.0.0", "spec.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var spec ir.DeploymentSpec
+	if err := json.Unmarshal(jsonSpec, &spec); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = spec.BuildDAG()
+	assert.ErrorContains(t, err, fmt.Sprintf("unsupported upgrade from spec version \"0.0.0\" to %q", ir.LatestSpecVersion))
+}
+
+func TestDeploymentSpec_BuildDAG_EmptySpec(t *testing.T) {
+	jsonSpec, err := os.ReadFile(path.Join("spectest", "empty", "spec.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var spec ir.DeploymentSpec
+	if err := json.Unmarshal(jsonSpec, &spec); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = spec.BuildDAG()
+	assert.ErrorContains(t, err, "cannot upgrade to the latest version. spec version is not specified")
+}
+
+func TestDeploymentSpec_BuildDAG_0_1_1(t *testing.T) {
+	jsonSpec, err := os.ReadFile(path.Join("spectest", "0.1.1", "spec.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var spec ir.DeploymentSpec
+	if err := json.Unmarshal(jsonSpec, &spec); err != nil {
+		t.Fatal(err)
+	}
+
+	dag, err := spec.BuildDAG()
+	require.NoError(t, err)
+
+	var fnUUID, destUUID string
+
+	// Check root is a connector source
+	roots := dag.GetRoots()
+	assert.Equal(t, len(roots), 1)
+	for _, s := range roots {
+		connector, ok := s.(*ir.ConnectorSpec)
+		if !ok {
+			t.Fatalf("root edge is not a connector")
+		}
+		assert.Equal(t, connector.Type, ir.ConnectorSource)
+	}
+
+	// Check its only leaf is a connector destination
+	leaves := dag.GetLeaves()
+	assert.Equal(t, len(leaves), 1)
+	for _, s := range leaves {
+		connector, ok := s.(*ir.ConnectorSpec)
+		if !ok {
+			t.Fatalf("leaf edge is not a connector")
+		}
+		destUUID = connector.UUID
+		assert.Equal(t, connector.Type, ir.ConnectorDestination)
+	}
+
+	// Check function connects both source and destination
+
+	// From destination connector
+	fnEdges, err := dag.GetParents(destUUID)
+	assert.NoError(t, err)
+
+	for _, fn := range fnEdges {
+		function, ok := fn.(*ir.FunctionSpec)
+		if !ok {
+			t.Fatalf("edge is not a not a function")
+		}
+		fnUUID = function.UUID
+	}
+
+	// From the function itself checks its parent is a connector source
+	srcEdges, err := dag.GetParents(fnUUID)
+	assert.NoError(t, err)
+
+	for _, src := range srcEdges {
+		connector, ok := src.(*ir.ConnectorSpec)
+		if !ok {
+			t.Fatalf("edge is not a not a connector")
+		}
+		assert.Equal(t, connector.Type, ir.ConnectorSource)
+	}
+
+	assert.Equal(t, len(dag.GetVertices()), 3)
+
+	// Number of edges created
+	assert.Equal(t, dag.GetSize(), 2)
+}
+
 func Test_DeploymentSpec(t *testing.T) {
-	jsonSpec, err := os.ReadFile(path.Join("spectest", "spec.json"))
+	jsonSpec, err := os.ReadFile(path.Join("spectest", "0.2.0", "spec.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,21 +185,20 @@ func Test_DeploymentSpec(t *testing.T) {
 
 func Test_ValidateVersion(t *testing.T) {
 	testCases := []struct {
-		name        string
+		name         string
 		specVersions []string
-		wantError   error
+		wantError    error
 	}{
 		{
-			name:        "using valid spec version",
+			name:         "using valid spec version",
 			specVersions: []string{"0.1.1", "0.2.0"},
-			wantError:   nil,
+			wantError:    nil,
 		},
+		{},
 		{
-		},
-		{
-			name:        "using invalid spec version",
+			name:         "using invalid spec version",
 			specVersions: []string{"0.0.0"},
-			wantError:   fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: 0.1.1, 0.2.0"),
+			wantError:    fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: 0.1.1, 0.2.0"),
 		},
 	}
 
@@ -180,7 +280,7 @@ func Test_MarshalUnmarshal(t *testing.T) {
 		Definition: ir.DefinitionSpec{
 			GitSha: "gitsh",
 			Metadata: ir.MetadataSpec{
-				SpecVersion: "0.2.1",
+				SpecVersion: "0.2.0",
 				Turbine: ir.TurbineSpec{
 					Language: ir.GoLang,
 					Version:  "10",
@@ -265,7 +365,7 @@ func Test_WrongSourceConnector(t *testing.T) {
 		},
 	)
 	require.Error(t, err)
-	require.Equal(t, err.Error(), "not a source connector.")
+	require.Equal(t, err.Error(), "not a source connector")
 }
 
 func Test_WrongDestinationConnector(t *testing.T) {
@@ -282,7 +382,7 @@ func Test_WrongDestinationConnector(t *testing.T) {
 		},
 	)
 	require.Error(t, err)
-	require.Equal(t, err.Error(), "not a destination connector.")
+	require.Equal(t, err.Error(), "not a destination connector")
 }
 
 // Scenario 1 - Simple DAG
@@ -290,6 +390,7 @@ func Test_WrongDestinationConnector(t *testing.T) {
 // ( src_con ) → (stream) → (function) → (stream) → (dest1)
 func Test_Scenario1(t *testing.T) {
 	var spec ir.DeploymentSpec
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -348,7 +449,7 @@ func Test_Scenario1(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -360,6 +461,7 @@ func Test_Scenario1(t *testing.T) {
 //	    (stream) → (dest2)
 func Test_DAGScenario2(t *testing.T) {
 	var spec ir.DeploymentSpec
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -443,7 +545,7 @@ func Test_DAGScenario2(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -605,7 +707,11 @@ func Test_DAGScenario4(t *testing.T) {
 //	source → (fn) → (fn)… → dest
 //	  ( src_con ) → (stream) → (function 1) → (stream) → (function2)  → (dest1)
 func Test_DAGScenario5(t *testing.T) {
-	var spec ir.DeploymentSpec
+	spec := ir.DeploymentSpec{
+		Definition: ir.DefinitionSpec{
+			Metadata: ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+		},
+	}
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -682,7 +788,7 @@ func Test_DAGScenario5(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -699,7 +805,11 @@ func Test_DAGScenario5(t *testing.T) {
 //	  								↓
 //									(dest 3)
 func Test_DAGScenario6(t *testing.T) {
-	var spec ir.DeploymentSpec
+	spec := ir.DeploymentSpec{
+		Definition: ir.DefinitionSpec{
+			Metadata: ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+		},
+	}
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -839,7 +949,7 @@ func Test_DAGScenario6(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -851,6 +961,7 @@ func Test_DAGScenario6(t *testing.T) {
 //	(stream) → (dest2)
 func Test_DAGScenario7(t *testing.T) {
 	var spec ir.DeploymentSpec
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -934,7 +1045,7 @@ func Test_DAGScenario7(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -943,6 +1054,7 @@ func Test_DAGScenario7(t *testing.T) {
 // ( src_con ) → (stream) → (func)
 func Test_Scenario8(t *testing.T) {
 	var spec ir.DeploymentSpec
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -975,7 +1087,7 @@ func Test_Scenario8(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -984,6 +1096,7 @@ func Test_Scenario8(t *testing.T) {
 // ( src_con ) → (stream) → (destination)
 func Test_Scenario9(t *testing.T) {
 	var spec ir.DeploymentSpec
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1022,7 +1135,7 @@ func Test_Scenario9(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -1030,7 +1143,11 @@ func Test_Scenario9(t *testing.T) {
 // src -> fn[0]
 // fn[1] -> dst
 func Test_Scenario10(t *testing.T) {
-	var spec ir.DeploymentSpec
+	spec := ir.DeploymentSpec{
+		Definition: ir.DefinitionSpec{
+			Metadata: ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+		},
+	}
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1099,7 +1216,74 @@ func Test_Scenario10(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	err = spec.ValidateDAG()
+	_, err = spec.BuildDAG()
 	require.Error(t, err)
-	assert.Equal(t, err.Error(), "too many source connectors")
+	assert.Equal(t, err.Error(), "invalid DAG, too many sources")
+}
+
+func Test_ValidateDAG(t *testing.T) {
+	testCases := []struct {
+		name      string
+		spec      ir.DeploymentSpec
+		wantError error
+	}{
+		{
+			name: "empty DAG",
+			spec: ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					Metadata: ir.MetadataSpec{
+						SpecVersion: ir.SpecVersion_0_2_0,
+					},
+				},
+			},
+			wantError: fmt.Errorf("invalid DAG, no sources found"),
+		},
+		{
+			name: "too many sources",
+			spec: ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					Metadata: ir.MetadataSpec{
+						SpecVersion: ir.SpecVersion_0_1_1,
+					},
+				},
+				Connectors: []ir.ConnectorSpec{
+					{
+						Type: ir.ConnectorSource,
+					},
+					{
+						Type: ir.ConnectorSource,
+					},
+				},
+			},
+			wantError: fmt.Errorf("unsupported number of sources in spec version %q", ir.SpecVersion_0_1_1),
+		},
+		{
+			name: "only one source",
+			spec: ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					Metadata: ir.MetadataSpec{
+						SpecVersion: ir.SpecVersion_0_1_1,
+					},
+				},
+				Connectors: []ir.ConnectorSpec{
+					{
+						Type: ir.ConnectorSource,
+					},
+				},
+			},
+			wantError: fmt.Errorf("invalid DAG, there has to be at least one source and one destination"),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			spec := tc.spec
+			_, err := spec.BuildDAG()
+			if tc.wantError != nil {
+				assert.Equal(t, err.Error(), tc.wantError.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
