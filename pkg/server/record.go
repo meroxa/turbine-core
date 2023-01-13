@@ -14,12 +14,14 @@ import (
 
 type recordService struct {
 	pb.UnimplementedTurbineServiceServer
-	deploymentSpec ir.DeploymentSpec
+	deploymentSpec *ir.DeploymentSpec
 	resources      []*pb.Resource
 }
 
 func NewRecordService() *recordService {
-	return &recordService{}
+	return &recordService{
+		deploymentSpec: &ir.DeploymentSpec{},
+	}
 }
 
 func (s *recordService) Init(_ context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {

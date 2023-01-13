@@ -2,8 +2,12 @@
 gomod:
 	go mod tidy && go mod vendor
 
+.PHONY: vet
+vet:
+	go vet ./...
+
 .PHONY: test
-test:
+test: vet
 	go test ./... -coverprofile=c.out -covermode=atomic -v
 
 .PHONY: test_turbine_rb

@@ -120,7 +120,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expectedSpec := ir.DeploymentSpec{
+	expectedSpec := &ir.DeploymentSpec{
 		Secrets: map[string]string{
 			"key": "valuesecret",
 		},
@@ -174,8 +174,8 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 	}
 
-	var deploySpec ir.DeploymentSpec
-	if err := json.Unmarshal(jsonSpec, &deploySpec); err != nil {
+	deploySpec :=  &ir.DeploymentSpec{}
+	if err := json.Unmarshal(jsonSpec, deploySpec); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1224,12 +1224,12 @@ func Test_Scenario10(t *testing.T) {
 func Test_ValidateDAG(t *testing.T) {
 	testCases := []struct {
 		name      string
-		spec      ir.DeploymentSpec
+		spec      *ir.DeploymentSpec
 		wantError error
 	}{
 		{
 			name: "empty DAG",
-			spec: ir.DeploymentSpec{
+			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					Metadata: ir.MetadataSpec{
 						SpecVersion: ir.SpecVersion_0_2_0,
@@ -1240,7 +1240,7 @@ func Test_ValidateDAG(t *testing.T) {
 		},
 		{
 			name: "too many sources",
-			spec: ir.DeploymentSpec{
+			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					Metadata: ir.MetadataSpec{
 						SpecVersion: ir.SpecVersion_0_1_1,
@@ -1259,7 +1259,7 @@ func Test_ValidateDAG(t *testing.T) {
 		},
 		{
 			name: "only one source",
-			spec: ir.DeploymentSpec{
+			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					Metadata: ir.MetadataSpec{
 						SpecVersion: ir.SpecVersion_0_1_1,
