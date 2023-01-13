@@ -15,13 +15,13 @@ import (
 func TestInit(t *testing.T) {
 	testCases := []struct {
 		test    string
-		spec    ir.DeploymentSpec
-		request pb.InitRequest
+		spec    *ir.DeploymentSpec
+		request *pb.InitRequest
 		want    error
 	}{
 		{
 			test: "Init successful with correct language",
-			spec: ir.DeploymentSpec{
+			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					GitSha: "gitsha",
 					Metadata: ir.MetadataSpec{
@@ -33,7 +33,7 @@ func TestInit(t *testing.T) {
 					},
 				},
 			},
-			request: pb.InitRequest{
+			request: &pb.InitRequest{
 				AppName:        "test-ruby",
 				ConfigFilePath: "path/to/ruby",
 				Language:       pb.Language_RUBY,
@@ -44,7 +44,7 @@ func TestInit(t *testing.T) {
 		},
 		{
 			test: "Init error with incorrect language",
-			spec: ir.DeploymentSpec{
+			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					GitSha: "gitsha",
 					Metadata: ir.MetadataSpec{
@@ -56,7 +56,7 @@ func TestInit(t *testing.T) {
 					},
 				},
 			},
-			request: pb.InitRequest{
+			request: &pb.InitRequest{
 				AppName:        "test-emoji",
 				ConfigFilePath: "path/to/emoji",
 				Language:       101221,
@@ -73,7 +73,7 @@ func TestInit(t *testing.T) {
 				ctx = context.Background()
 				s   = NewRecordService()
 			)
-			res, err := s.Init(ctx, &test.request)
+			res, err := s.Init(ctx, test.request)
 
 			if test.want == nil {
 				require.Nil(t, err)
@@ -108,7 +108,7 @@ func TestReadCollection(t *testing.T) {
 		description     string
 		populateService func(*recordService) *recordService
 		req             *pb.ReadCollectionRequest
-		want            ir.DeploymentSpec
+		want            *ir.DeploymentSpec
 		errMsg          string
 	}{
 
@@ -180,7 +180,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 		description     string
 		populateService func(*recordService) *recordService
 		req             *pb.WriteCollectionRequest
-		want            ir.DeploymentSpec
+		want            *ir.DeploymentSpec
 		errMsg          string
 	}{
 		{
@@ -194,7 +194,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 				TargetCollection: "accounts_copy",
 				Configs:          nil,
 			},
-			want: ir.DeploymentSpec{
+			want: &ir.DeploymentSpec{
 				Connectors: []ir.ConnectorSpec{
 					{
 						Collection: "accounts",
@@ -227,7 +227,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 					},
 				},
 			},
-			want: ir.DeploymentSpec{
+			want: &ir.DeploymentSpec{
 				Connectors: []ir.ConnectorSpec{
 					{
 						Collection: "accounts_copy",
@@ -286,7 +286,7 @@ func TestAddProcessToCollection(t *testing.T) {
 	var (
 		ctx  = context.Background()
 		s    = NewRecordService()
-		want = ir.DeploymentSpec{
+		want = &ir.DeploymentSpec{
 			Functions: []ir.FunctionSpec{
 				{
 					Name: "synchronize",
@@ -331,7 +331,7 @@ func TestRegisterSecret(t *testing.T) {
 	var (
 		ctx  = context.Background()
 		s    = NewRecordService()
-		want = ir.DeploymentSpec{
+		want = &ir.DeploymentSpec{
 			Secrets: map[string]string{
 				"api_key":     "secret_key",
 				"another_key": "key",
@@ -469,7 +469,7 @@ func TestGetSpec(t *testing.T) {
 		description     string
 		populateService func(*recordService) *recordService
 		request         *pb.GetSpecRequest
-		want            ir.DeploymentSpec
+		want            *ir.DeploymentSpec
 		wantErr         error
 	}{
 		{
@@ -485,7 +485,7 @@ func TestGetSpec(t *testing.T) {
 
 				return s
 			},
-			want: func() ir.DeploymentSpec {
+			want: func() *ir.DeploymentSpec {
 				s := exampleDeploymentSpec()
 				s.Streams = append(s.Streams, ir.StreamSpec{
 					UUID:     "1_3",
@@ -540,7 +540,7 @@ func TestGetSpec(t *testing.T) {
 			request: &pb.GetSpecRequest{
 				Image: "some/image",
 			},
-			want: func() ir.DeploymentSpec {
+			want: func() *ir.DeploymentSpec {
 				s := exampleDeploymentSpec()
 				s.AddFunction(
 					&ir.FunctionSpec{
@@ -592,7 +592,7 @@ func TestGetSpec(t *testing.T) {
 			request: &pb.GetSpecRequest{
 				Image: "some/image",
 			},
-			want: func() ir.DeploymentSpec {
+			want: func() *ir.DeploymentSpec {
 				s := exampleDeploymentSpec()
 				s.AddFunction(
 					&ir.FunctionSpec{
@@ -643,8 +643,8 @@ func TestGetSpec(t *testing.T) {
 	}
 }
 
-func exampleDeploymentSpec() ir.DeploymentSpec {
-	return ir.DeploymentSpec{
+func exampleDeploymentSpec() *ir.DeploymentSpec {
+	return &ir.DeploymentSpec{
 		Secrets: map[string]string{
 			"a secret": "with value",
 		},
