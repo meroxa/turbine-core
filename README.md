@@ -17,3 +17,8 @@ bundle install
 ```bash
 bundle exec guard
 ```
+
+### Release
++ Submit a PR incrementing the version in `version.rb`
++ Merge PR after approval
++ Gem is automatically released after merge
