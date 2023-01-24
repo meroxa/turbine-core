@@ -174,7 +174,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 	}
 
-	deploySpec :=  &ir.DeploymentSpec{}
+	deploySpec := &ir.DeploymentSpec{}
 	if err := json.Unmarshal(jsonSpec, deploySpec); err != nil {
 		t.Fatal(err)
 	}
@@ -191,14 +191,14 @@ func Test_ValidateVersion(t *testing.T) {
 	}{
 		{
 			name:         "using valid spec version",
-			specVersions: []string{"0.1.1", "0.2.0"},
+			specVersions: []string{"0.1.1", "0.2.0", "0.2.1"},
 			wantError:    nil,
 		},
 		{},
 		{
 			name:         "using invalid spec version",
 			specVersions: []string{"0.0.0"},
-			wantError:    fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: 0.1.1, 0.2.0"),
+			wantError:    fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: 0.1.1, 0.2.0, 0.2.1"),
 		},
 	}
 
@@ -388,7 +388,7 @@ func Test_WrongDestinationConnector(t *testing.T) {
 // Scenario 1 - Simple DAG
 // source → fn -> dest
 // ( src_con ) → (stream) → (function) → (stream) → (dest1)
-func Test_Scenario1(t *testing.T) {
+func Test_DAGScenario1(t *testing.T) {
 	var spec ir.DeploymentSpec
 	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
 
@@ -709,7 +709,8 @@ func Test_DAGScenario4(t *testing.T) {
 func Test_DAGScenario5(t *testing.T) {
 	spec := ir.DeploymentSpec{
 		Definition: ir.DefinitionSpec{
-			Metadata: ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+			Metadata:    ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+			Environment: "common",
 		},
 	}
 
@@ -807,7 +808,8 @@ func Test_DAGScenario5(t *testing.T) {
 func Test_DAGScenario6(t *testing.T) {
 	spec := ir.DeploymentSpec{
 		Definition: ir.DefinitionSpec{
-			Metadata: ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+			Metadata:    ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+			Environment: "common",
 		},
 	}
 
@@ -1052,7 +1054,7 @@ func Test_DAGScenario7(t *testing.T) {
 // Scenario 8 - Just source to function, no destination
 // source → fn
 // ( src_con ) → (stream) → (func)
-func Test_Scenario8(t *testing.T) {
+func Test_DAGScenario8(t *testing.T) {
 	var spec ir.DeploymentSpec
 	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
 
@@ -1094,7 +1096,7 @@ func Test_Scenario8(t *testing.T) {
 // Scenario 9 - Just source to destination, no function
 // source → dest
 // ( src_con ) → (stream) → (destination)
-func Test_Scenario9(t *testing.T) {
+func Test_DAGScenario9(t *testing.T) {
 	var spec ir.DeploymentSpec
 	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
 
@@ -1142,10 +1144,11 @@ func Test_Scenario9(t *testing.T) {
 // Scenario 10 - Disconnected Graph
 // src -> fn[0]
 // fn[1] -> dst
-func Test_Scenario10(t *testing.T) {
+func Test_DAGScenario10(t *testing.T) {
 	spec := ir.DeploymentSpec{
 		Definition: ir.DefinitionSpec{
-			Metadata: ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+			Metadata:    ir.MetadataSpec{SpecVersion: ir.LatestSpecVersion},
+			Environment: "common",
 		},
 	}
 
@@ -1272,6 +1275,58 @@ func Test_ValidateDAG(t *testing.T) {
 				},
 			},
 			wantError: fmt.Errorf("invalid DAG, there has to be at least one source and one destination"),
+		},
+		{
+			name: "block functions on non common environments",
+			spec: &ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					Environment: "my-env",
+					Metadata: ir.MetadataSpec{
+						SpecVersion: ir.SpecVersion_0_2_1,
+					},
+				},
+				Connectors: []ir.ConnectorSpec{
+					{
+						Type: ir.ConnectorSource,
+					},
+				},
+				Functions: []ir.FunctionSpec{
+					{
+						Name: "Test",
+					},
+				},
+			},
+			wantError: fmt.Errorf("applications with functions are not currently supported in non 'common' environments"),
+		},
+		{
+			name: "allow functions on in common environments",
+			spec: &ir.DeploymentSpec{
+				Definition: ir.DefinitionSpec{
+					Environment: "common",
+					Metadata: ir.MetadataSpec{
+						SpecVersion: ir.SpecVersion_0_2_1,
+					},
+				},
+				Connectors: []ir.ConnectorSpec{
+					{
+						UUID: "1234",
+						Type: ir.ConnectorSource,
+					},
+				},
+				Functions: []ir.FunctionSpec{
+					{
+						UUID: "123",
+						Name: "Test",
+					},
+				},
+				Streams: []ir.StreamSpec{
+					{
+						UUID:     "1_2",
+						FromUUID: "1234",
+						ToUUID:   "123",
+					},
+				},
+			},
 		},
 	}
 

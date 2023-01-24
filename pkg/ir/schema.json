@@ -143,6 +143,10 @@
                     "description": "The git sha used to generate the spec",
                     "type": "string"
                 },
+                "environment":{
+                    "description":"This is the environment name in which application was deployed in.",
+                    "type":"string"
+                },
                 "metadata": {
                     "description": "The metadata associated with the spec",
                     "type": "object",

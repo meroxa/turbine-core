@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"strings"
 	"sync"
+
+	"github.com/google/uuid"
 
 	"github.com/heimdalr/dag"
 )
@@ -26,13 +27,15 @@ const (
 
 	SpecVersion_0_1_1 = "0.1.1"
 	SpecVersion_0_2_0 = "0.2.0"
+	SpecVersion_0_2_1 = "0.2.1"
 
-	LatestSpecVersion = SpecVersion_0_2_0
+	LatestSpecVersion = SpecVersion_0_2_1
 )
 
 var specVersions = []string{
 	SpecVersion_0_1_1,
 	SpecVersion_0_2_0,
+	SpecVersion_0_2_1,
 }
 
 type DeploymentSpec struct {
@@ -68,8 +71,9 @@ type FunctionSpec struct {
 }
 
 type DefinitionSpec struct {
-	GitSha   string       `json:"git_sha"`
-	Metadata MetadataSpec `json:"metadata"`
+	GitSha      string       `json:"git_sha"`
+	Environment string       `json:"environment"`
+	Metadata    MetadataSpec `json:"metadata"`
 }
 
 type MetadataSpec struct {
@@ -191,14 +195,15 @@ func (d *DeploymentSpec) ValidateDAG(turbineDag *dag.DAG) error {
 	return nil
 }
 
-func (d *DeploymentSpec) getSpecVersion() string {
-	return d.Definition.Metadata.SpecVersion
-}
-
 func (d *DeploymentSpec) BuildDAG() (*dag.DAG, error) {
 	turbineDag := dag.NewDAG()
 
 	err := d.upgradeToLatestSpecVersion()
+	if err != nil {
+		return turbineDag, err
+	}
+
+	err = d.blockFunctionsInEnvironments()
 	if err != nil {
 		return turbineDag, err
 	}
@@ -224,8 +229,21 @@ func (d *DeploymentSpec) BuildDAG() (*dag.DAG, error) {
 	return turbineDag, d.ValidateDAG(turbineDag)
 }
 
+func (d *DeploymentSpec) getSpecVersion() string {
+	return d.Definition.Metadata.SpecVersion
+}
+
+func (d *DeploymentSpec) blockFunctionsInEnvironments() error {
+
+	if len(d.Functions) != 0 && (d.getSpecVersion() == LatestSpecVersion || d.getSpecVersion() == SpecVersion_0_2_1) && d.Definition.Environment != "common" {
+		return fmt.Errorf("applications with functions are not currently supported in non 'common' environments")
+	}
+
+	return nil
+}
+
 // upgradeToLatestSpecVersion will ensure that simple topologies as defined in 0.1.1 are still compatible
-// currently, only supported migration is from 0.1.1 to 0.2.0.
+// currently, only supported migration is from 0.1.1 or 0.2.0 to 0.2.1
 func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 	if d.getSpecVersion() == LatestSpecVersion {
 		return nil
@@ -235,13 +253,29 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 		return fmt.Errorf("cannot upgrade to the latest version. spec version is not specified")
 	}
 
-	if d.getSpecVersion() != SpecVersion_0_1_1 || LatestSpecVersion != SpecVersion_0_2_0 {
+	if d.getSpecVersion() != SpecVersion_0_1_1 && d.getSpecVersion() != SpecVersion_0_2_0 && LatestSpecVersion == SpecVersion_0_2_1 {
 		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
 	}
 
-	if d.getSpecVersion() != SpecVersion_0_1_1 || LatestSpecVersion != SpecVersion_0_2_0 {
-		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
+	if d.getSpecVersion() == SpecVersion_0_1_1 {
+		if err := d.upgradeSpec101_to_020(); err != nil {
+			return err
+		}
+		if err := d.upgradeSpec020_to_021(); err != nil {
+			return err
+		}
 	}
+
+	if d.getSpecVersion() == SpecVersion_0_2_0 {
+		if err := d.upgradeSpec020_to_021(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (d *DeploymentSpec) upgradeSpec101_to_020() error {
 
 	var sources, destinations []ConnectorSpec
 
@@ -271,7 +305,7 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 	}
 
 	if len(sources) == 0 {
-		return errors.New("not sources found in spec")
+		return errors.New("no sources found in spec")
 	}
 
 	// assign UUIDs to all functions
@@ -312,6 +346,20 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 			})
 		}
 	}
+
+	d.Definition.Metadata.SpecVersion = SpecVersion_0_2_0
+
+	return nil
+}
+
+func (d *DeploymentSpec) upgradeSpec020_to_021() error {
+
+	if d.Definition.Environment == "" {
+		d.Definition.Environment = "common"
+	}
+
+	d.Definition.Metadata.SpecVersion = SpecVersion_0_2_1
+
 	return nil
 }
 
