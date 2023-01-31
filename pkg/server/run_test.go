@@ -106,7 +106,6 @@ func Test_Init(t *testing.T) {
 				assert.Equal(t, s.appPath, req.ConfigFilePath)
 				assert.Equal(t, s.config, app.Config{
 					Name:        "app",
-					Environment: "common",
 					Pipeline:    "turbine-pipeline-app",
 					Resources: map[string]string{
 						"demopg": "fixtures/demo.json",
