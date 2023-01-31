@@ -27,6 +27,11 @@ func Test_ReadConfig(t *testing.T) {
 			appPath: setupAppJson(t),
 		},
 		{
+			desc:    "reads a valid app config with deprecated fields",
+			appName: "new-name-app",
+			appPath: setupAppJsonWithDeprecatedFields(t),
+		},
+		{
 			desc:    "fails to read an config with missing app name",
 			appPath: setupAppJsonMissingField(t),
 			errmsg:  "application name is required",
@@ -63,7 +68,6 @@ func setupAppJson(t *testing.T) string {
 		[]byte(`{
 				  "name": "testapp",
 				  "language": "golang",
-				  "environment": "common",
 				  "resources": {
 				    "source_name": "fixtures/demo-cdc.json"
 				  }
@@ -76,13 +80,33 @@ func setupAppJson(t *testing.T) string {
 	return tmpdir
 }
 
+func setupAppJsonWithDeprecatedFields(t *testing.T) string {
+	tmpdir := t.TempDir()
+	if err := os.WriteFile(
+		path.Join(tmpdir, "app.json"),
+		[]byte(`{
+				  "name": "testapp",
+				  "language": "golang",
+				  "environment": "foobar",
+				  "resources": {
+				    "source_name": "fixtures/demo-cdc.json"
+				  }
+				}`),
+		0644,
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	return tmpdir
+}
+
+
 func setupAppJsonMissingField(t *testing.T) string {
 	tmpdir := t.TempDir()
 	if err := os.WriteFile(
 		path.Join(tmpdir, "app.json"),
 		[]byte(`{
 				  "language": "golang",
-				  "environment": "common",
 				  "resources": {
 				    "source_name": "fixtures/demo-cdc.json"
 				  }
