@@ -39,6 +39,12 @@ testapp
     └── demo.json
 ```
 
+In your local app project directory, run the following command to ensure you have all the dependencies needed in the Gemfile:
+￼
+￼```shell
+￼$ bundle install
+￼```
+
 This will be a full-fledged Turbine app that can run. It provides just enough to show you what you need to get started.
 
 ### `app.rb`
@@ -224,4 +230,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/turbine_rb.
+Bug reports and pull requests are welcome on GitHub at https://github.com/meroxa/turbine-rb.
