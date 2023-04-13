@@ -4,7 +4,7 @@
 name: Dependabot auto-merge
 on:
   pull_request:
-    # Run this action when dependabot labels the PR, we care about the 'go' label.
+    # Run this action when dependabot labels the PR.
     types: [labeled]
 
 permissions:
@@ -14,7 +14,7 @@ permissions:
 jobs:
   dependabot-go:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' && contains(github.event.pull_request.labels.*.name, 'go') }}
+    if: ${{ github.actor == 'dependabot[bot]'}}
     steps:
       - name: Dependabot metadata
         id: metadata
