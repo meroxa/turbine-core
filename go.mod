@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.3.0
 	github.com/heimdalr/dag v1.2.1
 	github.com/jedib0t/go-pretty/v6 v6.4.6
 	github.com/santhosh-tekuri/jsonschema/v5 v5.0.1
