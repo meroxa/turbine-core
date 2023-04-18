@@ -6,6 +6,14 @@ gomod:
 vet:
 	go vet ./...
 
+.PHONY: gofumpt
+gofumpt:
+	go install mvdan.cc/gofumpt@latest
+
+.PHONY: fmt
+fmt: gofumpt
+	gofumpt -l -w .
+
 .PHONY: test
 test: vet
 	go test `go list ./... | grep -v 'turbine-core\/pkg\/app\/templates\/go'` \
