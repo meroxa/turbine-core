@@ -1,9 +1,10 @@
 package app
 
 import (
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"path/filepath"
 	"testing"
+
+	"github.com/meroxa/turbine-core/pkg/ir"
 
 	"github.com/stretchr/testify/require"
 )
@@ -24,6 +25,15 @@ func TestAppInit_createAppDirectory(t *testing.T) {
 			fields: fields{
 				AppName:  "createappdir",
 				Language: ir.Ruby,
+				Path:     t.TempDir(),
+			},
+			wantErr: false,
+		},
+		{
+			name: "creates the app directory",
+			fields: fields{
+				AppName:  "createappdir",
+				Language: ir.GoLang,
 				Path:     t.TempDir(),
 			},
 			wantErr: false,
@@ -54,6 +64,7 @@ func TestAppInit_createFixtures(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
+		want    string
 		wantErr bool
 	}{
 		{
@@ -63,6 +74,17 @@ func TestAppInit_createFixtures(t *testing.T) {
 				Language: ir.Ruby,
 				Path:     t.TempDir(),
 			},
+			want:    "demo.json",
+			wantErr: false,
+		},
+		{
+			name: "creates the fixtures directory",
+			fields: fields{
+				AppName:  "createfixtures",
+				Language: ir.GoLang,
+				Path:     t.TempDir(),
+			},
+			want:    "demo-cdc.json",
 			wantErr: false,
 		},
 	}
@@ -79,7 +101,7 @@ func TestAppInit_createFixtures(t *testing.T) {
 				t.Errorf("AppInit.createFixtures() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			require.DirExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "fixtures"))
-			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "fixtures", "demo.json"))
+			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "fixtures", tt.want))
 		})
 	}
 }
@@ -111,6 +133,18 @@ func TestAppInit_duplicateFile(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "duplicates the file from the embedded fs",
+			fields: fields{
+				AppName:  "duplicatefile",
+				Language: ir.GoLang,
+				Path:     t.TempDir(),
+			},
+			args: args{
+				fileName: "app_test.go",
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -123,7 +157,7 @@ func TestAppInit_duplicateFile(t *testing.T) {
 			if err := a.duplicateFile(tt.args.fileName); (err != nil) != tt.wantErr {
 				t.Errorf("AppInit.duplicateFile() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "Gemfile"))
+			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, tt.args.fileName))
 		})
 	}
 }
@@ -149,6 +183,16 @@ func TestAppInit_listTemplateContent(t *testing.T) {
 				Path:     t.TempDir(),
 			},
 			want:  []string{"Gemfile", "app.json", "app.rb"},
+			want1: []string{"fixtures"},
+		},
+		{
+			name: "lists files and dir content for go app embedded template",
+			fields: fields{
+				AppName:  "testapp",
+				Language: ir.GoLang,
+				Path:     t.TempDir(),
+			},
+			want:  []string{"README.md", "app.go", "app.json", "app_test.go"},
 			want1: []string{"fixtures"},
 		},
 	}
@@ -178,9 +222,11 @@ func TestAppInit_Init(t *testing.T) {
 		Path     string
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		wantErr bool
+		name            string
+		fields          fields
+		wantFiles       []string
+		wantFixtureFile string
+		wantErr         bool
 	}{
 		{
 			name: "copies the ruby app template to the path",
@@ -189,7 +235,20 @@ func TestAppInit_Init(t *testing.T) {
 				Language: ir.Ruby,
 				Path:     t.TempDir(),
 			},
-			wantErr: false,
+			wantFiles:       []string{"app.json", "app.rb", "Gemfile"},
+			wantFixtureFile: "demo.json",
+			wantErr:         false,
+		},
+		{
+			name: "copies the go app template to the path",
+			fields: fields{
+				AppName:  "testapp",
+				Language: ir.GoLang,
+				Path:     t.TempDir(),
+			},
+			wantFiles:       []string{"app.json", "app_test.go", "app.go", "README.md"},
+			wantFixtureFile: "demo-no-cdc.json",
+			wantErr:         false,
 		},
 	}
 	for _, tt := range tests {
@@ -204,10 +263,10 @@ func TestAppInit_Init(t *testing.T) {
 			}
 
 			require.DirExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName))
-			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "app.json"))
-			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "app.rb"))
-			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "Gemfile"))
-			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "fixtures", "demo.json"))
+			for _, f := range tt.wantFiles {
+				require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, f))
+			}
+			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "fixtures", tt.wantFixtureFile))
 		})
 	}
 }
