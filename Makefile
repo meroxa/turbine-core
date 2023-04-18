@@ -8,7 +8,10 @@ vet:
 
 .PHONY: test
 test: vet
-	go test ./... -coverprofile=c.out -covermode=atomic -v
+	go test `go list ./... | grep -v 'turbine-core\/pkg\/app\/templates\/go'` \
+	-coverprofile=c.out \
+	-covermode=atomic \
+	-v
 
 .PHONY: test_turbine_rb
 test_turbine_rb:
