@@ -186,11 +186,14 @@ func TestWriteCollectionToResource(t *testing.T) {
 		{
 			description: "empty request",
 			req:         &pb.WriteCollectionRequest{},
-			errMsg:      "please provide a collection name to 'write'",
+			errMsg:      "invalid WriteCollectionRequest.Resource: value is required",
 		},
 		{
 			description: "specBuilderService has existing connector",
 			req: &pb.WriteCollectionRequest{
+				Resource: &pb.Resource{
+					Name: "pg",
+				},
 				TargetCollection: "accounts_copy",
 				Configs:          nil,
 			},
@@ -213,6 +216,9 @@ func TestWriteCollectionToResource(t *testing.T) {
 		{
 			description: "successfully store destination information with config",
 			req: &pb.WriteCollectionRequest{
+				Resource: &pb.Resource{
+					Name: "pg",
+				},
 				TargetCollection: "accounts_copy",
 				Configs: &pb.Configs{
 					Config: []*pb.Config{
