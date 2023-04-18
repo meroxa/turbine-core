@@ -101,7 +101,7 @@ func (a *AppInit) listTemplateContent() ([]string, []string, error) {
 	return files, directories, nil
 }
 
-func NewAppInit(appName, language, path string) *AppInit {
+func NewAppInit(appName string, language ir.Lang, path string) *AppInit {
 	return &AppInit{
 		AppName:  appName,
 		Language: language,
