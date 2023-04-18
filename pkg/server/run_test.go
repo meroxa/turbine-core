@@ -112,7 +112,7 @@ func Test_Init(t *testing.T) {
 					Resources: map[string]string{
 						"demopg": "fixtures/demo.json",
 					},
-					Language: string(ir.Ruby),
+					Language: ir.Ruby,
 				})
 			}
 		})
