@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"io"
 	"os"
 	"path"
@@ -73,14 +75,14 @@ func Test_Init(t *testing.T) {
 					t,
 					os.WriteFile(
 						file,
-						[]byte(`{
+						[]byte(fmt.Sprintf(`{
 							"name": "app",
-							"language": "ruby",
+							"language": "%s",
 							"environment": "common",
 							"resources": {
 								"demopg": "fixtures/demo.json"
 							}
-						}`),
+						}`, ir.Ruby)),
 						0644,
 					),
 				)
@@ -105,12 +107,12 @@ func Test_Init(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, s.appPath, req.ConfigFilePath)
 				assert.Equal(t, s.config, app.Config{
-					Name:        "app",
-					Pipeline:    "turbine-pipeline-app",
+					Name:     "app",
+					Pipeline: "turbine-pipeline-app",
 					Resources: map[string]string{
 						"demopg": "fixtures/demo.json",
 					},
-					Language: "ruby",
+					Language: ir.Ruby,
 				})
 			}
 		})
