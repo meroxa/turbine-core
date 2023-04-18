@@ -95,10 +95,18 @@ func ValidateSpecVersion(ver string) error {
 	)
 }
 
-func (d *DeploymentSpec) SetImageForFunctions(image string) {
+func (d *DeploymentSpec) SetImageForFunctions(image string) error {
+	switch {
+	case image == "" && len(d.Functions) > 0:
+		return fmt.Errorf("empty image for functions")
+	case image != "" && len(d.Functions) == 0:
+		return fmt.Errorf("cannot set image without defined functions")
+	}
+
 	for i := range d.Functions {
 		d.Functions[i].Image = image
 	}
+	return nil
 }
 
 func (d *DeploymentSpec) Marshal() ([]byte, error) {

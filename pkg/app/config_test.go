@@ -100,7 +100,6 @@ func setupAppJsonWithDeprecatedFields(t *testing.T) string {
 	return tmpdir
 }
 
-
 func setupAppJsonMissingField(t *testing.T) string {
 	tmpdir := t.TempDir()
 	if err := os.WriteFile(
