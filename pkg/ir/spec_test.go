@@ -174,7 +174,7 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 	}
 
-	deploySpec :=  &ir.DeploymentSpec{}
+	deploySpec := &ir.DeploymentSpec{}
 	if err := json.Unmarshal(jsonSpec, deploySpec); err != nil {
 		t.Fatal(err)
 	}

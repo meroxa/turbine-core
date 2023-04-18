@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"path/filepath"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestAppInit_createAppDirectory(t *testing.T) {
 			name: "creates the app directory",
 			fields: fields{
 				AppName:  "createappdir",
-				Language: "ruby",
+				Language: string(ir.Ruby),
 				Path:     t.TempDir(),
 			},
 			wantErr: false,
@@ -59,7 +60,7 @@ func TestAppInit_createFixtures(t *testing.T) {
 			name: "creates the fixtures directory",
 			fields: fields{
 				AppName:  "createfixtures",
-				Language: "ruby",
+				Language: string(ir.Ruby),
 				Path:     t.TempDir(),
 			},
 			wantErr: false,
@@ -102,7 +103,7 @@ func TestAppInit_duplicateFile(t *testing.T) {
 			name: "duplicates the file from the embedded fs",
 			fields: fields{
 				AppName:  "duplicatefile",
-				Language: "ruby",
+				Language: string(ir.Ruby),
 				Path:     t.TempDir(),
 			},
 			args: args{
@@ -144,7 +145,7 @@ func TestAppInit_listTemplateContent(t *testing.T) {
 			name: "lists files and dir content for ruby app embedded template",
 			fields: fields{
 				AppName:  "testapp",
-				Language: "ruby",
+				Language: string(ir.Ruby),
 				Path:     t.TempDir(),
 			},
 			want:  []string{"Gemfile", "app.json", "app.rb"},
@@ -185,7 +186,7 @@ func TestAppInit_Init(t *testing.T) {
 			name: "copies the ruby app template to the path",
 			fields: fields{
 				AppName:  "testapp",
-				Language: "ruby",
+				Language: string(ir.Ruby),
 				Path:     t.TempDir(),
 			},
 			wantErr: false,

@@ -26,7 +26,7 @@ func TestInit(t *testing.T) {
 					GitSha: "gitsha",
 					Metadata: ir.MetadataSpec{
 						Turbine: ir.TurbineSpec{
-							Language: "ruby",
+							Language: ir.Ruby,
 							Version:  "0.1.0",
 						},
 						SpecVersion: ir.LatestSpecVersion,
