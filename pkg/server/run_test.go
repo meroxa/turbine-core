@@ -5,11 +5,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"io"
 	"os"
 	"path"
 	"testing"
+
+	"github.com/meroxa/turbine-core/pkg/ir"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/app"
@@ -83,7 +84,7 @@ func Test_Init(t *testing.T) {
 								"demopg": "fixtures/demo.json"
 							}
 						}`, ir.Ruby)),
-						0644,
+						0o644,
 					),
 				)
 
@@ -356,7 +357,7 @@ func Test_ReadCollection(t *testing.T) {
 								"timestamp": "1662758822"
 							}]
 						}`),
-						0644,
+						0o644,
 					),
 				)
 				return &pb.ReadCollectionRequest{

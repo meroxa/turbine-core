@@ -84,10 +84,8 @@ func TestInit(t *testing.T) {
 			} else {
 				require.ErrorContains(t, err, test.want.Error())
 			}
-
 		})
 	}
-
 }
 
 func TestGetResource(t *testing.T) {
@@ -111,7 +109,6 @@ func TestReadCollection(t *testing.T) {
 		want            *ir.DeploymentSpec
 		errMsg          string
 	}{
-
 		{
 			description: "successfully store source information",
 			req: &pb.ReadCollectionRequest{
@@ -172,7 +169,6 @@ func TestReadCollection(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestWriteCollectionToResource(t *testing.T) {
@@ -285,7 +281,6 @@ func TestWriteCollectionToResource(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestAddProcessToCollection(t *testing.T) {
@@ -303,7 +298,6 @@ func TestAddProcessToCollection(t *testing.T) {
 
 	read, err := s.ReadCollection(ctx,
 		&pb.ReadCollectionRequest{
-
 			Collection: "accounts",
 			Resource: &pb.Resource{
 				Name:       "pg",
@@ -330,7 +324,6 @@ func TestAddProcessToCollection(t *testing.T) {
 	require.Equal(t, s.spec.Functions[0].Name, want.Functions[0].Name)
 	require.Equal(t, s.spec.Streams[0].FromUUID, read.Stream)
 	require.Equal(t, s.spec.Streams[0].ToUUID, res.Stream)
-
 }
 
 func TestRegisterSecret(t *testing.T) {
@@ -361,7 +354,6 @@ func TestRegisterSecret(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, empty(), res)
 	require.Equal(t, want.Secrets, s.spec.Secrets)
-
 }
 
 func TestHasFunctions(t *testing.T) {

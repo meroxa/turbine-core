@@ -4,15 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"strings"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/heimdalr/dag"
 )
 
-type ConnectorType string
-type Lang string
+type (
+	ConnectorType string
+	Lang          string
+)
 
 const (
 	GoLang     Lang = "golang"

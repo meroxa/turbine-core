@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"strings"
-	//"fmt"
 
 	"github.com/google/uuid"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
@@ -38,8 +37,8 @@ func (s *specBuilderService) Init(_ context.Context, req *pb.InitRequest) (*empt
 		GitSha: req.GetGitSHA(),
 		Metadata: ir.MetadataSpec{
 			Turbine: ir.TurbineSpec{
-				Language: ir.Lang(strings.ToLower(req.GetLanguage().String())),
-				Version:  req.GetTurbineVersion(),
+				Language: ir.Lang(strings.ToLower(req.Language.String())),
+				Version:  req.TurbineVersion,
 			},
 			SpecVersion: ir.LatestSpecVersion,
 		},
