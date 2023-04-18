@@ -263,8 +263,8 @@ func TestAppInit_Init(t *testing.T) {
 			}
 
 			require.DirExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName))
-			for _, file := range tt.wantFiles {
-				require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, file))
+			for _, f := range tt.wantFiles {
+				require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, f))
 			}
 			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, "fixtures", tt.wantFixtureFile))
 		})
