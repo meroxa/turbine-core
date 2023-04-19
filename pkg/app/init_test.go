@@ -21,7 +21,7 @@ func TestAppInit_createAppDirectory(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "creates the app directory",
+			name: "creates the ruby app directory",
 			fields: fields{
 				AppName:  "createappdir",
 				Language: ir.Ruby,
@@ -30,10 +30,19 @@ func TestAppInit_createAppDirectory(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "creates the app directory",
+			name: "creates the go app directory",
 			fields: fields{
 				AppName:  "createappdir",
 				Language: ir.GoLang,
+				Path:     t.TempDir(),
+			},
+			wantErr: false,
+		},
+		{
+			name: "creates the js app directory",
+			fields: fields{
+				AppName:  "createappdir",
+				Language: ir.JavaScript,
 				Path:     t.TempDir(),
 			},
 			wantErr: false,
@@ -68,7 +77,7 @@ func TestAppInit_createFixtures(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "creates the fixtures directory",
+			name: "creates the ruby fixtures directory",
 			fields: fields{
 				AppName:  "createfixtures",
 				Language: ir.Ruby,
@@ -78,10 +87,20 @@ func TestAppInit_createFixtures(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "creates the fixtures directory",
+			name: "creates the go fixtures directory",
 			fields: fields{
 				AppName:  "createfixtures",
 				Language: ir.GoLang,
+				Path:     t.TempDir(),
+			},
+			want:    "demo-cdc.json",
+			wantErr: false,
+		},
+		{
+			name: "creates the js fixtures directory",
+			fields: fields{
+				AppName:  "createfixtures",
+				Language: ir.JavaScript,
 				Path:     t.TempDir(),
 			},
 			want:    "demo-cdc.json",
@@ -122,7 +141,7 @@ func TestAppInit_duplicateFile(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "duplicates the file from the embedded fs",
+			name: "duplicates the ruby file from the embedded fs",
 			fields: fields{
 				AppName:  "duplicatefile",
 				Language: ir.Ruby,
@@ -134,7 +153,7 @@ func TestAppInit_duplicateFile(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "duplicates the file from the embedded fs",
+			name: "duplicates the go file from the embedded fs",
 			fields: fields{
 				AppName:  "duplicatefile",
 				Language: ir.GoLang,
@@ -142,6 +161,18 @@ func TestAppInit_duplicateFile(t *testing.T) {
 			},
 			args: args{
 				fileName: "app_test.go",
+			},
+			wantErr: false,
+		},
+		{
+			name: "duplicates the js file from the embedded fs",
+			fields: fields{
+				AppName:  "duplicatefile",
+				Language: ir.JavaScript,
+				Path:     t.TempDir(),
+			},
+			args: args{
+				fileName: "index.js",
 			},
 			wantErr: false,
 		},
@@ -193,6 +224,16 @@ func TestAppInit_listTemplateContent(t *testing.T) {
 				Path:     t.TempDir(),
 			},
 			want:  []string{"README.md", "app.go", "app.json", "app_test.go"},
+			want1: []string{"fixtures"},
+		},
+		{
+			name: "lists files and dir content for js app embedded template",
+			fields: fields{
+				AppName:  "testapp",
+				Language: ir.JavaScript,
+				Path:     t.TempDir(),
+			},
+			want:  []string{"README.md", "app.json", "index.js", "index.test.js", "package.json"},
 			want1: []string{"fixtures"},
 		},
 	}
@@ -247,6 +288,17 @@ func TestAppInit_Init(t *testing.T) {
 				Path:     t.TempDir(),
 			},
 			wantFiles:       []string{"app.json", "app_test.go", "app.go", "README.md"},
+			wantFixtureFile: "demo-no-cdc.json",
+			wantErr:         false,
+		},
+		{
+			name: "copies the go app template to the path",
+			fields: fields{
+				AppName:  "testapp",
+				Language: ir.JavaScript,
+				Path:     t.TempDir(),
+			},
+			wantFiles:       []string{"app.json", "package.json", "index.js", "index.test.js", "README.md"},
 			wantFixtureFile: "demo-no-cdc.json",
 			wantErr:         false,
 		},
