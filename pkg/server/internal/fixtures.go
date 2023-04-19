@@ -3,10 +3,10 @@ package internal
 import (
 	"context"
 	"encoding/json"
-	"os"
-	"time"
 	"fmt"
+	"os"
 	"text/tabwriter"
+	"time"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"google.golang.org/protobuf/types/known/timestamppb"
