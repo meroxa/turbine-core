@@ -180,7 +180,6 @@ func Test_DeploymentSpec(t *testing.T) {
 	}
 
 	assert.Equal(t, deploySpec, expectedSpec)
-
 }
 
 func Test_ValidateVersion(t *testing.T) {

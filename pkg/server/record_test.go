@@ -71,29 +71,27 @@ func TestInit(t *testing.T) {
 		t.Run(test.test, func(t *testing.T) {
 			var (
 				ctx = context.Background()
-				s   = NewRecordService()
+				s   = NewSpecBuilderService()
 			)
 			res, err := s.Init(ctx, test.request)
 
 			if test.want == nil {
 				require.Nil(t, err)
 				require.Equal(t, empty(), res)
-				require.Equal(t, test.spec.Functions, s.deploymentSpec.Functions)
-				require.Equal(t, test.spec.Connectors, s.deploymentSpec.Connectors)
-				require.Equal(t, test.spec.Streams, s.deploymentSpec.Streams)
+				require.Equal(t, test.spec.Functions, s.spec.Functions)
+				require.Equal(t, test.spec.Connectors, s.spec.Connectors)
+				require.Equal(t, test.spec.Streams, s.spec.Streams)
 			} else {
 				require.ErrorContains(t, err, test.want.Error())
 			}
-
 		})
 	}
-
 }
 
 func TestGetResource(t *testing.T) {
 	var (
 		ctx = context.Background()
-		s   = NewRecordService()
+		s   = NewSpecBuilderService()
 	)
 
 	res, err := s.GetResource(ctx, &pb.GetResourceRequest{
@@ -106,12 +104,11 @@ func TestGetResource(t *testing.T) {
 func TestReadCollection(t *testing.T) {
 	tests := []struct {
 		description     string
-		populateService func(*recordService) *recordService
+		populateService func(*specBuilderService) *specBuilderService
 		req             *pb.ReadCollectionRequest
 		want            *ir.DeploymentSpec
 		errMsg          string
 	}{
-
 		{
 			description: "successfully store source information",
 			req: &pb.ReadCollectionRequest{
@@ -153,7 +150,7 @@ func TestReadCollection(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			var (
 				ctx = context.Background()
-				s   = NewRecordService()
+				s   = NewSpecBuilderService()
 			)
 			if test.populateService != nil {
 				s = test.populateService(s)
@@ -165,20 +162,19 @@ func TestReadCollection(t *testing.T) {
 			} else {
 				require.Nil(t, err)
 				require.Equal(t, test.req.Resource.Collection, res.Name)
-				require.NotEmpty(t, s.deploymentSpec.Connectors)
-				require.Equal(t, s.deploymentSpec.Connectors[0].Collection, res.Name)
-				require.Equal(t, s.deploymentSpec.Connectors[0].UUID, res.Stream)
-				require.Equal(t, s.deploymentSpec.Connectors[0].Type, ir.ConnectorType("source"))
+				require.NotEmpty(t, s.spec.Connectors)
+				require.Equal(t, s.spec.Connectors[0].Collection, res.Name)
+				require.Equal(t, s.spec.Connectors[0].UUID, res.Stream)
+				require.Equal(t, s.spec.Connectors[0].Type, ir.ConnectorType("source"))
 			}
 		})
 	}
-
 }
 
 func TestWriteCollectionToResource(t *testing.T) {
 	tests := []struct {
 		description     string
-		populateService func(*recordService) *recordService
+		populateService func(*specBuilderService) *specBuilderService
 		req             *pb.WriteCollectionRequest
 		want            *ir.DeploymentSpec
 		errMsg          string
@@ -186,11 +182,14 @@ func TestWriteCollectionToResource(t *testing.T) {
 		{
 			description: "empty request",
 			req:         &pb.WriteCollectionRequest{},
-			errMsg:      "please provide a collection name to 'write'",
+			errMsg:      "invalid WriteCollectionRequest.Resource: value is required",
 		},
 		{
-			description: "recordService has existing connector",
+			description: "specBuilderService has existing connector",
 			req: &pb.WriteCollectionRequest{
+				Resource: &pb.Resource{
+					Name: "pg",
+				},
 				TargetCollection: "accounts_copy",
 				Configs:          nil,
 			},
@@ -213,6 +212,9 @@ func TestWriteCollectionToResource(t *testing.T) {
 		{
 			description: "successfully store destination information with config",
 			req: &pb.WriteCollectionRequest{
+				Resource: &pb.Resource{
+					Name: "pg",
+				},
 				TargetCollection: "accounts_copy",
 				Configs: &pb.Configs{
 					Config: []*pb.Config{
@@ -247,7 +249,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			var (
 				ctx = context.Background()
-				s   = NewRecordService()
+				s   = NewSpecBuilderService()
 			)
 
 			source, err := s.ReadCollection(ctx,
@@ -272,20 +274,19 @@ func TestWriteCollectionToResource(t *testing.T) {
 
 				require.Nil(t, err)
 				require.Equal(t, empty(), res)
-				require.NotEmpty(t, s.deploymentSpec.Streams)
-				require.NotEmpty(t, s.deploymentSpec.Connectors)
-				require.Equal(t, s.deploymentSpec.Streams[0].FromUUID, source.Stream)
-				require.Equal(t, s.deploymentSpec.Streams[0].ToUUID, s.deploymentSpec.Connectors[1].UUID)
+				require.NotEmpty(t, s.spec.Streams)
+				require.NotEmpty(t, s.spec.Connectors)
+				require.Equal(t, s.spec.Streams[0].FromUUID, source.Stream)
+				require.Equal(t, s.spec.Streams[0].ToUUID, s.spec.Connectors[1].UUID)
 			}
 		})
 	}
-
 }
 
 func TestAddProcessToCollection(t *testing.T) {
 	var (
 		ctx  = context.Background()
-		s    = NewRecordService()
+		s    = NewSpecBuilderService()
 		want = &ir.DeploymentSpec{
 			Functions: []ir.FunctionSpec{
 				{
@@ -297,7 +298,6 @@ func TestAddProcessToCollection(t *testing.T) {
 
 	read, err := s.ReadCollection(ctx,
 		&pb.ReadCollectionRequest{
-
 			Collection: "accounts",
 			Resource: &pb.Resource{
 				Name:       "pg",
@@ -320,17 +320,16 @@ func TestAddProcessToCollection(t *testing.T) {
 
 	require.Nil(t, err)
 	require.NotEmpty(t, res)
-	require.NotEmpty(t, s.deploymentSpec.Functions)
-	require.Equal(t, s.deploymentSpec.Functions[0].Name, want.Functions[0].Name)
-	require.Equal(t, s.deploymentSpec.Streams[0].FromUUID, read.Stream)
-	require.Equal(t, s.deploymentSpec.Streams[0].ToUUID, res.Stream)
-
+	require.NotEmpty(t, s.spec.Functions)
+	require.Equal(t, s.spec.Functions[0].Name, want.Functions[0].Name)
+	require.Equal(t, s.spec.Streams[0].FromUUID, read.Stream)
+	require.Equal(t, s.spec.Streams[0].ToUUID, res.Stream)
 }
 
 func TestRegisterSecret(t *testing.T) {
 	var (
 		ctx  = context.Background()
-		s    = NewRecordService()
+		s    = NewSpecBuilderService()
 		want = &ir.DeploymentSpec{
 			Secrets: map[string]string{
 				"api_key":     "secret_key",
@@ -354,14 +353,13 @@ func TestRegisterSecret(t *testing.T) {
 		})
 	require.Nil(t, err)
 	require.Equal(t, empty(), res)
-	require.Equal(t, want.Secrets, s.deploymentSpec.Secrets)
-
+	require.Equal(t, want.Secrets, s.spec.Secrets)
 }
 
 func TestHasFunctions(t *testing.T) {
 	tests := []struct {
 		description     string
-		populateService func(*recordService) *recordService
+		populateService func(*specBuilderService) *specBuilderService
 		want            bool
 	}{
 		{
@@ -370,8 +368,8 @@ func TestHasFunctions(t *testing.T) {
 		},
 		{
 			description: "service with function",
-			populateService: func(s *recordService) *recordService {
-				s.deploymentSpec.Functions = []ir.FunctionSpec{
+			populateService: func(s *specBuilderService) *specBuilderService {
+				s.spec.Functions = []ir.FunctionSpec{
 					{
 						Name: "addition",
 					},
@@ -386,7 +384,7 @@ func TestHasFunctions(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			var (
 				ctx = context.Background()
-				s   = NewRecordService()
+				s   = NewSpecBuilderService()
 			)
 			if test.populateService != nil {
 				s = test.populateService(s)
@@ -402,7 +400,7 @@ func TestHasFunctions(t *testing.T) {
 func TestListResources(t *testing.T) {
 	tests := []struct {
 		description     string
-		populateService func(*recordService) *recordService
+		populateService func(*specBuilderService) *specBuilderService
 		want            *pb.ListResourcesResponse
 	}{
 		{
@@ -411,7 +409,7 @@ func TestListResources(t *testing.T) {
 		},
 		{
 			description: "service with resources",
-			populateService: func(s *recordService) *recordService {
+			populateService: func(s *specBuilderService) *specBuilderService {
 				s.resources = []*pb.Resource{
 					{
 						Name: "pg",
@@ -451,7 +449,7 @@ func TestListResources(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			var (
 				ctx = context.Background()
-				s   = NewRecordService()
+				s   = NewSpecBuilderService()
 			)
 			if test.populateService != nil {
 				s = test.populateService(s)
@@ -465,18 +463,19 @@ func TestListResources(t *testing.T) {
 }
 
 func TestGetSpec(t *testing.T) {
+	ctx := context.Background()
 	tests := []struct {
 		description     string
-		populateService func(*recordService) *recordService
+		populateService func(*specBuilderService) *specBuilderService
 		request         *pb.GetSpecRequest
 		want            *ir.DeploymentSpec
 		wantErr         error
 	}{
 		{
 			description: "get spec with no function",
-			populateService: func(s *recordService) *recordService {
-				s.deploymentSpec = exampleDeploymentSpec()
-				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+			populateService: func(s *specBuilderService) *specBuilderService {
+				s.spec = exampleDeploymentSpec()
+				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "1_3",
 					FromUUID: "1",
 					ToUUID:   "3",
@@ -484,6 +483,9 @@ func TestGetSpec(t *testing.T) {
 				})
 
 				return s
+			},
+			request: &pb.GetSpecRequest{
+				Image: "",
 			},
 			want: func() *ir.DeploymentSpec {
 				s := exampleDeploymentSpec()
@@ -495,13 +497,12 @@ func TestGetSpec(t *testing.T) {
 				})
 				return s
 			}(),
-			wantErr: nil,
 		},
 		{
 			description: "get spec with no function, set image",
-			populateService: func(s *recordService) *recordService {
-				s.deploymentSpec = exampleDeploymentSpec()
-				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+			populateService: func(s *specBuilderService) *specBuilderService {
+				s.spec = exampleDeploymentSpec()
+				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "1_3",
 					FromUUID: "1",
 					ToUUID:   "3",
@@ -512,24 +513,24 @@ func TestGetSpec(t *testing.T) {
 			request: &pb.GetSpecRequest{
 				Image: "some/image",
 			},
-			wantErr: fmt.Errorf("cannot set function image since spec has no functions"),
+			wantErr: fmt.Errorf("cannot set image without defined functions"),
 		},
 		{
 			description: "get spec with function",
-			populateService: func(s *recordService) *recordService {
-				s.deploymentSpec = exampleDeploymentSpec()
-				s.deploymentSpec.Functions = append(s.deploymentSpec.Functions, ir.FunctionSpec{
+			populateService: func(s *specBuilderService) *specBuilderService {
+				s.spec = exampleDeploymentSpec()
+				s.spec.Functions = append(s.spec.Functions, ir.FunctionSpec{
 					UUID:  "2",
 					Name:  "function",
 					Image: "some/image",
 				})
-				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "1_2",
 					FromUUID: "1",
 					ToUUID:   "2",
 					Name:     "1_2",
 				})
-				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "2_3",
 					FromUUID: "2",
 					ToUUID:   "3",
@@ -568,20 +569,20 @@ func TestGetSpec(t *testing.T) {
 		},
 		{
 			description: "get spec with function, overwrite image",
-			populateService: func(s *recordService) *recordService {
-				s.deploymentSpec = exampleDeploymentSpec()
-				s.deploymentSpec.Functions = append(s.deploymentSpec.Functions, ir.FunctionSpec{
+			populateService: func(s *specBuilderService) *specBuilderService {
+				s.spec = exampleDeploymentSpec()
+				s.spec.Functions = append(s.spec.Functions, ir.FunctionSpec{
 					UUID:  "2",
 					Name:  "function",
 					Image: "some/image",
 				})
-				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "1_2",
 					FromUUID: "1",
 					ToUUID:   "2",
 					Name:     "1_2",
 				})
-				s.deploymentSpec.Streams = append(s.deploymentSpec.Streams, ir.StreamSpec{
+				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "2_3",
 					FromUUID: "2",
 					ToUUID:   "3",
@@ -623,10 +624,7 @@ func TestGetSpec(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
-			var (
-				ctx = context.Background()
-			)
-			s := test.populateService(NewRecordService())
+			s := test.populateService(NewSpecBuilderService())
 			res, err := s.GetSpec(ctx, test.request)
 			if test.wantErr == nil && err == nil {
 				got, err := ir.Unmarshal(res.Spec)
