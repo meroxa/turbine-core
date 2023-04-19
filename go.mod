@@ -6,7 +6,6 @@ require (
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
 	github.com/google/uuid v1.3.0
 	github.com/heimdalr/dag v1.2.1
-	github.com/jedib0t/go-pretty/v6 v6.4.6
 	github.com/meroxa/turbine-go v1.0.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.0
 	github.com/stretchr/testify v1.8.1
@@ -20,11 +19,9 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/meroxa/meroxa-go v0.0.0-20221017201107-221ac11788e1 // indirect
 	github.com/oklog/run v1.1.1-0.20200508094559-c7096881717e // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/tidwall/gjson v1.14.3 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
