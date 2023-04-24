@@ -15,6 +15,11 @@ const (
 	ListenAddress = "localhost:50500"
 )
 
+type Server interface {
+	Run(context.Context)
+	GracefulStop()
+}
+
 type turbineCoreServer struct {
 	*grpc.Server
 }
