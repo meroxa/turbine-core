@@ -22,6 +22,11 @@ type client struct {
 func DialTimeout(addr string, timeout time.Duration) (*client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
+
+	return DialContext(ctx, addr)
+}
+
+func DialContext(ctx context.Context, addr string) (*client, error) {
 	c, err := grpc.DialContext(
 		ctx,
 		addr,
