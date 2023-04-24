@@ -20,6 +20,9 @@ github.com/emirpasic/gods/utils
 # github.com/envoyproxy/protoc-gen-validate v0.9.1
 ## explicit; go 1.17
 github.com/envoyproxy/protoc-gen-validate/validate
+# github.com/golang/mock v1.6.0
+## explicit; go 1.11
+github.com/golang/mock/gomock
 # github.com/golang/protobuf v1.5.2
 ## explicit; go 1.9
 github.com/golang/protobuf/jsonpb

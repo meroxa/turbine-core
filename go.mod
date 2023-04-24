@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v0.9.1
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
 	github.com/heimdalr/dag v1.2.1
 	github.com/meroxa/turbine-go v1.0.0
