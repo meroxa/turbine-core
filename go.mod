@@ -3,13 +3,13 @@ module github.com/meroxa/turbine-core
 go 1.19
 
 require (
-	github.com/envoyproxy/protoc-gen-validate v0.9.1
+	github.com/envoyproxy/protoc-gen-validate v0.10.1
 	github.com/google/uuid v1.3.0
 	github.com/heimdalr/dag v1.2.1
 	github.com/meroxa/turbine-go v1.0.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.0
 	github.com/stretchr/testify v1.8.2
-	google.golang.org/grpc v1.54.0
+	google.golang.org/grpc v1.53.0-dev
 	google.golang.org/protobuf v1.30.0
 )
 
