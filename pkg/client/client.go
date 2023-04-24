@@ -1,3 +1,5 @@
+//go:generate mockgen -source=client.go -package=mock -destination=mock/client_mock.go Client
+
 package client
 
 import (

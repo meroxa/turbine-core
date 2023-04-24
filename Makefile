@@ -14,6 +14,10 @@ gofumpt:
 fmt: gofumpt
 	gofumpt -l -w .
 
+.PHONY: generate
+generate:
+	go generate ./...
+
 .PHONY: test
 test: vet
 	go test `go list ./... | grep -v 'turbine-core\/pkg\/app\/templates\/go'` \
