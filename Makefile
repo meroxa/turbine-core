@@ -1,3 +1,5 @@
+MOCKGEN_VERSION   ?= v1.6.0
+
 .PHONY: gomod
 gomod:
 	go mod tidy && go mod vendor
@@ -15,7 +17,7 @@ fmt: gofumpt
 	gofumpt -l -w .
 
 .PHONY: generate
-generate:
+generate: mockgen-install
 	go generate ./...
 
 .PHONY: test
@@ -63,3 +65,6 @@ turbine_ruby_proto:
 		namely/protoc-all  \
 			-f ./turbine.proto \
 			-l ruby -o /out
+
+mockgen-install:
+	go install github.com/golang/mock/mockgen@$(MOCKGEN_VERSION)
