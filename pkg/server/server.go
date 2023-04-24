@@ -1,3 +1,5 @@
+//go:generate mockgen -source=server.go -package=mock -destination=mock/server_mock.go Server
+
 package server
 
 import (
