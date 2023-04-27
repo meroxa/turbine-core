@@ -457,7 +457,7 @@ func Test_ValidSpec(t *testing.T) {
 			spec: `{
 						"secrets": {
 							"API_KEY": "token"
-						}, 
+						},
 						"functions": [
 							{
 								"uuid": "d07f1a3d-f7e2-4495-a8fe-df46bef38a2b",
@@ -468,25 +468,25 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"type": "source",
-								"config": {}, 
-								"resource": "pg", 
+								"config": {},
+								"resource": "pg",
 								"collection": "sequences"
-							}, 
+							},
 							{
 								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
-								"type": "destination", 
-								"config": {}, 
-								"resource": "pg", 
+								"type": "destination",
+								"config": {},
+								"resource": "pg",
 								"collection": "test_py_feature_branch"
 							}
-						], 
+						],
 						"definition": {
-							"git_sha": "b1537986d46bcd810960696d1e6df739e7bcc592", 
+							"git_sha": "b1537986d46bcd810960696d1e6df739e7bcc592",
 							"metadata": {
 								"turbine": {
-									"version": "1.5.1", 
-									"language": "py"
-								}, 
+									"version": "1.5.1",
+									"language": "python"
+								},
 								"spec_version": "0.2.0"
 							}
 						}
@@ -541,7 +541,7 @@ func Test_ValidSpec(t *testing.T) {
 						"metadata": {
 							"turbine": {
 								"version": "1.5.1",
-								"language": "py"
+								"language": "python"
 							},
 							"spec_version": "0.2.0"
 						}
