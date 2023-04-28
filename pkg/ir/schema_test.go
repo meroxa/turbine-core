@@ -541,7 +541,7 @@ func Test_ValidSpec(t *testing.T) {
 						"metadata": {
 							"turbine": {
 								"version": "1.5.1",
-								"language": "python"
+								"language": "py"
 							},
 							"spec_version": "0.2.0"
 						}
