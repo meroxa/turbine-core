@@ -19,8 +19,11 @@ const (
 
 type Server interface {
 	Run(context.Context)
+	RunAddr(context.Context, string)
 	GracefulStop()
 }
+
+var _ Server = (*turbineCoreServer)(nil)
 
 type turbineCoreServer struct {
 	*grpc.Server
