@@ -43,7 +43,11 @@ func NewRecordServer() *turbineCoreServer {
 }
 
 func (s *turbineCoreServer) Run(ctx context.Context) {
-	listener, err := net.Listen("tcp", ListenAddress)
+	s.RunAddr(ctx, ListenAddress)
+}
+
+func (s *turbineCoreServer) RunAddr(ctx context.Context, addr string) {
+	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
