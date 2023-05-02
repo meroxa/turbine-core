@@ -53,7 +53,7 @@ func (a App) Run(v turbine.Turbine) error {
 	// with the `Process` function
 	// Replace `Anonymize` with the name of your function code.
 
-	res, err:= v.Process(rr, Anonymize{})
+	res, err := v.Process(rr, Anonymize{})
 	if err != nil {
 		return err
 	}
