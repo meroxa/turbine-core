@@ -8,12 +8,12 @@ import (
 	"log"
 
 	// Dependencies of Turbine
-	"github.com/meroxa/turbine-go"
-	"github.com/meroxa/turbine-go/runner"
+	"github.com/meroxa/turbine-go/pkg/turbine"
+	"github.com/meroxa/turbine-go/pkg/turbine/cmd"
 )
 
 func main() {
-	runner.Start(App{})
+	cmd.Start(App{})
 }
 
 var _ turbine.App = (*App)(nil)
