@@ -60,6 +60,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.ProcessCollectionRequest.Process" do
       optional :name, :string, 1
+      optional :script, :string, 2
     end
     add_message "turbine_core.Secret" do
       optional :name, :string, 1

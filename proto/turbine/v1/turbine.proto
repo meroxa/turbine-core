@@ -84,6 +84,7 @@ message Config {
 message ProcessCollectionRequest {
   message Process {
     string name = 1;
+    string script = 2;
   }
 
   Process process = 1 [(validate.rules).message.required = true];
