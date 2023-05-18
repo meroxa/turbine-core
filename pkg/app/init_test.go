@@ -223,7 +223,7 @@ func TestAppInit_listTemplateContent(t *testing.T) {
 				Language: ir.GoLang,
 				Path:     t.TempDir(),
 			},
-			want:  []string{"README.md", "app.go", "app.json", "app_test.go"},
+			want:  []string{".gitignore", "README.md", "app.go", "app.json", "app_test.go"},
 			want1: []string{"fixtures"},
 		},
 		{
@@ -233,7 +233,7 @@ func TestAppInit_listTemplateContent(t *testing.T) {
 				Language: ir.JavaScript,
 				Path:     t.TempDir(),
 			},
-			want:  []string{"README.md", "app.json", "index.js", "index.test.js", "package.json"},
+			want:  []string{".gitignore", "README.md", "app.json", "index.js", "index.test.js", "package.json"},
 			want1: []string{"fixtures"},
 		},
 	}
