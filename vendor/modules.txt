@@ -44,8 +44,8 @@ github.com/pmezard/go-difflib/difflib
 # github.com/santhosh-tekuri/jsonschema/v5 v5.3.0
 ## explicit; go 1.15
 github.com/santhosh-tekuri/jsonschema/v5
-# github.com/stretchr/testify v1.8.2
-## explicit; go 1.13
+# github.com/stretchr/testify v1.8.3
+## explicit; go 1.20
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/tidwall/gjson v1.14.4

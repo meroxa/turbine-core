@@ -9,7 +9,7 @@ require (
 	github.com/heimdalr/dag v1.2.1
 	github.com/meroxa/turbine-go v1.0.1-0.20230501205136-88d57eab23fc
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.0
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.3
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 )
