@@ -52,7 +52,8 @@ class App:
             # Specify which secrets in environment variables should be passed
             # into the Process.
             # Replace 'PWD' with the name of the environment variable.
-            turbine.register_secrets("PWD")
+            #
+            # turbine.register_secrets("PWD")
 
             # Specify what code to execute against upstream records
             # with the `process` function.
