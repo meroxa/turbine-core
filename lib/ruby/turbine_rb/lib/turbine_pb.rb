@@ -79,6 +79,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       value :PYTHON, 1
       value :JAVASCRIPT, 2
       value :RUBY, 3
+      value :JAVA, 4
     end
   end
 end

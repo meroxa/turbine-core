@@ -26,6 +26,7 @@ enum Language {
   PYTHON = 1;
   JAVASCRIPT = 2;
   RUBY = 3;
+  JAVA = 4;
 }
 
 message InitRequest {
