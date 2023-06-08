@@ -422,17 +422,6 @@ func (m *Collection) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetName()) < 1 {
-		err := CollectionValidationError{
-			field:  "Name",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	// no validation rules for Stream
 
 	for idx, item := range m.GetRecords() {
@@ -468,6 +457,8 @@ func (m *Collection) validate(all bool) error {
 		}
 
 	}
+
+	// no validation rules for Name
 
 	if len(errors) > 0 {
 		return CollectionMultiError(errors)
@@ -748,17 +739,6 @@ func (m *ReadCollectionRequest) validate(all bool) error {
 		}
 	}
 
-	if utf8.RuneCountInString(m.GetCollection()) < 1 {
-		err := ReadCollectionRequestValidationError{
-			field:  "Collection",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if all {
 		switch v := interface{}(m.GetConfigs()).(type) {
 		case interface{ ValidateAll() error }:
@@ -787,6 +767,8 @@ func (m *ReadCollectionRequest) validate(all bool) error {
 			}
 		}
 	}
+
+	// no validation rules for Collection
 
 	if len(errors) > 0 {
 		return ReadCollectionRequestMultiError(errors)

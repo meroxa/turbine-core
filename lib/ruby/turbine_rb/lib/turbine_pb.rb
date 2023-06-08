@@ -27,9 +27,9 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :collection, :string, 4
     end
     add_message "turbine_core.Collection" do
-      optional :name, :string, 1
       optional :stream, :string, 2
       repeated :records, :message, 3, "turbine_core.Record"
+      optional :name, :string, 4
     end
     add_message "turbine_core.Record" do
       optional :key, :string, 1
@@ -38,8 +38,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.ReadCollectionRequest" do
       optional :resource, :message, 1, "turbine_core.Resource"
-      optional :collection, :string, 2
       optional :configs, :message, 3, "turbine_core.Configs"
+      optional :collection, :string, 4
     end
     add_message "turbine_core.WriteCollectionRequest" do
       optional :resource, :message, 1, "turbine_core.Resource"
