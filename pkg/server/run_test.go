@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/meroxa/turbine-core/pkg/ir"
@@ -81,9 +82,9 @@ func Test_Init(t *testing.T) {
 							"language": "%s",
 							"environment": "common",
 							"resources": {
-								"demopg": "fixtures/demo.json"
+								"demopg": "%s"
 							}
-						}`, ir.Ruby)),
+						}`, ir.Ruby, filepath.Join("fixtures", "demo.json"))),
 						0o644,
 					),
 				)
@@ -111,7 +112,7 @@ func Test_Init(t *testing.T) {
 					Name:     "app",
 					Pipeline: "turbine-pipeline-app",
 					Resources: map[string]string{
-						"demopg": "fixtures/demo.json",
+						"demopg": filepath.Join("fixtures", "demo.json"),
 					},
 					Language: ir.Ruby,
 				})
