@@ -4,10 +4,11 @@ import (
 	"context"
 	"flag"
 	"log"
+	"os"
 
-	sdk "github.com/meroxa/turbine-go/pkg/turbine"
-	"github.com/meroxa/turbine-go/pkg/turbine/build"
-	"github.com/meroxa/turbine-go/pkg/turbine/server"
+	sdk "github.com/meroxa/turbine-go/v2/pkg/turbine"
+	"github.com/meroxa/turbine-go/v2/pkg/turbine/build"
+	"github.com/meroxa/turbine-go/v2/pkg/turbine/server"
 )
 
 const (
@@ -31,6 +32,7 @@ func Start(app sdk.App) {
 		ctx = context.Background()
 		cmd = parseFlags()
 	)
+	log.SetOutput(os.Stdout)
 
 	switch cmd {
 	case serverCmdName:
