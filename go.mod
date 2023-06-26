@@ -10,7 +10,7 @@ require (
 	github.com/meroxa/turbine-go/v2 v2.1.2
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.0
 	github.com/stretchr/testify v1.8.4
-	google.golang.org/grpc v1.56.0
+	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.30.0
 )
 
