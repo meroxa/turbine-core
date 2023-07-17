@@ -182,6 +182,69 @@ func Test_DeploymentSpec(t *testing.T) {
 	assert.Equal(t, deploySpec, expectedSpec)
 }
 
+func Test_DeploymentSpecFlink(t *testing.T) {
+	jsonSpec, err := os.ReadFile(path.Join("spectest", "0.2.0", "flink_spec.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expectedSpec := &ir.DeploymentSpec{
+		Secrets: map[string]string{
+			"key": "valuesecret",
+		},
+		Connectors: []ir.ConnectorSpec{
+			{
+				UUID:       "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+				Type:       ir.ConnectorSource,
+				Resource:   "mypg",
+				Collection: "user_activity",
+				Config: map[string]interface{}{
+					"logical_replication": true,
+				},
+			},
+			{
+				UUID:       "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+				Type:       ir.ConnectorDestination,
+				Resource:   "mypg",
+				Collection: "user_activity_enriched",
+			},
+		},
+		Definition: ir.DefinitionSpec{
+			GitSha: "3630e05a-98b7-43a0-aeb0-c9b5b0d4261c",
+			Metadata: ir.MetadataSpec{
+				SpecVersion: "0.2.1",
+			},
+		},
+		Streams: []ir.StreamSpec{
+			{
+				UUID:     "12345",
+				Name:     "my_stream1",
+				FromUUID: "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+				ToUUID:   "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+			},
+			{
+				UUID:     "123456",
+				Name:     "my_stream2",
+				FromUUID: "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+				ToUUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+			},
+		},
+		Flink: ir.FlinkSpec{
+			UUID:         "ffdc8b2e-45fa-4a11-9362-c69c21df4b75",
+			JarURL:       "www.somecool.url/where/da/jar/at",
+			PipelineUUID: "5150a8a4-ffd5-4ebf-925f-a921b69274d2",
+			Version:      "0.2.1",
+		},
+	}
+
+	deploySpec := &ir.DeploymentSpec{}
+	if err := json.Unmarshal(jsonSpec, deploySpec); err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, deploySpec, expectedSpec)
+}
+
 func Test_ValidateVersion(t *testing.T) {
 	testCases := []struct {
 		name         string

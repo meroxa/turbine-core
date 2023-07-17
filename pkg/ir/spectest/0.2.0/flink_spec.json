@@ -1,0 +1,48 @@
+{
+    "secrets": {
+        "key": "valuesecret"
+    },
+    "connectors": [
+        {
+            "uuid": "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+            "collection": "user_activity",
+            "type": "source",
+            "resource": "mypg",
+            "config": {
+                "logical_replication": true
+            }
+        },
+        {
+            "uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+            "collection": "user_activity_enriched",
+            "type": "destination",
+            "resource": "mypg"
+        }
+    ],
+    "streams": [
+        {
+            "uuid": "12345",
+            "name": "my_stream1",
+            "from_uuid": "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+            "to_uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea"
+        },
+        {
+            "uuid": "123456",
+            "name": "my_stream2",
+            "from_uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+            "to_uuid": "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d"
+        }
+    ],
+    "flink" : {
+        "uuid": "ffdc8b2e-45fa-4a11-9362-c69c21df4b75",
+        "jar_url": "www.somecool.url/where/da/jar/at",
+        "pipeline_uuid": "5150a8a4-ffd5-4ebf-925f-a921b69274d2",
+        "version": "0.2.1"
+    },
+    "definition": {
+        "git_sha": "3630e05a-98b7-43a0-aeb0-c9b5b0d4261c",
+        "metadata": {
+            "spec_version": "0.2.1"
+        }
+    }
+}
