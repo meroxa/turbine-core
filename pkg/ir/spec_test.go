@@ -209,10 +209,18 @@ func Test_DeploymentSpecFlink(t *testing.T) {
 				Collection: "user_activity_enriched",
 			},
 		},
+		Functions: []ir.FunctionSpec{
+			{
+				UUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+				Name:   "flink_pipeline",
+				JarURL: "flink/jar/url",
+				Type:   "flink",
+			},
+		},
 		Definition: ir.DefinitionSpec{
 			GitSha: "3630e05a-98b7-43a0-aeb0-c9b5b0d4261c",
 			Metadata: ir.MetadataSpec{
-				SpecVersion: "0.2.1",
+				SpecVersion: "0.2.0",
 			},
 		},
 		Streams: []ir.StreamSpec{
@@ -228,12 +236,6 @@ func Test_DeploymentSpecFlink(t *testing.T) {
 				FromUUID: "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 				ToUUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
 			},
-		},
-		Flink: ir.FlinkSpec{
-			UUID:         "ffdc8b2e-45fa-4a11-9362-c69c21df4b75",
-			JarURL:       "www.somecool.url/where/da/jar/at",
-			PipelineUUID: "5150a8a4-ffd5-4ebf-925f-a921b69274d2",
-			Version:      "0.2.1",
 		},
 	}
 

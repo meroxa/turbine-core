@@ -44,7 +44,6 @@ type DeploymentSpec struct {
 	Connectors  []ConnectorSpec   `json:"connectors"`
 	Functions   []FunctionSpec    `json:"functions,omitempty"`
 	Streams     []StreamSpec      `json:"streams,omitempty"`
-	Flink       FlinkSpec         `json:"flink,omitempty"`
 	Definition  DefinitionSpec    `json:"definition"`
 }
 
@@ -64,16 +63,11 @@ type ConnectorSpec struct {
 }
 
 type FunctionSpec struct {
-	UUID  string `json:"uuid"`
-	Name  string `json:"name"`
-	Image string `json:"image"`
-}
-
-type FlinkSpec struct {
-	UUID         string `json:"uuid"`
-	JarURL       string `json:"jar_url"`
-	PipelineUUID string `json:"pipeline_uuid"`
-	Version      string `json:"version"`
+	UUID   string `json:"uuid"`
+	Name   string `json:"name"`
+	Type   string `json:"type"`
+	Image  string `json:"image,omitempty"`
+	JarURL string `json:"jar_url,omitempty"`
 }
 
 type DefinitionSpec struct {
