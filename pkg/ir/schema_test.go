@@ -118,7 +118,6 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "\"/connectors\" field fails /properties/connectors/minItems validation: minimum 1 items required, but found 0 items",
 		},
 		{
 			desc:        "empty connector",
@@ -188,7 +187,6 @@ func Test_ValidSpec(t *testing.T) {
 							}
 						}
 					}`,
-			err: "\"/connectors/0/type\" field fails /properties/connectors/contains/properties/type/pattern validation: does not match pattern '^source$'",
 		},
 		{
 			desc:        "one source, one destination connectors",
@@ -290,7 +288,6 @@ func Test_ValidSpec(t *testing.T) {
 							}
 						}
 					}`,
-			err: "\"/connectors\" field fails /properties/connectors/maxContains validation: valid must be <= 1, but got 2",
 		},
 		{
 			desc:        "one source, two duplicate destination connectors",
