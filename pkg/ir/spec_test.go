@@ -1244,7 +1244,10 @@ func Test_Scenario10(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	_, err = spec.BuildDAG()
+	dag, err := spec.BuildDAG()
+	require.NoError(t, err)
+
+	err = spec.ValidateDAG(dag)
 	require.Error(t, err)
 	assert.Equal(t, err.Error(), "invalid DAG, too many sources")
 }
@@ -1306,11 +1309,19 @@ func Test_ValidateDAG(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			spec := tc.spec
-			_, err := spec.BuildDAG()
-			if tc.wantError != nil {
-				assert.Equal(t, err.Error(), tc.wantError.Error())
+			dag, buildError := spec.BuildDAG()
+			if tc.wantError != nil && buildError != nil {
+				assert.Equal(t, tc.wantError.Error(), buildError.Error())
+				return
 			} else {
-				assert.NoError(t, err)
+				assert.NoError(t, buildError)
+			}
+
+			validateError := spec.ValidateDAG(dag)
+			if tc.wantError != nil {
+				assert.Equal(t, tc.wantError.Error(), validateError.Error())
+			} else {
+				assert.NoError(t, validateError)
 			}
 		})
 	}

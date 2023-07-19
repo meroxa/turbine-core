@@ -227,7 +227,7 @@ func (d *DeploymentSpec) BuildDAG() (*dag.DAG, error) {
 		}
 	}
 
-	return turbineDag, d.ValidateDAG(turbineDag)
+	return turbineDag, nil
 }
 
 // upgradeToLatestSpecVersion will ensure that simple topologies as defined in 0.1.1 are still compatible
