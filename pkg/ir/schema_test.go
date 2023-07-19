@@ -102,7 +102,7 @@ func Test_ValidSpec(t *testing.T) {
 					}`,
 		},
 		{
-			desc:        "connectors list",
+			desc:        "allow an empty connectors list",
 			specVersion: "0.2.0",
 			spec: `{
 				"connectors": [
@@ -165,7 +165,7 @@ func Test_ValidSpec(t *testing.T) {
 			err: "\"/connectors/0/type\" field fails /properties/connectors/items/0/properties/type/enum validation: value must be one of \"source\", \"destination\"",
 		},
 		{
-			desc:        "one destination connector",
+			desc:        "allow one destination connector",
 			specVersion: "0.2.0",
 			spec: `{
 						"connectors": [
@@ -254,7 +254,7 @@ func Test_ValidSpec(t *testing.T) {
 					}`,
 		},
 		{
-			desc:        "two source, one destination connectors",
+			desc:        "allow multiple sources, one destination connectors",
 			specVersion: "0.2.0",
 			spec: `{
 						"connectors": [
