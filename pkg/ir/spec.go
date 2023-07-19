@@ -131,9 +131,6 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 	defer d.mu.Unlock()
 	d.init()
 
-	if len(d.turbineDag.GetRoots()) >= 1 {
-		return fmt.Errorf("can only add one source connector per application")
-	}
 	if c.Type != ConnectorSource {
 		return fmt.Errorf("not a source connector")
 	}

@@ -296,7 +296,7 @@ func Test_MarshalUnmarshal(t *testing.T) {
 	require.Equal(t, spec, got)
 }
 
-func Test_EnsureSingleSource(t *testing.T) {
+func Test_AllowMultipleSources(t *testing.T) {
 	var spec ir.DeploymentSpec
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -312,7 +312,7 @@ func Test_EnsureSingleSource(t *testing.T) {
 	require.NoError(t, err)
 	err = spec.AddSource(
 		&ir.ConnectorSpec{
-			UUID:       "1",
+			UUID:       "2",
 			Collection: "accounts2",
 			Resource:   "mongo",
 			Type:       ir.ConnectorSource,
@@ -321,7 +321,36 @@ func Test_EnsureSingleSource(t *testing.T) {
 			},
 		},
 	)
-	require.EqualError(t, err, fmt.Errorf("can only add one source connector per application").Error())
+	require.NoError(t, err)
+}
+
+func Test_EnsureNonDuplicateSources(t *testing.T) {
+	var spec ir.DeploymentSpec
+	err := spec.AddSource(
+		&ir.ConnectorSpec{
+			UUID:       "1",
+			Collection: "accounts",
+			Resource:   "mongo",
+			Type:       ir.ConnectorSource,
+			Config: map[string]interface{}{
+				"config": "value",
+			},
+		},
+	)
+	require.NoError(t, err)
+
+	duplicate := &ir.ConnectorSpec{
+		UUID:       "1",
+		Collection: "accounts2",
+		Resource:   "mongo",
+		Type:       ir.ConnectorSource,
+		Config: map[string]interface{}{
+			"config": "value",
+		},
+	}
+
+	err = spec.AddSource(duplicate)
+	require.EqualError(t, err, fmt.Errorf("the id '%s' is already known", duplicate.UUID).Error())
 }
 
 func Test_BadStream(t *testing.T) {
