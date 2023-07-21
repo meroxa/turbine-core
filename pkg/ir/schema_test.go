@@ -102,7 +102,7 @@ func Test_ValidSpec(t *testing.T) {
 					}`,
 		},
 		{
-			desc:        "connectors list",
+			desc:        "allow an empty connectors list",
 			specVersion: "0.2.0",
 			spec: `{
 				"connectors": [
@@ -118,7 +118,6 @@ func Test_ValidSpec(t *testing.T) {
 					}
 				}
 			}`,
-			err: "\"/connectors\" field fails /properties/connectors/minItems validation: minimum 1 items required, but found 0 items",
 		},
 		{
 			desc:        "empty connector",
@@ -166,7 +165,7 @@ func Test_ValidSpec(t *testing.T) {
 			err: "\"/connectors/0/type\" field fails /properties/connectors/items/0/properties/type/enum validation: value must be one of \"source\", \"destination\"",
 		},
 		{
-			desc:        "one destination connector",
+			desc:        "allow one destination connector",
 			specVersion: "0.2.0",
 			spec: `{
 						"connectors": [
@@ -188,7 +187,6 @@ func Test_ValidSpec(t *testing.T) {
 							}
 						}
 					}`,
-			err: "\"/connectors/0/type\" field fails /properties/connectors/contains/properties/type/pattern validation: does not match pattern '^source$'",
 		},
 		{
 			desc:        "one source, one destination connectors",
@@ -256,7 +254,7 @@ func Test_ValidSpec(t *testing.T) {
 					}`,
 		},
 		{
-			desc:        "two source, one destination connectors",
+			desc:        "allow multiple sources, one destination connectors",
 			specVersion: "0.2.0",
 			spec: `{
 						"connectors": [
@@ -290,7 +288,6 @@ func Test_ValidSpec(t *testing.T) {
 							}
 						}
 					}`,
-			err: "\"/connectors\" field fails /properties/connectors/maxContains validation: valid must be <= 1, but got 2",
 		},
 		{
 			desc:        "one source, two duplicate destination connectors",
