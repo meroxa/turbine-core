@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/heimdalr/dag v1.2.1
 	github.com/meroxa/turbine-go/v2 v2.1.2
-	github.com/santhosh-tekuri/jsonschema/v5 v5.3.0
+	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/grpc v1.56.2
 	google.golang.org/protobuf v1.31.0
