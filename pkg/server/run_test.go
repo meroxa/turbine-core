@@ -369,6 +369,41 @@ func Test_ReadCollection(t *testing.T) {
 				}
 			},
 		},
+		{
+			desc: "wrong fixture resource name",
+			srv: &runService{
+				appPath: path.Join(tempdir),
+				config: app.Config{
+					Resources: map[string]string{
+						"resource123": "fixture.json",
+					},
+				},
+			},
+			wantErr: errors.New("No fixture file found for resource pg"),
+			setup: func() *pb.ReadCollectionRequest {
+				file := path.Join(tempdir, "fixture.json")
+				require.NoError(
+					t,
+					os.WriteFile(
+						file,
+						[]byte(`{
+							"events": [{
+								"key": "1",
+								"value": {"message":"hello"},
+								"timestamp": "1662758822"
+							}]
+						}`),
+						0o644,
+					),
+				)
+				return &pb.ReadCollectionRequest{
+					Resource: &pb.Resource{
+						Name: "pg",
+					},
+					Collection: "events",
+				}
+			},
+		},
 	}
 
 	for _, tc := range tests {
