@@ -9,6 +9,8 @@ import (
 	"github.com/meroxa/turbine-core/pkg/server/internal"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -59,7 +61,13 @@ func (s *runService) ReadCollection(ctx context.Context, req *pb.ReadCollectionR
 
 	fixtureFile, ok := s.config.Resources[req.Resource.Name]
 	if !ok {
-		return nil, fmt.Errorf("No fixture file found for resource %s. Ensure that the resource is declared in your app.json.", req.Resource.Name)
+		return nil, status.Error(
+			codes.InvalidArgument,
+			fmt.Sprintf(
+				"No fixture file found for resource %s. Ensure that the resource is declared in your app.json.",
+				req.Resource.Name,
+			),
+		)
 	}
 
 	fixture := &internal.FixtureResource{
