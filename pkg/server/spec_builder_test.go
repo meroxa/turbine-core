@@ -182,7 +182,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 		{
 			description: "empty request",
 			req:         &pb.WriteCollectionRequest{},
-			errMsg:      "invalid WriteCollectionRequest.Resource: value is required",
+			errMsg:      "rpc error: code = InvalidArgument desc = invalid WriteCollectionRequest.Resource: value is required",
 		},
 		{
 			description: "specBuilderService has existing connector",
