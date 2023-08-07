@@ -179,10 +179,10 @@ func Test_AddProccessToCollection(t *testing.T) {
 			desc: "fails on missing collection",
 			setup: func() *pb.ProcessCollectionRequest {
 				return &pb.ProcessCollectionRequest{
-					Process: &pb.ProcessCollectionRequest_Process{},
+					Process: &pb.ProcessCollectionRequest_Process{Name: "my-process"},
 				}
 			},
-			wantErr: errors.New("invalid ProcessCollectionRequest.Collection: value is required"),
+			wantErr: errors.New(`function "my-process" is missing a source. Please define a source for this function.`),
 		},
 		{
 			desc: "success",
@@ -441,9 +441,21 @@ func Test_WriteCollectionToResource(t *testing.T) {
 		},
 		{
 			desc:    "fails when source collection is missing",
-			wantErr: errors.New("invalid WriteCollectionRequest.SourceCollection: value is required"),
+			wantErr: errors.New(`destination resource "resource" is missing a source. Please define a source or function for this destination.`),
 			setup: func() *pb.WriteCollectionRequest {
 				return &pb.WriteCollectionRequest{
+					Resource: &pb.Resource{
+						Name: "resource",
+					},
+				}
+			},
+		},
+		{
+			desc:    "fails when source collection name is missing",
+			wantErr: errors.New(`destination resource "resource" is missing a source. Please define a source or function for this destination.`),
+			setup: func() *pb.WriteCollectionRequest {
+				return &pb.WriteCollectionRequest{
+					SourceCollection: &pb.Collection{},
 					Resource: &pb.Resource{
 						Name: "resource",
 					},

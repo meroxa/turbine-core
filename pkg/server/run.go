@@ -89,6 +89,19 @@ func (s *runService) ReadCollection(ctx context.Context, req *pb.ReadCollectionR
 }
 
 func (s *runService) WriteCollectionToResource(ctx context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+	if req.Resource == nil || req.Resource.Name == "" {
+		return nil, status.Error(codes.InvalidArgument, "invalid WriteCollectionRequest.Resource: value is required")
+	}
+	if req.SourceCollection == nil || req.SourceCollection.Name == "" {
+		return nil,
+			status.Error(
+				codes.InvalidArgument,
+				fmt.Sprintf(
+					`destination resource "%s" is missing a source. Please define a source or function for this destination.`,
+					req.Resource.Name,
+				),
+			)
+	}
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -103,6 +116,19 @@ func (s *runService) WriteCollectionToResource(ctx context.Context, req *pb.Writ
 }
 
 func (s *runService) AddProcessToCollection(ctx context.Context, req *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+	if req.Process == nil || req.Process.Name == "" {
+		return nil, status.Error(codes.InvalidArgument, "invalid ProcessCollectionRequest.Process: value is required")
+	}
+	if req.Collection == nil || req.Collection.Name == "" {
+		return nil,
+			status.Error(
+				codes.InvalidArgument,
+				fmt.Sprintf(
+					`function "%s" is missing a source. Please define a source for this function.`,
+					req.Process.Name,
+				),
+			)
+	}
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}

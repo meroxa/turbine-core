@@ -306,16 +306,7 @@ func (m *Resource) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetName()) < 1 {
-		err := ResourceValidationError{
-			field:  "Name",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for Name
 
 	// no validation rules for Source
 
@@ -1345,17 +1336,6 @@ func (m *ProcessCollectionRequest) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if m.GetProcess() == nil {
-		err := ProcessCollectionRequestValidationError{
-			field:  "Process",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
 
 	if all {
 		switch v := interface{}(m.GetProcess()).(type) {

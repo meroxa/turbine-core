@@ -41,7 +41,7 @@ message GetResourceRequest {
 }
 
 message Resource {
-  string name = 1 [(validate.rules).string.min_len = 1];
+  string name = 1;
   bool source = 2;
   bool destination = 3;
   string collection = 4;
@@ -86,7 +86,7 @@ message ProcessCollectionRequest {
     string name = 1;
   }
 
-  Process process = 1 [(validate.rules).message.required = true];
+  Process process = 1;
   Collection collection = 2 [(validate.rules).message.required = true];
 }
 

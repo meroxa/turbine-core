@@ -2,11 +2,14 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/ir"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -83,6 +86,19 @@ func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadColle
 }
 
 func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+	if req.Resource == nil || req.Resource.Name == "" {
+		return nil, status.Error(codes.InvalidArgument, "invalid WriteCollectionRequest.Resource: value is required")
+	}
+	if req.SourceCollection == nil || req.SourceCollection.Name == "" {
+		return nil,
+			status.Error(
+				codes.InvalidArgument,
+				fmt.Sprintf(
+					`destination resource "%s" is missing a source. Please define a source or function for this destination.`,
+					req.Resource.Name,
+				),
+			)
+	}
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -117,6 +133,19 @@ func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *p
 }
 
 func (s *specBuilderService) AddProcessToCollection(_ context.Context, req *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+	if req.Process == nil || req.Process.Name == "" {
+		return nil, status.Error(codes.InvalidArgument, "invalid ProcessCollectionRequest.Process: value is required")
+	}
+	if req.Collection == nil || req.Collection.Name == "" {
+		return nil,
+			status.Error(
+				codes.InvalidArgument,
+				fmt.Sprintf(
+					`function "%s" is missing a source. Please define a source for this function.`,
+					req.Process.Name,
+				),
+			)
+	}
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
