@@ -1302,7 +1302,7 @@ func Test_ValidateDAG(t *testing.T) {
 					},
 				},
 			},
-			wantError: fmt.Errorf("invalid DAG, there has to be at least one source and one destination"),
+			wantError: fmt.Errorf("invalid DAG, there has to be at least one source, at most one function, and zero or more destinations"),
 		},
 	}
 
