@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
 	github.com/golang/mock v1.6.0
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.1
 	github.com/heimdalr/dag v1.3.1
 	github.com/meroxa/turbine-go/v2 v2.1.3
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
