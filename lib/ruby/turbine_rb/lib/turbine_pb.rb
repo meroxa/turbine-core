@@ -68,7 +68,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.ProcessRecordsRequest" do
       optional :process, :message, 1, "turbine_core.ProcessRecordsRequest.Process"
-      repeated :records, :message, 2, "turbine_core.Record"
+      optional :records, :message, 2, "turbine_core.RecordsCollection"
     end
     add_message "turbine_core.ProcessRecordsRequest.Process" do
       optional :name, :string, 1

@@ -1619,38 +1619,33 @@ func (m *ProcessRecordsRequest) validate(all bool) error {
 		}
 	}
 
-	for idx, item := range m.GetRecords() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ProcessRecordsRequestValidationError{
-						field:  fmt.Sprintf("Records[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, ProcessRecordsRequestValidationError{
-						field:  fmt.Sprintf("Records[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ProcessRecordsRequestValidationError{
-					field:  fmt.Sprintf("Records[%v]", idx),
+	if all {
+		switch v := interface{}(m.GetRecords()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ProcessRecordsRequestValidationError{
+					field:  "Records",
 					reason: "embedded message failed validation",
 					cause:  err,
-				}
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ProcessRecordsRequestValidationError{
+					field:  "Records",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
 			}
 		}
-
+	} else if v, ok := interface{}(m.GetRecords()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ProcessRecordsRequestValidationError{
+				field:  "Records",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
 	}
 
 	if len(errors) > 0 {

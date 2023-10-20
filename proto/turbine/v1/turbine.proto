@@ -107,7 +107,7 @@ message ProcessRecordsRequest {
   }
 
   Process process = 1 [(validate.rules).message.required = true];
-  repeated Record records = 2;
+  RecordsCollection records = 2;
 }
 
 message Secret {

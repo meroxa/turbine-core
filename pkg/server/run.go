@@ -54,24 +54,24 @@ func (s *runService) GetResource(ctx context.Context, req *pb.GetResourceRequest
 	}, nil
 }
 
-func (s *runService) ReadCollection(ctx context.Context, req *pb.ReadCollectionRequest) (*pb.Collection, error) {
+func (s *runService) ReadFromSource(ctx context.Context, req *pb.ReadFromSourceRequest) (*pb.RecordsCollection, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	fixtureFile, ok := s.config.Resources[req.Resource.Name]
+	fixtureFile, ok := s.config.Fixtures[req.PluginName]
 	if !ok {
 		return nil, status.Error(
 			codes.InvalidArgument,
 			fmt.Sprintf(
-				"No fixture file found for resource %s. Ensure that the resource is declared in your app.json.",
-				req.Resource.Name,
+				"No fixture file found for plugin name %s. Ensure that the plugin name is declared in your app.json.",
+				req.PluginName,
 			),
 		)
 	}
 
-	fixture := &internal.FixtureResource{
-		Collection: req.Collection,
+	fixture := &internal.FixtureConnector{
+		PluginName: req.PluginName,
 		File: path.Join(
 			s.appPath,
 			fixtureFile,
@@ -82,7 +82,7 @@ func (s *runService) ReadCollection(ctx context.Context, req *pb.ReadCollectionR
 	if err != nil {
 		return nil, err
 	}
-	return &pb.Collection{
+	return &pb.RecordsCollection{
 		Name:    req.Collection,
 		Records: rr,
 	}, nil
@@ -102,11 +102,11 @@ func (s *runService) WriteCollectionToResource(ctx context.Context, req *pb.Writ
 	return empty(), nil
 }
 
-func (s *runService) AddProcessToCollection(ctx context.Context, req *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+func (s *runService) Process(ctx context.Context, req *pb.ProcessRecordsRequest) (*pb.RecordsCollection, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return req.Collection, nil
+	return req.Records, nil
 }
 
 func (s *runService) RegisterSecret(ctx context.Context, req *pb.Secret) (*emptypb.Empty, error) {
