@@ -8,17 +8,38 @@ import "google/protobuf/wrappers.proto";
 import "validate/validate.proto";
 
 option go_package = "github.com/meroxa/turbine/core";
+option java_package = "com.meroxa.turbine.proto";
+option java_multiple_files = true;
 
 service TurbineService {
   rpc Init(InitRequest) returns (google.protobuf.Empty);
-  rpc GetResource(GetResourceRequest) returns (Resource);
-  rpc ReadCollection(ReadCollectionRequest) returns (Collection);
-  rpc WriteCollectionToResource(WriteCollectionRequest) returns (google.protobuf.Empty);
-  rpc AddProcessToCollection(ProcessCollectionRequest) returns (Collection);
-  rpc RegisterSecret(Secret) returns (google.protobuf.Empty);
+  // todo consider one method parameterized with connector type
+  rpc ReadFromSource(ReadFromSourceRequest) returns (RecordsCollection);
+  rpc Process(ProcessRecordsRequest) returns (RecordsCollection);
+  rpc WriteToDestination(WriteToDestinationRequest) returns (google.protobuf.Empty);
+
+  // needed in CLI to know if a build is needed or not
   rpc HasFunctions(google.protobuf.Empty) returns (google.protobuf.BoolValue);
+  // needed in CLI to know which resources are used
   rpc ListResources(google.protobuf.Empty) returns (ListResourcesResponse);
+  // needed in the CLI for the deployment spec
   rpc GetSpec(GetSpecRequest) returns (GetSpecResponse);
+}
+
+message ReadFromSourceRequest {
+  enum Direction {
+    SOURCE = 0;
+    DESTINATION = 1;
+  }
+  string pluginName = 1;
+  Direction direction = 2;
+  map<string, string> configuration = 3;
+}
+
+message WriteToDestinationRequest {
+  string pluginName = 1;
+  map<string, string> configuration = 2;
+  RecordsCollection records = 3;
 }
 
 enum Language {
@@ -48,10 +69,8 @@ message Resource {
   string collection = 4;
 }
 
-message Collection {
-  string name = 1 [(validate.rules).string.min_len = 1];
-  string stream = 2;
-  repeated Record records = 3;
+message RecordsCollection {
+  repeated Record records = 1;
 }
 
 message Record {
@@ -68,7 +87,7 @@ message ReadCollectionRequest {
 
 message WriteCollectionRequest {
   Resource resource = 1 [(validate.rules).message.required = true];
-  Collection sourceCollection = 2 [(validate.rules).message.required = true];
+  RecordsCollection sourceCollection = 2 [(validate.rules).message.required = true];
   string targetCollection = 3 [(validate.rules).string.min_len = 1];
   Configs configs = 4;
 }
@@ -82,13 +101,13 @@ message Config {
   string value = 2;
 }
 
-message ProcessCollectionRequest {
+message ProcessRecordsRequest {
   message Process {
     string name = 1;
   }
 
   Process process = 1 [(validate.rules).message.required = true];
-  Collection collection = 2 [(validate.rules).message.required = true];
+  repeated Record records = 2;
 }
 
 message Secret {

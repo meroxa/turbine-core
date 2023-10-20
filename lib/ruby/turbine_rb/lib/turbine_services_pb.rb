@@ -15,13 +15,15 @@ module TurbineCore
       self.service_name = 'turbine_core.TurbineService'
 
       rpc :Init, ::TurbineCore::InitRequest, ::Google::Protobuf::Empty
-      rpc :GetResource, ::TurbineCore::GetResourceRequest, ::TurbineCore::Resource
-      rpc :ReadCollection, ::TurbineCore::ReadCollectionRequest, ::TurbineCore::Collection
-      rpc :WriteCollectionToResource, ::TurbineCore::WriteCollectionRequest, ::Google::Protobuf::Empty
-      rpc :AddProcessToCollection, ::TurbineCore::ProcessCollectionRequest, ::TurbineCore::Collection
-      rpc :RegisterSecret, ::TurbineCore::Secret, ::Google::Protobuf::Empty
+      # todo consider one method parameterized with connector type
+      rpc :ReadFromSource, ::TurbineCore::ReadFromSourceRequest, ::TurbineCore::RecordsCollection
+      rpc :Process, ::TurbineCore::ProcessRecordsRequest, ::TurbineCore::RecordsCollection
+      rpc :WriteToDestination, ::TurbineCore::WriteToDestinationRequest, ::Google::Protobuf::Empty
+      # needed in CLI to know if a build is needed or not
       rpc :HasFunctions, ::Google::Protobuf::Empty, ::Google::Protobuf::BoolValue
+      # needed in CLI to know which resources are used
       rpc :ListResources, ::Google::Protobuf::Empty, ::TurbineCore::ListResourcesResponse
+      # needed in the CLI for the deployment spec
       rpc :GetSpec, ::TurbineCore::GetSpecRequest, ::TurbineCore::GetSpecResponse
     end
 
