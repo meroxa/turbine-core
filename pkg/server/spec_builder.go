@@ -51,10 +51,10 @@ func (s *specBuilderService) ReadFromSource(_ context.Context, req *pb.ReadFromS
 	}
 
 	c := ir.ConnectorSpec{
-		UUID:          uuid.New().String(),
-		PluginName:    req.PluginName,
-		Direction:     ir.ConnectorSource,
-		Configuration: configMap(req.Configuration),
+		UUID:       uuid.New().String(),
+		PluginName: req.PluginName,
+		Direction:  ir.ConnectorSource,
+		Config:     configMap(req.Configuration),
 	}
 
 	if err := s.spec.AddSource(&c); err != nil {
@@ -72,9 +72,9 @@ func (s *specBuilderService) WriteToDestination(_ context.Context, req *pb.Write
 	}
 
 	c := ir.ConnectorSpec{
-		UUID:          uuid.New().String(),
-		Direction:     ir.ConnectorDestination,
-		Configuration: configMap(req.Configuration),
+		UUID:      uuid.New().String(),
+		Direction: ir.ConnectorDestination,
+		Config:    configMap(req.Configuration),
 	}
 	if err := s.spec.AddDestination(&c); err != nil {
 		return nil, err
