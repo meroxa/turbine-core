@@ -21,8 +21,6 @@ module TurbineCore
       rpc :WriteToDestination, ::TurbineCore::WriteToDestinationRequest, ::Google::Protobuf::Empty
       # needed in CLI to know if a build is needed or not
       rpc :HasFunctions, ::Google::Protobuf::Empty, ::Google::Protobuf::BoolValue
-      # needed in CLI to know which resources are used
-      rpc :ListResources, ::Google::Protobuf::Empty, ::TurbineCore::ListResourcesResponse
       # needed in the CLI for the deployment spec
       rpc :GetSpec, ::TurbineCore::GetSpecRequest, ::TurbineCore::GetSpecResponse
     end

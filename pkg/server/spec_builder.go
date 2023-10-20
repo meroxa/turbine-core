@@ -53,34 +53,34 @@ func (s *specBuilderService) GetResource(_ context.Context, req *pb.GetResourceR
 	return &pb.Resource{Name: req.Name}, nil
 }
 
-func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadCollectionRequest) (*pb.Collection, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-
-	s.resources = append(s.resources, &pb.Resource{
-		Name:       req.GetResource().GetName(),
-		Source:     true,
-		Collection: req.GetCollection(),
-	})
-
-	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Collection: req.Collection,
-		Resource:   req.Resource.Name,
-		Type:       ir.ConnectorSource,
-		Config:     configMap(req.Configs),
-	}
-
-	if err := s.spec.AddSource(&c); err != nil {
-		return nil, err
-	}
-
-	return &pb.Collection{
-		Name:   req.Collection,
-		Stream: c.UUID,
-	}, nil
-}
+//func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadCollectionRequest) (*pb.Collection, error) {
+//	if err := req.Validate(); err != nil {
+//		return nil, err
+//	}
+//
+//	s.resources = append(s.resources, &pb.Resource{
+//		Name:       req.GetResource().GetName(),
+//		Source:     true,
+//		Collection: req.GetCollection(),
+//	})
+//
+//	c := ir.ConnectorSpec{
+//		UUID:       uuid.New().String(),
+//		Collection: req.Collection,
+//		Resource:   req.Resource.Name,
+//		Type:       ir.ConnectorSource,
+//		Config:     configMap(req.Configs),
+//	}
+//
+//	if err := s.spec.AddSource(&c); err != nil {
+//		return nil, err
+//	}
+//
+//	return &pb.Collection{
+//		Name:   req.Collection,
+//		Stream: c.UUID,
+//	}, nil
+//}
 
 func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {

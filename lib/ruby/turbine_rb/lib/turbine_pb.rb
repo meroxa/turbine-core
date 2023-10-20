@@ -31,15 +31,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :gitSHA, :string, 4
       optional :turbineVersion, :string, 5
     end
-    add_message "turbine_core.GetResourceRequest" do
-      optional :name, :string, 1
-    end
-    add_message "turbine_core.Resource" do
-      optional :name, :string, 1
-      optional :source, :bool, 2
-      optional :destination, :bool, 3
-      optional :collection, :string, 4
-    end
     add_message "turbine_core.RecordsCollection" do
       repeated :records, :message, 1, "turbine_core.Record"
     end
@@ -47,17 +38,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :key, :string, 1
       optional :value, :bytes, 2
       optional :timestamp, :message, 3, "google.protobuf.Timestamp"
-    end
-    add_message "turbine_core.ReadCollectionRequest" do
-      optional :resource, :message, 1, "turbine_core.Resource"
-      optional :collection, :string, 2
-      optional :configs, :message, 3, "turbine_core.Configs"
-    end
-    add_message "turbine_core.WriteCollectionRequest" do
-      optional :resource, :message, 1, "turbine_core.Resource"
-      optional :sourceCollection, :message, 2, "turbine_core.RecordsCollection"
-      optional :targetCollection, :string, 3
-      optional :configs, :message, 4, "turbine_core.Configs"
     end
     add_message "turbine_core.Configs" do
       repeated :config, :message, 1, "turbine_core.Config"
@@ -76,9 +56,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     add_message "turbine_core.Secret" do
       optional :name, :string, 1
       optional :value, :string, 2
-    end
-    add_message "turbine_core.ListResourcesResponse" do
-      repeated :resources, :message, 1, "turbine_core.Resource"
     end
     add_message "turbine_core.GetSpecRequest" do
       optional :image, :string, 1
@@ -101,18 +78,13 @@ module TurbineCore
   ReadFromSourceRequest::Direction = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ReadFromSourceRequest.Direction").enummodule
   WriteToDestinationRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.WriteToDestinationRequest").msgclass
   InitRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.InitRequest").msgclass
-  GetResourceRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetResourceRequest").msgclass
-  Resource = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Resource").msgclass
   RecordsCollection = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.RecordsCollection").msgclass
   Record = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Record").msgclass
-  ReadCollectionRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ReadCollectionRequest").msgclass
-  WriteCollectionRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.WriteCollectionRequest").msgclass
   Configs = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Configs").msgclass
   Config = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Config").msgclass
   ProcessRecordsRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessRecordsRequest").msgclass
   ProcessRecordsRequest::Process = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessRecordsRequest.Process").msgclass
   Secret = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Secret").msgclass
-  ListResourcesResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ListResourcesResponse").msgclass
   GetSpecRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetSpecRequest").msgclass
   GetSpecResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetSpecResponse").msgclass
   Language = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Language").enummodule

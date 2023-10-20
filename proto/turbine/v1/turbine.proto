@@ -20,8 +20,7 @@ service TurbineService {
 
   // needed in CLI to know if a build is needed or not
   rpc HasFunctions(google.protobuf.Empty) returns (google.protobuf.BoolValue);
-  // needed in CLI to know which resources are used
-  rpc ListResources(google.protobuf.Empty) returns (ListResourcesResponse);
+
   // needed in the CLI for the deployment spec
   rpc GetSpec(GetSpecRequest) returns (GetSpecResponse);
 }
@@ -58,17 +57,6 @@ message InitRequest {
   string turbineVersion = 5;
 }
 
-message GetResourceRequest {
-  string name = 1 [(validate.rules).string.min_len = 1];
-}
-
-message Resource {
-  string name = 1 [(validate.rules).string.min_len = 1];
-  bool source = 2;
-  bool destination = 3;
-  string collection = 4;
-}
-
 message RecordsCollection {
   repeated Record records = 1;
 }
@@ -77,19 +65,6 @@ message Record {
   string key = 1 [(validate.rules).string.min_len = 1];;
   bytes value = 2;
   google.protobuf.Timestamp timestamp = 3;
-}
-
-message ReadCollectionRequest {
-  Resource resource = 1 [(validate.rules).message.required = true];
-  string collection = 2 [(validate.rules).string.min_len = 1];
-  Configs configs = 3;
-}
-
-message WriteCollectionRequest {
-  Resource resource = 1 [(validate.rules).message.required = true];
-  RecordsCollection sourceCollection = 2 [(validate.rules).message.required = true];
-  string targetCollection = 3 [(validate.rules).string.min_len = 1];
-  Configs configs = 4;
 }
 
 message Configs {
@@ -113,10 +88,6 @@ message ProcessRecordsRequest {
 message Secret {
   string name = 1 [(validate.rules).string.min_len = 1];
   string value = 2 [(validate.rules).string.min_len = 1];
-}
-
-message ListResourcesResponse {
-  repeated Resource resources = 1;
 }
 
 message GetSpecRequest {

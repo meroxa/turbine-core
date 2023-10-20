@@ -31,8 +31,6 @@ type TurbineServiceClient interface {
 	WriteToDestination(ctx context.Context, in *WriteToDestinationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// needed in CLI to know if a build is needed or not
 	HasFunctions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
-	// needed in CLI to know which resources are used
-	ListResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListResourcesResponse, error)
 	// needed in the CLI for the deployment spec
 	GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error)
 }
@@ -90,15 +88,6 @@ func (c *turbineServiceClient) HasFunctions(ctx context.Context, in *emptypb.Emp
 	return out, nil
 }
 
-func (c *turbineServiceClient) ListResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListResourcesResponse, error) {
-	out := new(ListResourcesResponse)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/ListResources", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *turbineServiceClient) GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error) {
 	out := new(GetSpecResponse)
 	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/GetSpec", in, out, opts...)
@@ -119,8 +108,6 @@ type TurbineServiceServer interface {
 	WriteToDestination(context.Context, *WriteToDestinationRequest) (*emptypb.Empty, error)
 	// needed in CLI to know if a build is needed or not
 	HasFunctions(context.Context, *emptypb.Empty) (*wrapperspb.BoolValue, error)
-	// needed in CLI to know which resources are used
-	ListResources(context.Context, *emptypb.Empty) (*ListResourcesResponse, error)
 	// needed in the CLI for the deployment spec
 	GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error)
 }
@@ -143,9 +130,6 @@ func (UnimplementedTurbineServiceServer) WriteToDestination(context.Context, *Wr
 }
 func (UnimplementedTurbineServiceServer) HasFunctions(context.Context, *emptypb.Empty) (*wrapperspb.BoolValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HasFunctions not implemented")
-}
-func (UnimplementedTurbineServiceServer) ListResources(context.Context, *emptypb.Empty) (*ListResourcesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListResources not implemented")
 }
 func (UnimplementedTurbineServiceServer) GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSpec not implemented")
@@ -252,24 +236,6 @@ func _TurbineService_HasFunctions_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_ListResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TurbineServiceServer).ListResources(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/ListResources",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).ListResources(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _TurbineService_GetSpec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSpecRequest)
 	if err := dec(in); err != nil {
@@ -314,10 +280,6 @@ var TurbineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HasFunctions",
 			Handler:    _TurbineService_HasFunctions_Handler,
-		},
-		{
-			MethodName: "ListResources",
-			Handler:    _TurbineService_ListResources_Handler,
 		},
 		{
 			MethodName: "GetSpec",
