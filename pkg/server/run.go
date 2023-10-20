@@ -83,7 +83,6 @@ func (s *runService) ReadFromSource(ctx context.Context, req *pb.ReadFromSourceR
 		return nil, err
 	}
 	return &pb.RecordsCollection{
-		Name:    req.Collection,
 		Records: rr,
 	}, nil
 }
