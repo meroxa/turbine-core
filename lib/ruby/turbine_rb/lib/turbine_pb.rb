@@ -13,7 +13,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     add_message "turbine_core.ReadFromSourceRequest" do
       optional :pluginName, :string, 1
       optional :direction, :enum, 2, "turbine_core.ReadFromSourceRequest.Direction"
-      map :configuration, :string, :string, 3
+      optional :configuration, :message, 3, "turbine_core.Configurations"
     end
     add_enum "turbine_core.ReadFromSourceRequest.Direction" do
       value :SOURCE, 0
@@ -21,7 +21,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.WriteToDestinationRequest" do
       optional :pluginName, :string, 1
-      map :configuration, :string, :string, 2
+      optional :configuration, :message, 2, "turbine_core.Configurations"
       optional :records, :message, 3, "turbine_core.RecordsCollection"
     end
     add_message "turbine_core.InitRequest" do
@@ -33,16 +33,17 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.RecordsCollection" do
       repeated :records, :message, 1, "turbine_core.Record"
+      optional :stream, :string, 2
     end
     add_message "turbine_core.Record" do
       optional :key, :string, 1
       optional :value, :bytes, 2
       optional :timestamp, :message, 3, "google.protobuf.Timestamp"
     end
-    add_message "turbine_core.Configs" do
-      repeated :config, :message, 1, "turbine_core.Config"
+    add_message "turbine_core.Configurations" do
+      repeated :configuration, :message, 1, "turbine_core.Configuration"
     end
-    add_message "turbine_core.Config" do
+    add_message "turbine_core.Configuration" do
       optional :field, :string, 1
       optional :value, :string, 2
     end
@@ -80,8 +81,8 @@ module TurbineCore
   InitRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.InitRequest").msgclass
   RecordsCollection = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.RecordsCollection").msgclass
   Record = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Record").msgclass
-  Configs = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Configs").msgclass
-  Config = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Config").msgclass
+  Configurations = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Configurations").msgclass
+  Configuration = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Configuration").msgclass
   ProcessRecordsRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessRecordsRequest").msgclass
   ProcessRecordsRequest::Process = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessRecordsRequest.Process").msgclass
   Secret = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Secret").msgclass

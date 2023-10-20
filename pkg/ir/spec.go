@@ -12,8 +12,8 @@ import (
 )
 
 type (
-	ConnectorType string
-	Lang          string
+	ConnectorDirection string
+	Lang               string
 )
 
 const (
@@ -23,8 +23,8 @@ const (
 	Ruby       Lang = "ruby"
 	Java       Lang = "java"
 
-	ConnectorSource      ConnectorType = "source"
-	ConnectorDestination ConnectorType = "destination"
+	ConnectorSource      ConnectorDirection = "source"
+	ConnectorDestination ConnectorDirection = "destination"
 
 	SpecVersion_0_1_1 = "0.1.1"
 	SpecVersion_0_2_0 = "0.2.0"
@@ -57,9 +57,8 @@ type StreamSpec struct {
 
 type ConnectorSpec struct {
 	UUID       string                 `json:"uuid"`
-	Type       ConnectorType          `json:"type"`
-	Resource   string                 `json:"resource"`
-	Collection string                 `json:"collection"`
+	PluginName string                 `json:"plugin_name"`
+	Direction  ConnectorDirection     `json:"type"`
 	Config     map[string]interface{} `json:"config,omitempty"`
 }
 
@@ -132,7 +131,7 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 	defer d.mu.Unlock()
 	d.init()
 
-	if c.Type != ConnectorSource {
+	if c.Direction != ConnectorSource {
 		return fmt.Errorf("not a source connector")
 	}
 	d.Connectors = append(d.Connectors, *c)
@@ -153,7 +152,7 @@ func (d *DeploymentSpec) AddDestination(c *ConnectorSpec) error {
 	defer d.mu.Unlock()
 	d.init()
 
-	if c.Type != ConnectorDestination {
+	if c.Direction != ConnectorDestination {
 		return fmt.Errorf("not a destination connector")
 	}
 	d.Connectors = append(d.Connectors, *c)
@@ -259,7 +258,7 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 			d.Connectors[i].UUID = c.UUID
 		}
 
-		switch c.Type {
+		switch c.Direction {
 		case ConnectorSource:
 			sources = append(sources, c)
 		case ConnectorDestination:

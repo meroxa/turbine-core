@@ -61,7 +61,34 @@ func (m *ReadFromSourceRequest) validate(all bool) error {
 
 	// no validation rules for Direction
 
-	// no validation rules for Configuration
+	if all {
+		switch v := interface{}(m.GetConfiguration()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ReadFromSourceRequestValidationError{
+					field:  "Configuration",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ReadFromSourceRequestValidationError{
+					field:  "Configuration",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetConfiguration()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ReadFromSourceRequestValidationError{
+				field:  "Configuration",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return ReadFromSourceRequestMultiError(errors)
@@ -167,7 +194,34 @@ func (m *WriteToDestinationRequest) validate(all bool) error {
 
 	// no validation rules for PluginName
 
-	// no validation rules for Configuration
+	if all {
+		switch v := interface{}(m.GetConfiguration()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, WriteToDestinationRequestValidationError{
+					field:  "Configuration",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, WriteToDestinationRequestValidationError{
+					field:  "Configuration",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetConfiguration()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return WriteToDestinationRequestValidationError{
+				field:  "Configuration",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if all {
 		switch v := interface{}(m.GetRecords()).(type) {
@@ -470,6 +524,8 @@ func (m *RecordsCollection) validate(all bool) error {
 
 	}
 
+	// no validation rules for Stream
+
 	if len(errors) > 0 {
 		return RecordsCollectionMultiError(errors)
 	}
@@ -690,44 +746,45 @@ var _ interface {
 	ErrorName() string
 } = RecordValidationError{}
 
-// Validate checks the field values on Configs with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
+// Validate checks the field values on Configurations with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *Configs) Validate() error {
+func (m *Configurations) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on Configs with the rules defined in the
-// proto definition for this message. If any rules are violated, the result is
-// a list of violation errors wrapped in ConfigsMultiError, or nil if none found.
-func (m *Configs) ValidateAll() error {
+// ValidateAll checks the field values on Configurations with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ConfigurationsMultiError,
+// or nil if none found.
+func (m *Configurations) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *Configs) validate(all bool) error {
+func (m *Configurations) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	for idx, item := range m.GetConfig() {
+	for idx, item := range m.GetConfiguration() {
 		_, _ = idx, item
 
 		if all {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ConfigsValidationError{
-						field:  fmt.Sprintf("Config[%v]", idx),
+					errors = append(errors, ConfigurationsValidationError{
+						field:  fmt.Sprintf("Configuration[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, ConfigsValidationError{
-						field:  fmt.Sprintf("Config[%v]", idx),
+					errors = append(errors, ConfigurationsValidationError{
+						field:  fmt.Sprintf("Configuration[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -735,8 +792,8 @@ func (m *Configs) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ConfigsValidationError{
-					field:  fmt.Sprintf("Config[%v]", idx),
+				return ConfigurationsValidationError{
+					field:  fmt.Sprintf("Configuration[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -746,18 +803,19 @@ func (m *Configs) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return ConfigsMultiError(errors)
+		return ConfigurationsMultiError(errors)
 	}
 
 	return nil
 }
 
-// ConfigsMultiError is an error wrapping multiple validation errors returned
-// by Configs.ValidateAll() if the designated constraints aren't met.
-type ConfigsMultiError []error
+// ConfigurationsMultiError is an error wrapping multiple validation errors
+// returned by Configurations.ValidateAll() if the designated constraints
+// aren't met.
+type ConfigurationsMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ConfigsMultiError) Error() string {
+func (m ConfigurationsMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -766,11 +824,11 @@ func (m ConfigsMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ConfigsMultiError) AllErrors() []error { return m }
+func (m ConfigurationsMultiError) AllErrors() []error { return m }
 
-// ConfigsValidationError is the validation error returned by Configs.Validate
-// if the designated constraints aren't met.
-type ConfigsValidationError struct {
+// ConfigurationsValidationError is the validation error returned by
+// Configurations.Validate if the designated constraints aren't met.
+type ConfigurationsValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -778,22 +836,22 @@ type ConfigsValidationError struct {
 }
 
 // Field function returns field value.
-func (e ConfigsValidationError) Field() string { return e.field }
+func (e ConfigurationsValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ConfigsValidationError) Reason() string { return e.reason }
+func (e ConfigurationsValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ConfigsValidationError) Cause() error { return e.cause }
+func (e ConfigurationsValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ConfigsValidationError) Key() bool { return e.key }
+func (e ConfigurationsValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ConfigsValidationError) ErrorName() string { return "ConfigsValidationError" }
+func (e ConfigurationsValidationError) ErrorName() string { return "ConfigurationsValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ConfigsValidationError) Error() string {
+func (e ConfigurationsValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -805,14 +863,14 @@ func (e ConfigsValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sConfigs.%s: %s%s",
+		"invalid %sConfigurations.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ConfigsValidationError{}
+var _ error = ConfigurationsValidationError{}
 
 var _ interface {
 	Field() string
@@ -820,23 +878,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ConfigsValidationError{}
+} = ConfigurationsValidationError{}
 
-// Validate checks the field values on Config with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
+// Validate checks the field values on Configuration with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *Config) Validate() error {
+func (m *Configuration) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on Config with the rules defined in the
-// proto definition for this message. If any rules are violated, the result is
-// a list of violation errors wrapped in ConfigMultiError, or nil if none found.
-func (m *Config) ValidateAll() error {
+// ValidateAll checks the field values on Configuration with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ConfigurationMultiError, or
+// nil if none found.
+func (m *Configuration) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *Config) validate(all bool) error {
+func (m *Configuration) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -848,18 +907,19 @@ func (m *Config) validate(all bool) error {
 	// no validation rules for Value
 
 	if len(errors) > 0 {
-		return ConfigMultiError(errors)
+		return ConfigurationMultiError(errors)
 	}
 
 	return nil
 }
 
-// ConfigMultiError is an error wrapping multiple validation errors returned by
-// Config.ValidateAll() if the designated constraints aren't met.
-type ConfigMultiError []error
+// ConfigurationMultiError is an error wrapping multiple validation errors
+// returned by Configuration.ValidateAll() if the designated constraints
+// aren't met.
+type ConfigurationMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ConfigMultiError) Error() string {
+func (m ConfigurationMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -868,11 +928,11 @@ func (m ConfigMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ConfigMultiError) AllErrors() []error { return m }
+func (m ConfigurationMultiError) AllErrors() []error { return m }
 
-// ConfigValidationError is the validation error returned by Config.Validate if
-// the designated constraints aren't met.
-type ConfigValidationError struct {
+// ConfigurationValidationError is the validation error returned by
+// Configuration.Validate if the designated constraints aren't met.
+type ConfigurationValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -880,22 +940,22 @@ type ConfigValidationError struct {
 }
 
 // Field function returns field value.
-func (e ConfigValidationError) Field() string { return e.field }
+func (e ConfigurationValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ConfigValidationError) Reason() string { return e.reason }
+func (e ConfigurationValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ConfigValidationError) Cause() error { return e.cause }
+func (e ConfigurationValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ConfigValidationError) Key() bool { return e.key }
+func (e ConfigurationValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ConfigValidationError) ErrorName() string { return "ConfigValidationError" }
+func (e ConfigurationValidationError) ErrorName() string { return "ConfigurationValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ConfigValidationError) Error() string {
+func (e ConfigurationValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -907,14 +967,14 @@ func (e ConfigValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sConfig.%s: %s%s",
+		"invalid %sConfiguration.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ConfigValidationError{}
+var _ error = ConfigurationValidationError{}
 
 var _ interface {
 	Field() string
@@ -922,7 +982,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ConfigValidationError{}
+} = ConfigurationValidationError{}
 
 // Validate checks the field values on ProcessRecordsRequest with the rules
 // defined in the proto definition for this message. If any rules are

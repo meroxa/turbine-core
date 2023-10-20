@@ -32,12 +32,12 @@ message ReadFromSourceRequest {
   }
   string pluginName = 1;
   Direction direction = 2;
-  map<string, string> configuration = 3;
+  Configurations configuration = 3;
 }
 
 message WriteToDestinationRequest {
   string pluginName = 1;
-  map<string, string> configuration = 2;
+  Configurations configuration = 2;
   RecordsCollection records = 3;
 }
 
@@ -59,6 +59,7 @@ message InitRequest {
 
 message RecordsCollection {
   repeated Record records = 1;
+  string stream = 2;
 }
 
 message Record {
@@ -67,11 +68,11 @@ message Record {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-message Configs {
-  repeated Config config = 1;
+message Configurations {
+  repeated Configuration configuration = 1;
 }
 
-message Config {
+message Configuration {
   string field = 1;
   string value = 2;
 }
