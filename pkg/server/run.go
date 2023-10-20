@@ -44,16 +44,6 @@ func (s *runService) Init(ctx context.Context, req *pb.InitRequest) (*emptypb.Em
 	return empty(), nil
 }
 
-func (s *runService) GetResource(ctx context.Context, req *pb.GetResourceRequest) (*pb.Resource, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-
-	return &pb.Resource{
-		Name: req.Name,
-	}, nil
-}
-
 func (s *runService) ReadFromSource(ctx context.Context, req *pb.ReadFromSourceRequest) (*pb.RecordsCollection, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
@@ -87,16 +77,12 @@ func (s *runService) ReadFromSource(ctx context.Context, req *pb.ReadFromSourceR
 	}, nil
 }
 
-func (s *runService) WriteCollectionToResource(ctx context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+func (s *runService) WriteToDestination(_ context.Context, req *pb.WriteToDestinationRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	internal.PrintRecords(
-		req.Resource.Name,
-		req.TargetCollection,
-		req.SourceCollection.Records,
-	)
+	internal.PrintRecords(req.PluginName, req.Records.Records)
 
 	return empty(), nil
 }

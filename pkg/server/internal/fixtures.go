@@ -75,9 +75,9 @@ func wrapRecord(m fixtureRecord) *pb.Record {
 	}
 }
 
-func PrintRecords(name, collection string, rr []*pb.Record) {
+func PrintRecords(name string, rr []*pb.Record) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.AlignRight|tabwriter.Debug)
-	fmt.Fprintf(w, "Destination %s/%s\n", name, collection)
+	fmt.Fprintf(w, "Destination %s\n", name)
 	fmt.Fprintf(w, "----------------------\n")
 	fmt.Fprintln(w, "index\trecord")
 	fmt.Fprintln(w, "----\t----")
