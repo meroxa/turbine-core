@@ -1,7 +1,6 @@
 {
   "name": "{{.AppName}}",
   "language": "golang",
-  "environment": "common",
   "fixtures": {
     "source_name": "fixtures/demo-cdc.json"
   }

@@ -87,7 +87,6 @@ func setupAppJsonWithDeprecatedFields(t *testing.T) string {
 		[]byte(`{
 				  "name": "testapp",
 				  "language": "golang",
-				  "environment": "foobar",
 				  "fixtures": {
 				    "source_name": "fixtures/demo-cdc.json"
 				  }

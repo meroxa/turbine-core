@@ -80,7 +80,6 @@ func Test_Init(t *testing.T) {
 						[]byte(fmt.Sprintf(`{
 							"name": "app",
 							"language": "%s",
-							"environment": "common",
 							"fixtures": {
 								"demopg": "%s"
 							}
