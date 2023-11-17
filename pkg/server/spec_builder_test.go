@@ -207,15 +207,15 @@ func TestWriteCollectionToResource(t *testing.T) {
 			want: &ir.DeploymentSpec{
 				Connectors: []ir.ConnectorSpec{
 					{
-						Collection:  "accounts",
-						Destination: "mongo",
-						Type:        ir.ConnectorDestination,
+						Collection: "accounts",
+						PluginName: "mongo",
+						Type:       ir.ConnectorDestination,
 					},
 					{
-						Collection:  "accounts_copy",
-						Destination: "pg",
-						Type:        ir.ConnectorDestination,
-						Config:      map[string]interface{}{},
+						Collection: "accounts_copy",
+						PluginName: "pg",
+						Type:       ir.ConnectorDestination,
+						Config:     map[string]interface{}{},
 					},
 				},
 			},
@@ -243,9 +243,9 @@ func TestWriteCollectionToResource(t *testing.T) {
 			want: &ir.DeploymentSpec{
 				Connectors: []ir.ConnectorSpec{
 					{
-						Collection:  "accounts_copy",
-						Destination: "pg",
-						Type:        ir.ConnectorDestination,
+						Collection: "accounts_copy",
+						PluginName: "pg",
+						Type:       ir.ConnectorDestination,
 						Config: map[string]interface{}{
 							"config":         "value",
 							"another_config": "another_value",
@@ -594,14 +594,14 @@ func exampleDeploymentSpec() *ir.DeploymentSpec {
 			{
 				UUID:       "1",
 				Collection: "accounts",
-				Source:     "mongo",
+				PluginName: "mongo",
 				Type:       ir.ConnectorSource,
 			},
 			{
-				UUID:        "3",
-				Collection:  "accounts_copy",
-				Destination: "pg",
-				Type:        ir.ConnectorDestination,
+				UUID:       "3",
+				Collection: "accounts_copy",
+				PluginName: "pg",
+				Type:       ir.ConnectorDestination,
 				Config: map[string]interface{}{
 					"config": "value",
 				},

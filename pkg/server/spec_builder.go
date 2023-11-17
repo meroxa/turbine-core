@@ -67,7 +67,7 @@ func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadColle
 	c := ir.ConnectorSpec{
 		UUID:       uuid.New().String(),
 		Collection: req.Collection,
-		Source:     req.Source.Name,
+		PluginName: req.Source.Name,
 		Type:       ir.ConnectorSource,
 		Config:     configMap(req.Configs),
 	}
@@ -88,11 +88,11 @@ func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *p
 	}
 
 	c := ir.ConnectorSpec{
-		UUID:        uuid.New().String(),
-		Collection:  req.DestinationCollection,
-		Destination: req.Destination.Name,
-		Type:        ir.ConnectorDestination,
-		Config:      configMap(req.Configs),
+		UUID:       uuid.New().String(),
+		Collection: req.DestinationCollection,
+		PluginName: req.Destination.Name,
+		Type:       ir.ConnectorDestination,
+		Config:     configMap(req.Configs),
 	}
 	if err := s.spec.AddDestination(&c); err != nil {
 		return nil, err

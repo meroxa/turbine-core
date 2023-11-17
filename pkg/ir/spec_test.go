@@ -128,17 +128,17 @@ func Test_DeploymentSpec(t *testing.T) {
 			{
 				UUID:       "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 				Type:       ir.ConnectorSource,
-				Source:     "mypg",
+				PluginName: "mypg",
 				Collection: "user_activity",
 				Config: map[string]interface{}{
 					"logical_replication": true,
 				},
 			},
 			{
-				UUID:        "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
-				Type:        ir.ConnectorDestination,
-				Destination: "mypg",
-				Collection:  "user_activity_enriched",
+				UUID:       "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+				Type:       ir.ConnectorDestination,
+				PluginName: "mypg",
+				Collection: "user_activity_enriched",
 			},
 		},
 		Functions: []ir.FunctionSpec{
@@ -249,14 +249,14 @@ func Test_MarshalUnmarshal(t *testing.T) {
 			{
 				UUID:       "1",
 				Collection: "accounts",
-				Source:     "mongo",
+				PluginName: "mongo",
 				Type:       ir.ConnectorSource,
 			},
 			{
-				UUID:        "2",
-				Collection:  "accounts_copy",
-				Destination: "pg",
-				Type:        ir.ConnectorDestination,
+				UUID:       "2",
+				Collection: "accounts_copy",
+				PluginName: "pg",
+				Type:       ir.ConnectorDestination,
 				Config: map[string]interface{}{
 					"config": "value",
 				},
@@ -302,7 +302,7 @@ func Test_AllowMultipleSources(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -314,7 +314,7 @@ func Test_AllowMultipleSources(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "2",
 			Collection: "accounts2",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -330,7 +330,7 @@ func Test_EnsureNonDuplicateSources(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -342,7 +342,7 @@ func Test_EnsureNonDuplicateSources(t *testing.T) {
 	duplicate := &ir.ConnectorSpec{
 		UUID:       "1",
 		Collection: "accounts2",
-		Source:     "mongo",
+		PluginName: "mongo",
 		Type:       ir.ConnectorSource,
 		Config: map[string]interface{}{
 			"config": "value",
@@ -359,7 +359,7 @@ func Test_BadStream(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -383,10 +383,10 @@ func Test_WrongSourceConnector(t *testing.T) {
 	var spec ir.DeploymentSpec
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
-			UUID:        "1",
-			Collection:  "accounts",
-			Destination: "mongo",
-			Type:        ir.ConnectorDestination,
+			UUID:       "1",
+			Collection: "accounts",
+			PluginName: "mongo",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -402,7 +402,7 @@ func Test_WrongDestinationConnector(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -424,7 +424,7 @@ func Test_Scenario1(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -455,10 +455,10 @@ func Test_Scenario1(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "3",
-			Collection:  "accounts_copy",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "3",
+			Collection: "accounts_copy",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -495,7 +495,7 @@ func Test_DAGScenario2(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -526,10 +526,10 @@ func Test_DAGScenario2(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "3",
-			Collection:  "accounts_copy",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "3",
+			Collection: "accounts_copy",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -551,10 +551,10 @@ func Test_DAGScenario2(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "4",
-			Collection:  "accounts_copy",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "4",
+			Collection: "accounts_copy",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -591,7 +591,7 @@ func Test_DAGScenario3(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -622,10 +622,10 @@ func Test_DAGScenario3(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "3",
-			Collection:  "accounts_copy",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "3",
+			Collection: "accounts_copy",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -689,7 +689,7 @@ func Test_DAGScenario4(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -745,7 +745,7 @@ func Test_DAGScenario5(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -794,10 +794,10 @@ func Test_DAGScenario5(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "4",
-			Collection:  "accounts_copy",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "4",
+			Collection: "accounts_copy",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -843,7 +843,7 @@ func Test_DAGScenario6(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -892,10 +892,10 @@ func Test_DAGScenario6(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "4",
-			Collection:  "accounts_copy",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "4",
+			Collection: "accounts_copy",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -915,10 +915,10 @@ func Test_DAGScenario6(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "5",
-			Collection:  "accounts_copy_2",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "5",
+			Collection: "accounts_copy_2",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -956,10 +956,10 @@ func Test_DAGScenario6(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "7",
-			Collection:  "accounts_copy_3",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "7",
+			Collection: "accounts_copy_3",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -995,7 +995,7 @@ func Test_DAGScenario7(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -1026,10 +1026,10 @@ func Test_DAGScenario7(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "3",
-			Collection:  "accounts_copy",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "3",
+			Collection: "accounts_copy",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -1051,10 +1051,10 @@ func Test_DAGScenario7(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "4",
-			Collection:  "accounts_copy",
-			Destination: "pg",
-			Type:        ir.ConnectorDestination,
+			UUID:       "4",
+			Collection: "accounts_copy",
+			PluginName: "pg",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -1088,7 +1088,7 @@ func Test_Scenario8(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -1130,7 +1130,7 @@ func Test_Scenario9(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -1142,10 +1142,10 @@ func Test_Scenario9(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "2",
-			Collection:  "accounts",
-			Destination: "mongo",
-			Type:        ir.ConnectorDestination,
+			UUID:       "2",
+			Collection: "accounts",
+			PluginName: "mongo",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},
@@ -1181,7 +1181,7 @@ func Test_Scenario10(t *testing.T) {
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			Collection: "accounts",
-			Source:     "mongo",
+			PluginName: "mongo",
 			Type:       ir.ConnectorSource,
 			Config: map[string]interface{}{
 				"config": "value",
@@ -1224,10 +1224,10 @@ func Test_Scenario10(t *testing.T) {
 
 	err = spec.AddDestination(
 		&ir.ConnectorSpec{
-			UUID:        "4",
-			Collection:  "accounts",
-			Destination: "mongo",
-			Type:        ir.ConnectorDestination,
+			UUID:       "4",
+			Collection: "accounts",
+			PluginName: "mongo",
+			Type:       ir.ConnectorDestination,
 			Config: map[string]interface{}{
 				"config": "value",
 			},

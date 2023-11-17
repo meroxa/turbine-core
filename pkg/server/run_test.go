@@ -326,7 +326,7 @@ func Test_ReadCollection(t *testing.T) {
 		{
 			desc:    "fails when source is missing",
 			srv:     &runService{},
-			wantErr: errors.New("invalid ReadCollectionRequest.Source: value is required"),
+			wantErr: errors.New("invalid ReadCollectionRequest.PluginName: value is required"),
 			setup: func() *pb.ReadCollectionRequest {
 				return &pb.ReadCollectionRequest{
 					Collection: "resource-collection",
