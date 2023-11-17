@@ -55,11 +55,12 @@ type StreamSpec struct {
 }
 
 type ConnectorSpec struct {
-	UUID       string                 `json:"uuid"`
-	Type       ConnectorType          `json:"type"`
-	Resource   string                 `json:"resource"`
-	Collection string                 `json:"collection"`
-	Config     map[string]interface{} `json:"config,omitempty"`
+	UUID        string                 `json:"uuid"`
+	Type        ConnectorType          `json:"type"` // TODO: Rename to direction
+	Source      string                 `json:"source,omitempty"`
+	Destination string                 `json:"destination,omitempty"`
+	Collection  string                 `json:"collection"`
+	Config      map[string]interface{} `json:"config,omitempty"`
 }
 
 type FunctionSpec struct {

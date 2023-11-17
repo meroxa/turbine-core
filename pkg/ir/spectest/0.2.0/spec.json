@@ -7,7 +7,7 @@
             "uuid": "252bc5e1-666e-4985-a12a-42af81a5d2ab",
             "collection": "user_activity",
             "type": "source",
-            "resource": "mypg",
+            "source": "mypg",
             "config": {
                 "logical_replication": true
             }
@@ -16,7 +16,7 @@
             "uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
             "collection": "user_activity_enriched",
             "type": "destination",
-            "resource": "mypg"
+            "destination": "mypg"
         }
     ],
     "functions": [

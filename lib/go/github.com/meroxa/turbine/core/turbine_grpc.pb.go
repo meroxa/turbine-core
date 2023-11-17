@@ -25,13 +25,13 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TurbineServiceClient interface {
 	Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*Resource, error)
+	GetSource(ctx context.Context, in *GetSourceRequest, opts ...grpc.CallOption) (*Source, error)
+	GetDestination(ctx context.Context, in *GetDestinationRequest, opts ...grpc.CallOption) (*Destination, error)
 	ReadCollection(ctx context.Context, in *ReadCollectionRequest, opts ...grpc.CallOption) (*Collection, error)
-	WriteCollectionToResource(ctx context.Context, in *WriteCollectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	WriteCollectionToDestination(ctx context.Context, in *WriteCollectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AddProcessToCollection(ctx context.Context, in *ProcessCollectionRequest, opts ...grpc.CallOption) (*Collection, error)
 	RegisterSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	HasFunctions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
-	ListResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListResourcesResponse, error)
 	GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error)
 }
 
@@ -52,9 +52,18 @@ func (c *turbineServiceClient) Init(ctx context.Context, in *InitRequest, opts .
 	return out, nil
 }
 
-func (c *turbineServiceClient) GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*Resource, error) {
-	out := new(Resource)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/GetResource", in, out, opts...)
+func (c *turbineServiceClient) GetSource(ctx context.Context, in *GetSourceRequest, opts ...grpc.CallOption) (*Source, error) {
+	out := new(Source)
+	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/GetSource", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *turbineServiceClient) GetDestination(ctx context.Context, in *GetDestinationRequest, opts ...grpc.CallOption) (*Destination, error) {
+	out := new(Destination)
+	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/GetDestination", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +79,9 @@ func (c *turbineServiceClient) ReadCollection(ctx context.Context, in *ReadColle
 	return out, nil
 }
 
-func (c *turbineServiceClient) WriteCollectionToResource(ctx context.Context, in *WriteCollectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *turbineServiceClient) WriteCollectionToDestination(ctx context.Context, in *WriteCollectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/WriteCollectionToResource", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/WriteCollectionToDestination", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -106,15 +115,6 @@ func (c *turbineServiceClient) HasFunctions(ctx context.Context, in *emptypb.Emp
 	return out, nil
 }
 
-func (c *turbineServiceClient) ListResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListResourcesResponse, error) {
-	out := new(ListResourcesResponse)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/ListResources", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *turbineServiceClient) GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error) {
 	out := new(GetSpecResponse)
 	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/GetSpec", in, out, opts...)
@@ -129,13 +129,13 @@ func (c *turbineServiceClient) GetSpec(ctx context.Context, in *GetSpecRequest, 
 // for forward compatibility
 type TurbineServiceServer interface {
 	Init(context.Context, *InitRequest) (*emptypb.Empty, error)
-	GetResource(context.Context, *GetResourceRequest) (*Resource, error)
+	GetSource(context.Context, *GetSourceRequest) (*Source, error)
+	GetDestination(context.Context, *GetDestinationRequest) (*Destination, error)
 	ReadCollection(context.Context, *ReadCollectionRequest) (*Collection, error)
-	WriteCollectionToResource(context.Context, *WriteCollectionRequest) (*emptypb.Empty, error)
+	WriteCollectionToDestination(context.Context, *WriteCollectionRequest) (*emptypb.Empty, error)
 	AddProcessToCollection(context.Context, *ProcessCollectionRequest) (*Collection, error)
 	RegisterSecret(context.Context, *Secret) (*emptypb.Empty, error)
 	HasFunctions(context.Context, *emptypb.Empty) (*wrapperspb.BoolValue, error)
-	ListResources(context.Context, *emptypb.Empty) (*ListResourcesResponse, error)
 	GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error)
 }
 
@@ -146,14 +146,17 @@ type UnimplementedTurbineServiceServer struct {
 func (UnimplementedTurbineServiceServer) Init(context.Context, *InitRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Init not implemented")
 }
-func (UnimplementedTurbineServiceServer) GetResource(context.Context, *GetResourceRequest) (*Resource, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetResource not implemented")
+func (UnimplementedTurbineServiceServer) GetSource(context.Context, *GetSourceRequest) (*Source, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSource not implemented")
+}
+func (UnimplementedTurbineServiceServer) GetDestination(context.Context, *GetDestinationRequest) (*Destination, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDestination not implemented")
 }
 func (UnimplementedTurbineServiceServer) ReadCollection(context.Context, *ReadCollectionRequest) (*Collection, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadCollection not implemented")
 }
-func (UnimplementedTurbineServiceServer) WriteCollectionToResource(context.Context, *WriteCollectionRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method WriteCollectionToResource not implemented")
+func (UnimplementedTurbineServiceServer) WriteCollectionToDestination(context.Context, *WriteCollectionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WriteCollectionToDestination not implemented")
 }
 func (UnimplementedTurbineServiceServer) AddProcessToCollection(context.Context, *ProcessCollectionRequest) (*Collection, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddProcessToCollection not implemented")
@@ -163,9 +166,6 @@ func (UnimplementedTurbineServiceServer) RegisterSecret(context.Context, *Secret
 }
 func (UnimplementedTurbineServiceServer) HasFunctions(context.Context, *emptypb.Empty) (*wrapperspb.BoolValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HasFunctions not implemented")
-}
-func (UnimplementedTurbineServiceServer) ListResources(context.Context, *emptypb.Empty) (*ListResourcesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListResources not implemented")
 }
 func (UnimplementedTurbineServiceServer) GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSpec not implemented")
@@ -200,20 +200,38 @@ func _TurbineService_Init_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_GetResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetResourceRequest)
+func _TurbineService_GetSource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TurbineServiceServer).GetResource(ctx, in)
+		return srv.(TurbineServiceServer).GetSource(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/GetResource",
+		FullMethod: "/turbine_core.TurbineService/GetSource",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).GetResource(ctx, req.(*GetResourceRequest))
+		return srv.(TurbineServiceServer).GetSource(ctx, req.(*GetSourceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TurbineService_GetDestination_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDestinationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TurbineServiceServer).GetDestination(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/turbine_core.TurbineService/GetDestination",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TurbineServiceServer).GetDestination(ctx, req.(*GetDestinationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,20 +254,20 @@ func _TurbineService_ReadCollection_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_WriteCollectionToResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TurbineService_WriteCollectionToDestination_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WriteCollectionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TurbineServiceServer).WriteCollectionToResource(ctx, in)
+		return srv.(TurbineServiceServer).WriteCollectionToDestination(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/WriteCollectionToResource",
+		FullMethod: "/turbine_core.TurbineService/WriteCollectionToDestination",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).WriteCollectionToResource(ctx, req.(*WriteCollectionRequest))
+		return srv.(TurbineServiceServer).WriteCollectionToDestination(ctx, req.(*WriteCollectionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -308,24 +326,6 @@ func _TurbineService_HasFunctions_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_ListResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TurbineServiceServer).ListResources(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/ListResources",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).ListResources(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _TurbineService_GetSpec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSpecRequest)
 	if err := dec(in); err != nil {
@@ -356,16 +356,20 @@ var TurbineService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TurbineService_Init_Handler,
 		},
 		{
-			MethodName: "GetResource",
-			Handler:    _TurbineService_GetResource_Handler,
+			MethodName: "GetSource",
+			Handler:    _TurbineService_GetSource_Handler,
+		},
+		{
+			MethodName: "GetDestination",
+			Handler:    _TurbineService_GetDestination_Handler,
 		},
 		{
 			MethodName: "ReadCollection",
 			Handler:    _TurbineService_ReadCollection_Handler,
 		},
 		{
-			MethodName: "WriteCollectionToResource",
-			Handler:    _TurbineService_WriteCollectionToResource_Handler,
+			MethodName: "WriteCollectionToDestination",
+			Handler:    _TurbineService_WriteCollectionToDestination_Handler,
 		},
 		{
 			MethodName: "AddProcessToCollection",
@@ -378,10 +382,6 @@ var TurbineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HasFunctions",
 			Handler:    _TurbineService_HasFunctions_Handler,
-		},
-		{
-			MethodName: "ListResources",
-			Handler:    _TurbineService_ListResources_Handler,
 		},
 		{
 			MethodName: "GetSpec",

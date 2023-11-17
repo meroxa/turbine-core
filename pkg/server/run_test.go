@@ -84,7 +84,7 @@ func Test_Init(t *testing.T) {
 							"resources": {
 								"demopg": "%s"
 							}
-						}`, ir.Ruby, filepath.Join("fixtures", "demo.json"))),
+						}`, ir.Ruby, filepath.Join("resources", "demo.json"))),
 						0o644,
 					),
 				)
@@ -109,10 +109,9 @@ func Test_Init(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, s.appPath, req.ConfigFilePath)
 				assert.Equal(t, s.config, app.Config{
-					Name:     "app",
-					Pipeline: "turbine-pipeline-app",
+					Name: "app",
 					Resources: map[string]string{
-						"demopg": filepath.Join("fixtures", "demo.json"),
+						"demopg": filepath.Join("resources", "demo.json"),
 					},
 					Language: ir.Ruby,
 				})
@@ -121,24 +120,24 @@ func Test_Init(t *testing.T) {
 	}
 }
 
-func Test_GetResource(t *testing.T) {
+func Test_GetSource(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		desc    string
-		setup   func() *pb.GetResourceRequest
+		setup   func() *pb.GetSourceRequest
 		wantErr error
 	}{
 		{
 			desc: "fails on invalid name",
-			setup: func() *pb.GetResourceRequest {
-				return &pb.GetResourceRequest{}
+			setup: func() *pb.GetSourceRequest {
+				return &pb.GetSourceRequest{}
 			},
-			wantErr: errors.New("invalid GetResourceRequest.Name: value length must be at least 1 runes"),
+			wantErr: errors.New("invalid GetSourceRequest.Name: value length must be at least 1 runes"),
 		},
 		{
 			desc: "success",
-			setup: func() *pb.GetResourceRequest {
-				return &pb.GetResourceRequest{
+			setup: func() *pb.GetSourceRequest {
+				return &pb.GetSourceRequest{
 					Name: "my-resource",
 				}
 			},
@@ -149,7 +148,47 @@ func Test_GetResource(t *testing.T) {
 			s := &runService{}
 			req := tc.setup()
 
-			r, err := s.GetResource(ctx, req)
+			r, err := s.GetSource(ctx, req)
+			if tc.wantErr != nil {
+				assert.ErrorContains(t, err, tc.wantErr.Error())
+			} else {
+				if assert.NoError(t, err) {
+					assert.Equal(t, r.Name, req.Name)
+				}
+			}
+		})
+	}
+}
+
+func Test_GetDestination(t *testing.T) {
+	ctx := context.Background()
+	tests := []struct {
+		desc    string
+		setup   func() *pb.GetDestinationRequest
+		wantErr error
+	}{
+		{
+			desc: "fails on invalid name",
+			setup: func() *pb.GetDestinationRequest {
+				return &pb.GetDestinationRequest{}
+			},
+			wantErr: errors.New("invalid GetDestinationRequest.Name: value length must be at least 1 runes"),
+		},
+		{
+			desc: "success",
+			setup: func() *pb.GetDestinationRequest {
+				return &pb.GetDestinationRequest{
+					Name: "my-resource",
+				}
+			},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			s := &runService{}
+			req := tc.setup()
+
+			r, err := s.GetDestination(ctx, req)
 			if tc.wantErr != nil {
 				assert.ErrorContains(t, err, tc.wantErr.Error())
 			} else {
@@ -285,9 +324,9 @@ func Test_ReadCollection(t *testing.T) {
 		wantErr        error
 	}{
 		{
-			desc:    "fails when resource is missing",
+			desc:    "fails when source is missing",
 			srv:     &runService{},
-			wantErr: errors.New("invalid ReadCollectionRequest.Resource: value is required"),
+			wantErr: errors.New("invalid ReadCollectionRequest.Source: value is required"),
 			setup: func() *pb.ReadCollectionRequest {
 				return &pb.ReadCollectionRequest{
 					Collection: "resource-collection",
@@ -300,7 +339,7 @@ func Test_ReadCollection(t *testing.T) {
 			wantErr: errors.New("invalid ReadCollectionRequest.Collection: value length must be at least 1 runes"),
 			setup: func() *pb.ReadCollectionRequest {
 				return &pb.ReadCollectionRequest{
-					Resource: &pb.Resource{
+					Source: &pb.Source{
 						Name: "resource",
 					},
 				}
@@ -319,7 +358,7 @@ func Test_ReadCollection(t *testing.T) {
 			wantErr: errors.New("no such file or directory"),
 			setup: func() *pb.ReadCollectionRequest {
 				return &pb.ReadCollectionRequest{
-					Resource: &pb.Resource{
+					Source: &pb.Source{
 						Name: "resource",
 					},
 					Collection: "resource-collection",
@@ -362,7 +401,7 @@ func Test_ReadCollection(t *testing.T) {
 					),
 				)
 				return &pb.ReadCollectionRequest{
-					Resource: &pb.Resource{
+					Source: &pb.Source{
 						Name: "resource",
 					},
 					Collection: "events",
@@ -370,7 +409,7 @@ func Test_ReadCollection(t *testing.T) {
 			},
 		},
 		{
-			desc: "wrong fixture resource name",
+			desc: "wrong fixture source name",
 			srv: &runService{
 				appPath: path.Join(tempdir),
 				config: app.Config{
@@ -379,7 +418,7 @@ func Test_ReadCollection(t *testing.T) {
 					},
 				},
 			},
-			wantErr: errors.New("No fixture file found for resource pg"),
+			wantErr: errors.New("No fixture file found for source pg"),
 			setup: func() *pb.ReadCollectionRequest {
 				file := path.Join(tempdir, "fixture.json")
 				require.NoError(
@@ -397,7 +436,7 @@ func Test_ReadCollection(t *testing.T) {
 					),
 				)
 				return &pb.ReadCollectionRequest{
-					Resource: &pb.Resource{
+					Source: &pb.Source{
 						Name: "pg",
 					},
 					Collection: "events",
@@ -433,18 +472,18 @@ func Test_WriteCollectionToResource(t *testing.T) {
 		wantErr error
 	}{
 		{
-			desc:    "fails when resource is missing",
-			wantErr: errors.New("invalid WriteCollectionRequest.Resource: value is required"),
+			desc:    "fails when destination is missing",
+			wantErr: errors.New("invalid WriteCollectionRequest.Destination: value is required"),
 			setup: func() *pb.WriteCollectionRequest {
 				return &pb.WriteCollectionRequest{}
 			},
 		},
 		{
-			desc:    "fails when source collection is missing",
+			desc:    "fails when destination collection is missing",
 			wantErr: errors.New("invalid WriteCollectionRequest.SourceCollection: value is required"),
 			setup: func() *pb.WriteCollectionRequest {
 				return &pb.WriteCollectionRequest{
-					Resource: &pb.Resource{
+					Destination: &pb.Destination{
 						Name: "resource",
 					},
 				}
@@ -452,10 +491,10 @@ func Test_WriteCollectionToResource(t *testing.T) {
 		},
 		{
 			desc:    "fails when target collection is missing",
-			wantErr: errors.New("invalid WriteCollectionRequest.TargetCollection: value length must be at least 1 runes"),
+			wantErr: errors.New("invalid WriteCollectionRequest.DestinationCollection: value length must be at least 1 runes"),
 			setup: func() *pb.WriteCollectionRequest {
 				return &pb.WriteCollectionRequest{
-					Resource: &pb.Resource{
+					Destination: &pb.Destination{
 						Name: "resource",
 					},
 					SourceCollection: &pb.Collection{
@@ -469,7 +508,7 @@ func Test_WriteCollectionToResource(t *testing.T) {
 			desc: "success",
 			setup: func() *pb.WriteCollectionRequest {
 				return &pb.WriteCollectionRequest{
-					Resource: &pb.Resource{
+					Destination: &pb.Destination{
 						Name: "resource",
 					},
 					SourceCollection: &pb.Collection{
@@ -481,7 +520,7 @@ func Test_WriteCollectionToResource(t *testing.T) {
 							},
 						},
 					},
-					TargetCollection: "target-collection",
+					DestinationCollection: "target-collection",
 				}
 			},
 		},

@@ -11,13 +11,13 @@ option go_package = "github.com/meroxa/turbine/core";
 
 service TurbineService {
   rpc Init(InitRequest) returns (google.protobuf.Empty);
-  rpc GetResource(GetResourceRequest) returns (Resource);
+  rpc GetSource(GetSourceRequest) returns (Source);
+  rpc GetDestination(GetDestinationRequest) returns (Destination);
   rpc ReadCollection(ReadCollectionRequest) returns (Collection);
-  rpc WriteCollectionToResource(WriteCollectionRequest) returns (google.protobuf.Empty);
+  rpc WriteCollectionToDestination(WriteCollectionRequest) returns (google.protobuf.Empty);
   rpc AddProcessToCollection(ProcessCollectionRequest) returns (Collection);
   rpc RegisterSecret(Secret) returns (google.protobuf.Empty);
   rpc HasFunctions(google.protobuf.Empty) returns (google.protobuf.BoolValue);
-  rpc ListResources(google.protobuf.Empty) returns (ListResourcesResponse);
   rpc GetSpec(GetSpecRequest) returns (GetSpecResponse);
 }
 
@@ -36,14 +36,21 @@ message InitRequest {
   string turbineVersion = 5;
 }
 
-message GetResourceRequest {
+message GetSourceRequest {
   string name = 1 [(validate.rules).string.min_len = 1];
 }
 
-message Resource {
+message GetDestinationRequest {
   string name = 1 [(validate.rules).string.min_len = 1];
-  bool source = 2;
-  bool destination = 3;
+}
+
+message Source {
+  string name = 1 [(validate.rules).string.min_len = 1];
+  string collection = 4;
+}
+
+message Destination {
+  string name = 1 [(validate.rules).string.min_len = 1];
   string collection = 4;
 }
 
@@ -60,15 +67,15 @@ message Record {
 }
 
 message ReadCollectionRequest {
-  Resource resource = 1 [(validate.rules).message.required = true];
+  Source source = 1 [(validate.rules).message.required = true];
   string collection = 2 [(validate.rules).string.min_len = 1];
   Configs configs = 3;
 }
 
 message WriteCollectionRequest {
-  Resource resource = 1 [(validate.rules).message.required = true];
+  Destination destination = 1 [(validate.rules).message.required = true];
   Collection sourceCollection = 2 [(validate.rules).message.required = true];
-  string targetCollection = 3 [(validate.rules).string.min_len = 1];
+  string destinationCollection = 3 [(validate.rules).string.min_len = 1];
   Configs configs = 4;
 }
 
@@ -93,10 +100,6 @@ message ProcessCollectionRequest {
 message Secret {
   string name = 1 [(validate.rules).string.min_len = 1];
   string value = 2 [(validate.rules).string.min_len = 1];
-}
-
-message ListResourcesResponse {
-  repeated Resource resources = 1;
 }
 
 message GetSpecRequest {

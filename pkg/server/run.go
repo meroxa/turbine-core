@@ -44,12 +44,22 @@ func (s *runService) Init(ctx context.Context, req *pb.InitRequest) (*emptypb.Em
 	return empty(), nil
 }
 
-func (s *runService) GetResource(ctx context.Context, req *pb.GetResourceRequest) (*pb.Resource, error) {
+func (s *runService) GetSource(ctx context.Context, req *pb.GetSourceRequest) (*pb.Source, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	return &pb.Resource{
+	return &pb.Source{
+		Name: req.Name,
+	}, nil
+}
+
+func (s *runService) GetDestination(ctx context.Context, req *pb.GetDestinationRequest) (*pb.Destination, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	return &pb.Destination{
 		Name: req.Name,
 	}, nil
 }
@@ -59,13 +69,13 @@ func (s *runService) ReadCollection(ctx context.Context, req *pb.ReadCollectionR
 		return nil, err
 	}
 
-	fixtureFile, ok := s.config.Resources[req.Resource.Name]
+	fixtureFile, ok := s.config.Resources[req.Source.Name]
 	if !ok {
 		return nil, status.Error(
 			codes.InvalidArgument,
 			fmt.Sprintf(
-				"No fixture file found for resource %s. Ensure that the resource is declared in your app.json.",
-				req.Resource.Name,
+				"No fixture file found for source %s. Ensure that the source is declared in your app.json.",
+				req.Source.Name,
 			),
 		)
 	}
@@ -94,8 +104,8 @@ func (s *runService) WriteCollectionToResource(ctx context.Context, req *pb.Writ
 	}
 
 	internal.PrintRecords(
-		req.Resource.Name,
-		req.TargetCollection,
+		req.Destination.Name,
+		req.DestinationCollection,
 		req.SourceCollection.Records,
 	)
 

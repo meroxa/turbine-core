@@ -16,8 +16,7 @@ var _ pb.TurbineServiceServer = (*specBuilderService)(nil)
 type specBuilderService struct {
 	pb.UnimplementedTurbineServiceServer
 
-	spec      *ir.DeploymentSpec
-	resources []*pb.Resource
+	spec *ir.DeploymentSpec
 }
 
 func NewSpecBuilderService() *specBuilderService {
@@ -46,11 +45,18 @@ func (s *specBuilderService) Init(_ context.Context, req *pb.InitRequest) (*empt
 	return empty(), nil
 }
 
-func (s *specBuilderService) GetResource(_ context.Context, req *pb.GetResourceRequest) (*pb.Resource, error) {
+func (s *specBuilderService) GetSource(_ context.Context, req *pb.GetSourceRequest) (*pb.Source, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return &pb.Resource{Name: req.Name}, nil
+	return &pb.Source{Name: req.Name}, nil
+}
+
+func (s *specBuilderService) GetDestination(_ context.Context, req *pb.GetDestinationRequest) (*pb.Destination, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	return &pb.Destination{Name: req.Name}, nil
 }
 
 func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadCollectionRequest) (*pb.Collection, error) {
@@ -58,16 +64,10 @@ func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadColle
 		return nil, err
 	}
 
-	s.resources = append(s.resources, &pb.Resource{
-		Name:       req.GetResource().GetName(),
-		Source:     true,
-		Collection: req.GetCollection(),
-	})
-
 	c := ir.ConnectorSpec{
 		UUID:       uuid.New().String(),
 		Collection: req.Collection,
-		Resource:   req.Resource.Name,
+		Source:     req.Source.Name,
 		Type:       ir.ConnectorSource,
 		Config:     configMap(req.Configs),
 	}
@@ -87,18 +87,12 @@ func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *p
 		return nil, err
 	}
 
-	s.resources = append(s.resources, &pb.Resource{
-		Name:        req.Resource.Name,
-		Destination: true,
-		Collection:  req.TargetCollection,
-	})
-
 	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Collection: req.TargetCollection,
-		Resource:   req.Resource.Name,
-		Type:       ir.ConnectorDestination,
-		Config:     configMap(req.Configs),
+		UUID:        uuid.New().String(),
+		Collection:  req.DestinationCollection,
+		Destination: req.Destination.Name,
+		Type:        ir.ConnectorDestination,
+		Config:      configMap(req.Configs),
 	}
 	if err := s.spec.AddDestination(&c); err != nil {
 		return nil, err
@@ -154,10 +148,6 @@ func (s *specBuilderService) RegisterSecret(_ context.Context, secret *pb.Secret
 
 func (s *specBuilderService) HasFunctions(_ context.Context, _ *emptypb.Empty) (*wrapperspb.BoolValue, error) {
 	return wrapperspb.Bool(len(s.spec.Functions) > 0), nil
-}
-
-func (s *specBuilderService) ListResources(_ context.Context, _ *emptypb.Empty) (*pb.ListResourcesResponse, error) {
-	return &pb.ListResourcesResponse{Resources: s.resources}, nil
 }
 
 func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) (*pb.GetSpecResponse, error) {

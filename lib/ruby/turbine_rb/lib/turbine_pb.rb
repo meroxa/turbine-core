@@ -17,13 +17,18 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :gitSHA, :string, 4
       optional :turbineVersion, :string, 5
     end
-    add_message "turbine_core.GetResourceRequest" do
+    add_message "turbine_core.GetSourceRequest" do
       optional :name, :string, 1
     end
-    add_message "turbine_core.Resource" do
+    add_message "turbine_core.GetDestinationRequest" do
       optional :name, :string, 1
-      optional :source, :bool, 2
-      optional :destination, :bool, 3
+    end
+    add_message "turbine_core.Source" do
+      optional :name, :string, 1
+      optional :collection, :string, 4
+    end
+    add_message "turbine_core.Destination" do
+      optional :name, :string, 1
       optional :collection, :string, 4
     end
     add_message "turbine_core.Collection" do
@@ -37,14 +42,14 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :timestamp, :message, 3, "google.protobuf.Timestamp"
     end
     add_message "turbine_core.ReadCollectionRequest" do
-      optional :resource, :message, 1, "turbine_core.Resource"
+      optional :source, :message, 1, "turbine_core.Source"
       optional :collection, :string, 2
       optional :configs, :message, 3, "turbine_core.Configs"
     end
     add_message "turbine_core.WriteCollectionRequest" do
-      optional :resource, :message, 1, "turbine_core.Resource"
+      optional :destination, :message, 1, "turbine_core.Destination"
       optional :sourceCollection, :message, 2, "turbine_core.Collection"
-      optional :targetCollection, :string, 3
+      optional :destinationCollection, :string, 3
       optional :configs, :message, 4, "turbine_core.Configs"
     end
     add_message "turbine_core.Configs" do
@@ -65,9 +70,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :name, :string, 1
       optional :value, :string, 2
     end
-    add_message "turbine_core.ListResourcesResponse" do
-      repeated :resources, :message, 1, "turbine_core.Resource"
-    end
     add_message "turbine_core.GetSpecRequest" do
       optional :image, :string, 1
     end
@@ -85,8 +87,10 @@ end
 
 module TurbineCore
   InitRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.InitRequest").msgclass
-  GetResourceRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetResourceRequest").msgclass
-  Resource = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Resource").msgclass
+  GetSourceRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetSourceRequest").msgclass
+  GetDestinationRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetDestinationRequest").msgclass
+  Source = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Source").msgclass
+  Destination = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Destination").msgclass
   Collection = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Collection").msgclass
   Record = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Record").msgclass
   ReadCollectionRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ReadCollectionRequest").msgclass
@@ -96,7 +100,6 @@ module TurbineCore
   ProcessCollectionRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessCollectionRequest").msgclass
   ProcessCollectionRequest::Process = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessCollectionRequest.Process").msgclass
   Secret = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Secret").msgclass
-  ListResourcesResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ListResourcesResponse").msgclass
   GetSpecRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetSpecRequest").msgclass
   GetSpecResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetSpecResponse").msgclass
   Language = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Language").enummodule

@@ -88,17 +88,30 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func TestGetResource(t *testing.T) {
+func TestGetSource(t *testing.T) {
 	var (
 		ctx = context.Background()
 		s   = NewSpecBuilderService()
 	)
 
-	res, err := s.GetResource(ctx, &pb.GetResourceRequest{
+	res, err := s.GetSource(ctx, &pb.GetSourceRequest{
 		Name: "pg",
 	})
 	require.Nil(t, err)
-	require.Equal(t, &pb.Resource{Name: "pg"}, res)
+	require.Equal(t, &pb.Source{Name: "pg"}, res)
+}
+
+func TestGetDestination(t *testing.T) {
+	var (
+		ctx = context.Background()
+		s   = NewSpecBuilderService()
+	)
+
+	res, err := s.GetDestination(ctx, &pb.GetDestinationRequest{
+		Name: "pg",
+	})
+	require.Nil(t, err)
+	require.Equal(t, &pb.Destination{Name: "pg"}, res)
 }
 
 func TestReadCollection(t *testing.T) {
@@ -113,9 +126,8 @@ func TestReadCollection(t *testing.T) {
 			description: "successfully store source information",
 			req: &pb.ReadCollectionRequest{
 				Collection: "accounts",
-				Resource: &pb.Resource{
+				Source: &pb.Source{
 					Name:       "pg",
-					Source:     true,
 					Collection: "accounts",
 				},
 				Configs: nil,
@@ -125,9 +137,8 @@ func TestReadCollection(t *testing.T) {
 			description: "successfully store source information with config",
 			req: &pb.ReadCollectionRequest{
 				Collection: "accounts",
-				Resource: &pb.Resource{
+				Source: &pb.Source{
 					Name:       "pg",
-					Source:     true,
 					Collection: "accounts",
 				},
 				Configs: &pb.Configs{
@@ -161,7 +172,7 @@ func TestReadCollection(t *testing.T) {
 				require.EqualError(t, err, test.errMsg)
 			} else {
 				require.Nil(t, err)
-				require.Equal(t, test.req.Resource.Collection, res.Name)
+				require.Equal(t, test.req.Source.Collection, res.Name)
 				require.NotEmpty(t, s.spec.Connectors)
 				require.Equal(t, s.spec.Connectors[0].Collection, res.Name)
 				require.Equal(t, s.spec.Connectors[0].UUID, res.Stream)
@@ -182,29 +193,29 @@ func TestWriteCollectionToResource(t *testing.T) {
 		{
 			description: "empty request",
 			req:         &pb.WriteCollectionRequest{},
-			errMsg:      "invalid WriteCollectionRequest.Resource: value is required",
+			errMsg:      "invalid WriteCollectionRequest.Destination: value is required",
 		},
 		{
 			description: "specBuilderService has existing connector",
 			req: &pb.WriteCollectionRequest{
-				Resource: &pb.Resource{
+				Destination: &pb.Destination{
 					Name: "pg",
 				},
-				TargetCollection: "accounts_copy",
-				Configs:          nil,
+				DestinationCollection: "accounts_copy",
+				Configs:               nil,
 			},
 			want: &ir.DeploymentSpec{
 				Connectors: []ir.ConnectorSpec{
 					{
-						Collection: "accounts",
-						Resource:   "mongo",
-						Type:       ir.ConnectorDestination,
+						Collection:  "accounts",
+						Destination: "mongo",
+						Type:        ir.ConnectorDestination,
 					},
 					{
-						Collection: "accounts_copy",
-						Resource:   "pg",
-						Type:       ir.ConnectorDestination,
-						Config:     map[string]interface{}{},
+						Collection:  "accounts_copy",
+						Destination: "pg",
+						Type:        ir.ConnectorDestination,
+						Config:      map[string]interface{}{},
 					},
 				},
 			},
@@ -212,10 +223,10 @@ func TestWriteCollectionToResource(t *testing.T) {
 		{
 			description: "successfully store destination information with config",
 			req: &pb.WriteCollectionRequest{
-				Resource: &pb.Resource{
+				Destination: &pb.Destination{
 					Name: "pg",
 				},
-				TargetCollection: "accounts_copy",
+				DestinationCollection: "accounts_copy",
 				Configs: &pb.Configs{
 					Config: []*pb.Config{
 						{
@@ -232,9 +243,9 @@ func TestWriteCollectionToResource(t *testing.T) {
 			want: &ir.DeploymentSpec{
 				Connectors: []ir.ConnectorSpec{
 					{
-						Collection: "accounts_copy",
-						Resource:   "pg",
-						Type:       ir.ConnectorDestination,
+						Collection:  "accounts_copy",
+						Destination: "pg",
+						Type:        ir.ConnectorDestination,
 						Config: map[string]interface{}{
 							"config":         "value",
 							"another_config": "another_value",
@@ -255,9 +266,8 @@ func TestWriteCollectionToResource(t *testing.T) {
 			source, err := s.ReadCollection(ctx,
 				&pb.ReadCollectionRequest{
 					Collection: "pg_2",
-					Resource: &pb.Resource{
+					Source: &pb.Source{
 						Name:       "pg_2",
-						Source:     true,
 						Collection: "pg_2",
 					},
 					Configs: nil,
@@ -299,9 +309,8 @@ func TestAddProcessToCollection(t *testing.T) {
 	read, err := s.ReadCollection(ctx,
 		&pb.ReadCollectionRequest{
 			Collection: "accounts",
-			Resource: &pb.Resource{
+			Source: &pb.Source{
 				Name:       "pg",
-				Source:     true,
 				Collection: "accounts",
 			},
 			Configs: nil,
@@ -393,71 +402,6 @@ func TestHasFunctions(t *testing.T) {
 			res, err := s.HasFunctions(ctx, empty())
 			require.Nil(t, err)
 			require.Equal(t, test.want, res.Value)
-		})
-	}
-}
-
-func TestListResources(t *testing.T) {
-	tests := []struct {
-		description     string
-		populateService func(*specBuilderService) *specBuilderService
-		want            *pb.ListResourcesResponse
-	}{
-		{
-			description: "service with no resources",
-			want:        &pb.ListResourcesResponse{},
-		},
-		{
-			description: "service with resources",
-			populateService: func(s *specBuilderService) *specBuilderService {
-				s.resources = []*pb.Resource{
-					{
-						Name: "pg",
-
-						Source:     true,
-						Collection: "in",
-					},
-					{
-						Name: "mongo",
-
-						Destination: true,
-						Collection:  "out",
-					},
-				}
-				return s
-			},
-			want: &pb.ListResourcesResponse{
-				Resources: []*pb.Resource{
-					{
-						Name: "pg",
-
-						Source:     true,
-						Collection: "in",
-					},
-					{
-						Name: "mongo",
-
-						Destination: true,
-						Collection:  "out",
-					},
-				},
-			},
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.description, func(t *testing.T) {
-			var (
-				ctx = context.Background()
-				s   = NewSpecBuilderService()
-			)
-			if test.populateService != nil {
-				s = test.populateService(s)
-			}
-
-			res, err := s.ListResources(ctx, empty())
-			require.Nil(t, err)
-			require.Equal(t, test.want, res)
 		})
 	}
 }
@@ -650,14 +594,14 @@ func exampleDeploymentSpec() *ir.DeploymentSpec {
 			{
 				UUID:       "1",
 				Collection: "accounts",
-				Resource:   "mongo",
+				Source:     "mongo",
 				Type:       ir.ConnectorSource,
 			},
 			{
-				UUID:       "3",
-				Collection: "accounts_copy",
-				Resource:   "pg",
-				Type:       ir.ConnectorDestination,
+				UUID:        "3",
+				Collection:  "accounts_copy",
+				Destination: "pg",
+				Type:        ir.ConnectorDestination,
 				Config: map[string]interface{}{
 					"config": "value",
 				},
