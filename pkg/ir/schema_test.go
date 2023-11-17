@@ -16,13 +16,13 @@ func Test_ValidSpec(t *testing.T) {
 	}{
 		{
 			desc:        "empty spec",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec:        `{}`,
 			err:         "\"\" field fails /required validation: missing properties: 'connectors', 'definition'",
 		},
 		{
 			desc:        "empty definition",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -38,7 +38,7 @@ func Test_ValidSpec(t *testing.T) {
 		},
 		{
 			desc:        "empty metadata",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -57,7 +57,7 @@ func Test_ValidSpec(t *testing.T) {
 		},
 		{
 			desc:        "empty turbine",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 				"connectors": [
 					{
@@ -71,7 +71,7 @@ func Test_ValidSpec(t *testing.T) {
 					"git_sha" : "83e7c39d83fe4cc04a404182dc30b8d9bed2537b",
 					"metadata": {
 						"turbine": {},
-						"spec_version": "0.2.0"
+						"spec_version": "0.3.0"
 					}
 				}
 			}`,
@@ -79,7 +79,7 @@ func Test_ValidSpec(t *testing.T) {
 		},
 		{
 			desc:        "minimal valid spec",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -96,14 +96,14 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
 		},
 		{
 			desc:        "allow an empty connectors list",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 				"connectors": [
 				],
@@ -114,14 +114,14 @@ func Test_ValidSpec(t *testing.T) {
 							"language": "golang",
 							"version": "0.19"
 						},
-						"spec_version": "0.2.0"
+						"spec_version": "0.3.0"
 					}
 				}
 			}`,
 		},
 		{
 			desc:        "empty connector",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{}
@@ -133,7 +133,7 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
@@ -141,7 +141,7 @@ func Test_ValidSpec(t *testing.T) {
 		},
 		{
 			desc:        "unknown connector direction",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -158,7 +158,7 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
@@ -166,7 +166,7 @@ func Test_ValidSpec(t *testing.T) {
 		},
 		{
 			desc:        "allow one destination connector",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -183,14 +183,14 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
 		},
 		{
 			desc:        "one source, one destination connectors",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -212,14 +212,14 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
 		},
 		{
 			desc:        "one source, two destination connectors",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -248,14 +248,14 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
 		},
 		{
 			desc:        "allow multiple sources, one destination connectors",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -284,14 +284,14 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
 		},
 		{
 			desc:        "one source, two duplicate destination connectors",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -320,7 +320,7 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
@@ -328,7 +328,7 @@ func Test_ValidSpec(t *testing.T) {
 		},
 		{
 			desc:        "empty function list",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -346,14 +346,14 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
 		},
 		{
 			desc:        "empty function",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -373,7 +373,7 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
@@ -381,7 +381,7 @@ func Test_ValidSpec(t *testing.T) {
 		},
 		{
 			desc:        "one function",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"connectors": [
 							{
@@ -405,14 +405,14 @@ func Test_ValidSpec(t *testing.T) {
 									"language": "golang",
 									"version": "0.19"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
 		},
 		{
 			desc:        "two functions",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 				"connectors": [
 					{
@@ -441,7 +441,7 @@ func Test_ValidSpec(t *testing.T) {
 							"language": "golang",
 							"version": "0.19"
 						},
-						"spec_version": "0.2.0"
+						"spec_version": "0.3.0"
 					}
 				}
 			}`,
@@ -450,7 +450,7 @@ func Test_ValidSpec(t *testing.T) {
 
 		{
 			desc:        "maximum spec",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 						"secrets": {
 							"API_KEY": "token"
@@ -484,14 +484,14 @@ func Test_ValidSpec(t *testing.T) {
 									"version": "1.5.1",
 									"language": "python"
 								},
-								"spec_version": "0.2.0"
+								"spec_version": "0.3.0"
 							}
 						}
 					}`,
 		},
 		{
 			desc:        "spec with streams ",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			spec: `{
 					"secrets": {
 						"API_KEY": "token"
@@ -540,7 +540,7 @@ func Test_ValidSpec(t *testing.T) {
 								"version": "1.5.1",
 								"language": "py"
 							},
-							"spec_version": "0.2.0"
+							"spec_version": "0.3.0"
 						}
 					}
 				}`,
