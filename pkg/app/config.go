@@ -12,9 +12,9 @@ import (
 )
 
 type Config struct {
-	Name      string            `json:"name"`
-	Resources map[string]string `json:"resources"`
-	Language  ir.Lang           `json:"language"`
+	Name     string            `json:"name"`
+	Fixtures map[string]string `json:"fixtures"`
+	Language ir.Lang           `json:"language"`
 }
 
 // validateAppConfig will check if app.json contains information required

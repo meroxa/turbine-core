@@ -133,7 +133,7 @@ This file contains all of the options for configuring a Turbine app. Upon initia
   "name": "testapp",
   "language": "js",
   "environment": "common",
-  "resources": {
+  "fixtures": {
     "source_name": "fixtures/path"
   }
 }

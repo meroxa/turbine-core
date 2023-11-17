@@ -113,7 +113,7 @@ This file contains all of the options for configuring a Turbine app. Upon initia
   "name": "testapp",
   "language": "python",
   "environment": "common",
-  "resources": {
+  "fixtures": {
     "source_name": "fixtures/demo-cdc.json"
   }
 }

@@ -69,7 +69,7 @@ func (s *runService) ReadCollection(ctx context.Context, req *pb.ReadCollectionR
 		return nil, err
 	}
 
-	fixtureFile, ok := s.config.Resources[req.Source.Name]
+	fixtureFile, ok := s.config.Fixtures[req.Source.Name]
 	if !ok {
 		return nil, status.Error(
 			codes.InvalidArgument,

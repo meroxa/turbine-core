@@ -68,7 +68,7 @@ func setupAppJson(t *testing.T) string {
 		[]byte(`{
 				  "name": "testapp",
 				  "language": "golang",
-				  "resources": {
+				  "fixtures": {
 				    "source_name": "fixtures/demo-cdc.json"
 				  }
 				}`),
@@ -88,7 +88,7 @@ func setupAppJsonWithDeprecatedFields(t *testing.T) string {
 				  "name": "testapp",
 				  "language": "golang",
 				  "environment": "foobar",
-				  "resources": {
+				  "fixtures": {
 				    "source_name": "fixtures/demo-cdc.json"
 				  }
 				}`),
@@ -106,7 +106,7 @@ func setupAppJsonMissingField(t *testing.T) string {
 		path.Join(tmpdir, "app.json"),
 		[]byte(`{
 				  "language": "golang",
-				  "resources": {
+				  "fixtures": {
 				    "source_name": "fixtures/demo-cdc.json"
 				  }
 				}`),

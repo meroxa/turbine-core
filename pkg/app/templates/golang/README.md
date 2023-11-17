@@ -166,7 +166,7 @@ This file contains all of the options for configuring a Turbine app. Upon initia
   "name": "testapp",
   "language": "golang",
   "environment": "common",
-  "resources": {
+  "fixtures": {
     "source_name": "fixtures/path"
   }
 }

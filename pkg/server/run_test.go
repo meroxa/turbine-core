@@ -81,7 +81,7 @@ func Test_Init(t *testing.T) {
 							"name": "app",
 							"language": "%s",
 							"environment": "common",
-							"resources": {
+							"fixtures": {
 								"demopg": "%s"
 							}
 						}`, ir.Ruby, filepath.Join("resources", "demo.json"))),
@@ -110,7 +110,7 @@ func Test_Init(t *testing.T) {
 				assert.Equal(t, s.appPath, req.ConfigFilePath)
 				assert.Equal(t, s.config, app.Config{
 					Name: "app",
-					Resources: map[string]string{
+					Fixtures: map[string]string{
 						"demopg": filepath.Join("resources", "demo.json"),
 					},
 					Language: ir.Ruby,
@@ -350,7 +350,7 @@ func Test_ReadCollection(t *testing.T) {
 			srv: &runService{
 				appPath: tempdir,
 				config: app.Config{
-					Resources: map[string]string{
+					Fixtures: map[string]string{
 						"resource": "fixture.json",
 					},
 				},
@@ -370,7 +370,7 @@ func Test_ReadCollection(t *testing.T) {
 			srv: &runService{
 				appPath: path.Join(tempdir),
 				config: app.Config{
-					Resources: map[string]string{
+					Fixtures: map[string]string{
 						"resource": "fixture.json",
 					},
 				},
@@ -413,7 +413,7 @@ func Test_ReadCollection(t *testing.T) {
 			srv: &runService{
 				appPath: path.Join(tempdir),
 				config: app.Config{
-					Resources: map[string]string{
+					Fixtures: map[string]string{
 						"resource123": "fixture.json",
 					},
 				},
