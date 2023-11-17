@@ -5,16 +5,16 @@
     "connectors": [
         {
             "collection": "user_activity",
-            "type": "source",
-            "resource": "mypg",
+            "direction": "source",
+            "plugin_name": "postgres",
             "config": {
                 "logical_replication": true
             }
         },
         {
             "collection": "user_activity_enriched",
-            "type": "destination",
-            "resource": "mypg"
+            "direction": "destination",
+            "plugin_name": "postgres"
         }
     ],
     "functions": [

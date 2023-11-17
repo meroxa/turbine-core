@@ -176,7 +176,7 @@ func TestReadCollection(t *testing.T) {
 				require.NotEmpty(t, s.spec.Connectors)
 				require.Equal(t, s.spec.Connectors[0].Collection, res.Name)
 				require.Equal(t, s.spec.Connectors[0].UUID, res.Stream)
-				require.Equal(t, s.spec.Connectors[0].Type, ir.ConnectorType("source"))
+				require.Equal(t, s.spec.Connectors[0].Direction, ir.ConnectorDirection("source"))
 			}
 		})
 	}
@@ -209,12 +209,12 @@ func TestWriteCollectionToResource(t *testing.T) {
 					{
 						Collection: "accounts",
 						PluginName: "mongo",
-						Type:       ir.ConnectorDestination,
+						Direction:  ir.ConnectorDestination,
 					},
 					{
 						Collection: "accounts_copy",
 						PluginName: "pg",
-						Type:       ir.ConnectorDestination,
+						Direction:  ir.ConnectorDestination,
 						Config:     map[string]interface{}{},
 					},
 				},
@@ -245,7 +245,7 @@ func TestWriteCollectionToResource(t *testing.T) {
 					{
 						Collection: "accounts_copy",
 						PluginName: "pg",
-						Type:       ir.ConnectorDestination,
+						Direction:  ir.ConnectorDestination,
 						Config: map[string]interface{}{
 							"config":         "value",
 							"another_config": "another_value",
@@ -595,13 +595,13 @@ func exampleDeploymentSpec() *ir.DeploymentSpec {
 				UUID:       "1",
 				Collection: "accounts",
 				PluginName: "mongo",
-				Type:       ir.ConnectorSource,
+				Direction:  ir.ConnectorSource,
 			},
 			{
 				UUID:       "3",
 				Collection: "accounts_copy",
 				PluginName: "pg",
-				Type:       ir.ConnectorDestination,
+				Direction:  ir.ConnectorDestination,
 				Config: map[string]interface{}{
 					"config": "value",
 				},

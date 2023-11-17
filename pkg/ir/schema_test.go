@@ -28,8 +28,8 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"definition": {}
@@ -44,8 +44,8 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"definition": {
@@ -63,8 +63,8 @@ func Test_ValidSpec(t *testing.T) {
 					{
 						"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 						"collection": "users",
-						"type": "source",
-						"resource": "pg"
+						"direction": "source",
+						"plugin_name": "postgres"
 					}
 				],
 				"definition": {
@@ -85,8 +85,8 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"definition": {
@@ -137,18 +137,18 @@ func Test_ValidSpec(t *testing.T) {
 							}
 						}
 					}`,
-			err: "\"/connectors/0\" field fails /properties/connectors/items/0/required validation: missing properties: 'collection', 'type', 'resource'",
+			err: "\"/connectors/0\" field fails /properties/connectors/items/0/required validation: missing properties: 'collection', 'direction', 'plugin_name'",
 		},
 		{
-			desc:        "unknown connector type",
+			desc:        "unknown connector direction",
 			specVersion: "0.2.0",
 			spec: `{
 						"connectors": [
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"type": "some random type",
-								"resource": "pg"
+								"direction": "some random direction",
+								"plugin_name": "postgres"
 							}
 						],
 						"definition": {
@@ -162,7 +162,7 @@ func Test_ValidSpec(t *testing.T) {
 							}
 						}
 					}`,
-			err: "\"/connectors/0/type\" field fails /properties/connectors/items/0/properties/type/enum validation: value must be one of \"source\", \"destination\"",
+			err: "\"/connectors/0/direction\" field fails /properties/connectors/items/0/properties/direction/enum validation: value must be one of \"source\", \"destination\"",
 		},
 		{
 			desc:        "allow one destination connector",
@@ -172,8 +172,8 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"type": "destination",
-								"resource": "pg"
+								"direction": "destination",
+								"plugin_name": "postgres"
 							}
 						],
 						"definition": {
@@ -196,13 +196,13 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users_processed",
-								"type": "destination",
-								"resource": "pg"
+								"direction": "destination",
+								"plugin_name": "postgres"
 							},
 							{
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"definition": {
@@ -225,20 +225,20 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users_processed",
-								"type": "destination",
-								"resource": "pg"
+								"direction": "destination",
+								"plugin_name": "postgres"
 							},
 							{
 								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users_copy",
-								"type": "destination",
-								"resource": "pg"
+								"direction": "destination",
+								"plugin_name": "postgres"
 							},
 							{
 								"uuid":   "9e9e8e88-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"definition": {
@@ -261,20 +261,20 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users_processed",
-								"type": "destination",
-								"resource": "pg"
+								"direction": "destination",
+								"plugin_name": "postgres"
 							},
 							{
 								"uuid":   "9839888cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "accounts",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							},
 							{
 								"uuid":   "02929383-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"definition": {
@@ -297,20 +297,20 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users_processed",
-								"type": "destination",
-								"resource": "pg"
+								"direction": "destination",
+								"plugin_name": "postgres"
 							},
 							{
 								"uuid":  "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users_processed",
-								"type": "destination",
-								"resource": "pg"
+								"direction": "destination",
+								"plugin_name": "postgres"
 							},
 							{
 								"uuid":  "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"definition": {
@@ -334,8 +334,8 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"function": [],
@@ -359,8 +359,8 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"functions": [
@@ -387,8 +387,8 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"type": "source",
-								"resource": "pg"
+								"direction": "source",
+								"plugin_name": "postgres"
 							}
 						],
 						"functions": [
@@ -418,8 +418,8 @@ func Test_ValidSpec(t *testing.T) {
 					{
 						"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 						"collection": "users",
-						"type": "source",
-						"resource": "pg"
+						"direction": "source",
+						"plugin_name": "postgres"
 					}
 				],
 				"functions": [
@@ -464,16 +464,16 @@ func Test_ValidSpec(t *testing.T) {
 						"connectors": [
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
-								"type": "source",
+								"direction": "source",
 								"config": {},
-								"resource": "pg",
+								"plugin_name": "postgres",
 								"collection": "sequences"
 							},
 							{
 								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
-								"type": "destination",
+								"direction": "destination",
 								"config": {},
-								"resource": "pg",
+								"plugin_name": "postgres",
 								"collection": "test_py_feature_branch"
 							}
 						],
@@ -506,16 +506,16 @@ func Test_ValidSpec(t *testing.T) {
 					"connectors": [
 						{
 							"uuid": "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
-							"type": "source",
+							"direction": "source",
 							"config": {},
-							"resource": "pg",
+							"plugin_name": "postgres",
 							"collection": "sequences"
 						},
 						{
 							"uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
-							"type": "destination",
+							"direction": "destination",
 							"config": {},
-							"resource": "pg",
+							"plugin_name": "postgres",
 							"collection": "test_py_feature_branch"
 						}
 					],
