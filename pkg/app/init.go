@@ -30,9 +30,7 @@ func (a *AppInit) applytemplate(srcDir, destDir, fileName string) error {
 		return err
 	}
 
-	appTrait := AppInitTemplate{
-		AppName: a.appName,
-	}
+	appTrait := AppInitTemplate{AppName: a.appName}
 
 	f, err := os.Create(filepath.Join(destDir, fileName))
 	if err != nil {
@@ -138,9 +136,7 @@ func (a *AppInit) duplicateDirectory(srcDir, destDir string) error {
 // TODO: Replicate this method in other languages so it's consistent.
 // At the moment, other languages do `NewAppInit(...).Init()`
 func Init(path, appName string, language ir.Lang) error {
-	a := &AppInit{
-		appName: appName,
-	}
+	a := &AppInit{appName: appName}
 
 	rootSrcDir := filepath.Join("templates", string(language))
 	rootDestDir := filepath.Join(path, a.appName)
