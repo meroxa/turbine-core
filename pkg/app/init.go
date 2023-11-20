@@ -133,8 +133,6 @@ func (a *AppInit) duplicateDirectory(srcDir, destDir string) error {
 
 // Init will be used from the CLI to generate a new application directory based on the existing
 // content on `/templates`.
-// TODO: Replicate this method in other languages so it's consistent.
-// At the moment, other languages do `NewAppInit(...).Init()`
 func Init(path, appName string, language ir.Lang) error {
 	a := &AppInit{appName: appName}
 
