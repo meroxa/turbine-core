@@ -65,12 +65,10 @@ func TestAppInit_duplicateFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &AppInit{
-				AppName:  tt.fields.AppName,
-				Language: tt.fields.Language,
-				Path:     tt.fields.Path,
+				appName: tt.fields.AppName,
 			}
-			srcPath := filepath.Join("templates", string(a.Language))
-			dstPath := filepath.Join(a.Path, a.AppName)
+			srcPath := filepath.Join("templates", string(tt.fields.Language))
+			dstPath := filepath.Join(tt.fields.Path, a.appName)
 
 			os.MkdirAll(dstPath, 0o755)
 			if err := a.duplicateFileInPath(srcPath, dstPath, tt.args.fileName); (err != nil) != tt.wantErr {
@@ -81,13 +79,12 @@ func TestAppInit_duplicateFile(t *testing.T) {
 	}
 }
 
-func TestAppInit_listTemplateContentFrompath(t *testing.T) {
+func TestAppInit_listTemplateContentFromPath(t *testing.T) {
 	const appName = "testapp"
 
 	type fields struct {
 		AppName  string
 		Language ir.Lang
-		Path     string
 	}
 	tests := []struct {
 		name    string
@@ -101,7 +98,6 @@ func TestAppInit_listTemplateContentFrompath(t *testing.T) {
 			fields: fields{
 				AppName:  appName,
 				Language: ir.Ruby,
-				Path:     t.TempDir(),
 			},
 			want:  []string{"Gemfile", "app.json", "app.rb"},
 			want1: []string{"fixtures"},
@@ -111,7 +107,6 @@ func TestAppInit_listTemplateContentFrompath(t *testing.T) {
 			fields: fields{
 				AppName:  appName,
 				Language: ir.GoLang,
-				Path:     t.TempDir(),
 			},
 			want:  []string{".gitignore", "README.md", "app.go", "app.json", "app_test.go"},
 			want1: []string{"fixtures"},
@@ -121,7 +116,6 @@ func TestAppInit_listTemplateContentFrompath(t *testing.T) {
 			fields: fields{
 				AppName:  appName,
 				Language: ir.JavaScript,
-				Path:     t.TempDir(),
 			},
 			want:  []string{".gitignore", "README.md", "app.json", "index.js", "index.test.js", "package.json"},
 			want1: []string{"fixtures"},
@@ -130,11 +124,9 @@ func TestAppInit_listTemplateContentFrompath(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &AppInit{
-				AppName:  tt.fields.AppName,
-				Language: tt.fields.Language,
-				Path:     tt.fields.Path,
+				appName: tt.fields.AppName,
 			}
-			got, got1, err := a.listTemplateContentFromPath(filepath.Join("templates", string(a.Language)))
+			got, got1, err := a.listTemplateContentFromPath(filepath.Join("templates", string(tt.fields.Language)))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("AppInit.listTemplateContent() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -226,12 +218,7 @@ func TestAppInit_Init(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &AppInit{
-				AppName:  tt.fields.AppName,
-				Language: tt.fields.Language,
-				Path:     tt.fields.Path,
-			}
-			if err := a.Init(); (err != nil) != tt.wantErr {
+			if err := Init(tt.fields.Path, tt.fields.AppName, tt.fields.Language); (err != nil) != tt.wantErr {
 				t.Errorf("AppInit.Init() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			assertDirectory(t, tt.fields.Path, tt.wantFiles)
