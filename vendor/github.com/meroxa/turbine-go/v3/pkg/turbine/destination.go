@@ -4,10 +4,7 @@ import (
 	"context"
 )
 
-type Resource interface {
-	Records(string, ConnectionOptions) (Records, error)
-	RecordsWithContext(context.Context, string, ConnectionOptions) (Records, error)
-
+type Destination interface {
 	Write(Records, string) error
 	WriteWithContext(context.Context, Records, string) error
 	WriteWithConfig(Records, string, ConnectionOptions) error

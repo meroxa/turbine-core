@@ -9,8 +9,8 @@ import (
 	"strings"
 	"sync"
 
-	sdk "github.com/meroxa/turbine-go/v2/pkg/turbine"
-	pb "github.com/meroxa/turbine-go/v2/proto"
+	sdk "github.com/meroxa/turbine-go/v3/pkg/turbine"
+	pb "github.com/meroxa/turbine-go/v3/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -57,12 +57,12 @@ func (s *server) GracefulStop() {
 	s.g.GracefulStop()
 }
 
-func (s *server) Resources(n string) (sdk.Resource, error) {
-	return &resource{}, nil
+func (s *server) Resources(n string) (sdk.Source, error) {
+	return &source{}, nil
 }
 
-func (s *server) ResourcesWithContext(ctx context.Context, n string) (sdk.Resource, error) {
-	return &resource{}, nil
+func (s *server) ResourcesWithContext(ctx context.Context, n string) (sdk.Source, error) {
+	return &source{}, nil
 }
 
 func (s *server) Process(rs sdk.Records, fn sdk.Function) (sdk.Records, error) {

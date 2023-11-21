@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	sdk "github.com/meroxa/turbine-go/v2/pkg/turbine"
+	sdk "github.com/meroxa/turbine-go/v3/pkg/turbine"
 )
 
 func (b *builder) Process(rs sdk.Records, fn sdk.Function) (sdk.Records, error) {

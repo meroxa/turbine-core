@@ -8,8 +8,8 @@ import (
 	"log"
 
 	// Dependencies of Turbine
-	"github.com/meroxa/turbine-go/v2/pkg/turbine"
-	"github.com/meroxa/turbine-go/v2/pkg/turbine/cmd"
+	"github.com/meroxa/turbine-go/v3/pkg/turbine"
+	"github.com/meroxa/turbine-go/v3/pkg/turbine/cmd"
 )
 
 func main() {
@@ -30,7 +30,7 @@ func (a App) Run(v turbine.Turbine) error {
 	// Replace `source_name` with the resource name the
 	// data store was configured with on Meroxa.
 
-	source, err := v.Resources("source_name")
+	source, err := v.Source("source_name")
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (a App) Run(v turbine.Turbine) error {
 	// Replace `destination_name` with the resource name the
 	// data store was configured with on Meroxa.
 
-	dest, err := v.Resources("destination_name")
+	dest, err := v.Destination("destination_name")
 	if err != nil {
 		return err
 	}

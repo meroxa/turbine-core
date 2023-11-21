@@ -10,7 +10,7 @@ import (
 	"runtime/debug"
 	"strings"
 
-	sdk "github.com/meroxa/turbine-go/v2/pkg/turbine"
+	sdk "github.com/meroxa/turbine-go/v3/pkg/turbine"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/client"
@@ -59,23 +59,43 @@ func NewBuildClient(ctx context.Context, turbineCoreAddress, gitSha, appPath str
 	return b, nil
 }
 
-func (b *builder) Resources(name string) (sdk.Resource, error) {
-	return b.ResourcesWithContext(context.Background(), name)
+func (b *builder) Source(name string) (sdk.Source, error) {
+	return b.SourceWithContext(context.Background(), name)
 }
 
-func (b *builder) ResourcesWithContext(ctx context.Context, name string) (sdk.Resource, error) {
-	r, err := b.GetResource(
+func (b *builder) SourceWithContext(ctx context.Context, name string) (sdk.Source, error) {
+	s, err := b.GetSource(
 		ctx,
-		&pb.GetResourceRequest{
+		&pb.GetSourceRequest{
 			Name: name,
 		})
 	if err != nil {
 		return nil, err
 	}
 
-	return &resource{
-		Resource: r,
-		Client:   b.Client,
+	return &source{
+		Source: s,
+		Client: b.Client,
+	}, nil
+}
+
+func (b *builder) Destination(name string) (sdk.Destination, error) {
+	return b.DestinationWithContext(context.Background(), name)
+}
+
+func (b *builder) DestinationWithContext(ctx context.Context, name string) (sdk.Destination, error) {
+	d, err := b.GetDestination(
+		ctx,
+		&pb.GetDestinationRequest{
+			Name: name,
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	return &destination{
+		Destination: d,
+		Client:      b.Client,
 	}, nil
 }
 
@@ -115,7 +135,7 @@ func turbineGoVersion(ctx context.Context) (string, error) {
 	}
 
 	for _, m := range bi.Deps {
-		if m.Path == "github.com/meroxa/turbine-go/v2" { // this path is the same, regardless of OS
+		if m.Path == "github.com/meroxa/turbine-go/v3" { // this path is the same, regardless of OS
 			return parse(m.Version), nil
 		}
 	}
