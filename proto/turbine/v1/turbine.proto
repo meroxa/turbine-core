@@ -16,7 +16,6 @@ service TurbineService {
   rpc ReadCollection(ReadCollectionRequest) returns (Collection);
   rpc WriteCollectionToDestination(WriteCollectionRequest) returns (google.protobuf.Empty);
   rpc AddProcessToCollection(ProcessCollectionRequest) returns (Collection);
-  rpc RegisterSecret(Secret) returns (google.protobuf.Empty);
   rpc HasFunctions(google.protobuf.Empty) returns (google.protobuf.BoolValue);
   rpc GetSpec(GetSpecRequest) returns (GetSpecResponse);
 }
@@ -46,12 +45,12 @@ message GetDestinationRequest {
 
 message Source {
   string name = 1 [(validate.rules).string.min_len = 1];
-  string collection = 4;
+  string pluginName = 2 [(validate.rules).string.min_len = 1];
 }
 
 message Destination {
   string name = 1 [(validate.rules).string.min_len = 1];
-  string collection = 4;
+  string pluginName = 2 [(validate.rules).string.min_len = 1];
 }
 
 message Collection {

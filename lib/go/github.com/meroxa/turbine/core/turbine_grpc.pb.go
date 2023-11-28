@@ -30,7 +30,6 @@ type TurbineServiceClient interface {
 	ReadCollection(ctx context.Context, in *ReadCollectionRequest, opts ...grpc.CallOption) (*Collection, error)
 	WriteCollectionToDestination(ctx context.Context, in *WriteCollectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AddProcessToCollection(ctx context.Context, in *ProcessCollectionRequest, opts ...grpc.CallOption) (*Collection, error)
-	RegisterSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	HasFunctions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
 	GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error)
 }
@@ -97,15 +96,6 @@ func (c *turbineServiceClient) AddProcessToCollection(ctx context.Context, in *P
 	return out, nil
 }
 
-func (c *turbineServiceClient) RegisterSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/RegisterSecret", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *turbineServiceClient) HasFunctions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
 	out := new(wrapperspb.BoolValue)
 	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/HasFunctions", in, out, opts...)
@@ -134,7 +124,6 @@ type TurbineServiceServer interface {
 	ReadCollection(context.Context, *ReadCollectionRequest) (*Collection, error)
 	WriteCollectionToDestination(context.Context, *WriteCollectionRequest) (*emptypb.Empty, error)
 	AddProcessToCollection(context.Context, *ProcessCollectionRequest) (*Collection, error)
-	RegisterSecret(context.Context, *Secret) (*emptypb.Empty, error)
 	HasFunctions(context.Context, *emptypb.Empty) (*wrapperspb.BoolValue, error)
 	GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error)
 }
@@ -160,9 +149,6 @@ func (UnimplementedTurbineServiceServer) WriteCollectionToDestination(context.Co
 }
 func (UnimplementedTurbineServiceServer) AddProcessToCollection(context.Context, *ProcessCollectionRequest) (*Collection, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddProcessToCollection not implemented")
-}
-func (UnimplementedTurbineServiceServer) RegisterSecret(context.Context, *Secret) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterSecret not implemented")
 }
 func (UnimplementedTurbineServiceServer) HasFunctions(context.Context, *emptypb.Empty) (*wrapperspb.BoolValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HasFunctions not implemented")
@@ -290,24 +276,6 @@ func _TurbineService_AddProcessToCollection_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_RegisterSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Secret)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TurbineServiceServer).RegisterSecret(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/RegisterSecret",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).RegisterSecret(ctx, req.(*Secret))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _TurbineService_HasFunctions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -374,10 +342,6 @@ var TurbineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddProcessToCollection",
 			Handler:    _TurbineService_AddProcessToCollection_Handler,
-		},
-		{
-			MethodName: "RegisterSecret",
-			Handler:    _TurbineService_RegisterSecret_Handler,
 		},
 		{
 			MethodName: "HasFunctions",

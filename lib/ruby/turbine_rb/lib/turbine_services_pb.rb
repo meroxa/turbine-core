@@ -20,7 +20,6 @@ module TurbineCore
       rpc :ReadCollection, ::TurbineCore::ReadCollectionRequest, ::TurbineCore::Collection
       rpc :WriteCollectionToDestination, ::TurbineCore::WriteCollectionRequest, ::Google::Protobuf::Empty
       rpc :AddProcessToCollection, ::TurbineCore::ProcessCollectionRequest, ::TurbineCore::Collection
-      rpc :RegisterSecret, ::TurbineCore::Secret, ::Google::Protobuf::Empty
       rpc :HasFunctions, ::Google::Protobuf::Empty, ::Google::Protobuf::BoolValue
       rpc :GetSpec, ::TurbineCore::GetSpecRequest, ::TurbineCore::GetSpecResponse
     end

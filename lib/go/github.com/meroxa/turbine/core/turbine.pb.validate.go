@@ -427,7 +427,16 @@ func (m *Source) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for Collection
+	if utf8.RuneCountInString(m.GetPluginName()) < 1 {
+		err := SourceValidationError{
+			field:  "PluginName",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return SourceMultiError(errors)
@@ -539,7 +548,16 @@ func (m *Destination) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for Collection
+	if utf8.RuneCountInString(m.GetPluginName()) < 1 {
+		err := DestinationValidationError{
+			field:  "PluginName",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return DestinationMultiError(errors)
