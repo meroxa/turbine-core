@@ -5,8 +5,9 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	ir "github.com/meroxa/turbine-core/pkg/ir/v1"
+
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core/v2"
+	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -46,14 +47,14 @@ func (s *specBuilderService) Init(_ context.Context, req *pb.InitRequest) (*empt
 	return empty(), nil
 }
 
-func (s *specBuilderService) GetResource(_ context.Context, req *pb.GetResourceRequest) (*pb.Resource, error) {
+func (s *specBuilderService) AddSource(_ context.Context, req *pb.AddSourceRequest) (*pb.AddSourceResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 	return &pb.Resource{Name: req.Name}, nil
 }
 
-func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadCollectionRequest) (*pb.Collection, error) {
+func (s *specBuilderService) ReadRecords(_ context.Context, req *pb.ReadRecordsRequest) (*pb.ReadRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -82,7 +83,14 @@ func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadColle
 	}, nil
 }
 
-func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+func (s *specBuilderService) AddDestination(_ context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	return &pb.Resource{Name: req.Name}, nil
+}
+
+func (s *specBuilderService) WriteRecords(_ context.Context, req *pb.WriteRecordsRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -116,7 +124,7 @@ func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *p
 	return empty(), nil
 }
 
-func (s *specBuilderService) AddProcessToCollection(_ context.Context, req *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+func (s *specBuilderService) ProcessRecords(_ context.Context, req *pb.ProcessRecordsRequest) (*pb.ProcessRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -142,22 +150,6 @@ func (s *specBuilderService) AddProcessToCollection(_ context.Context, req *pb.P
 		Name:   req.Collection.Name,
 		Stream: f.UUID,
 	}, nil
-}
-
-func (s *specBuilderService) RegisterSecret(_ context.Context, secret *pb.Secret) (*emptypb.Empty, error) {
-	if err := secret.Validate(); err != nil {
-		return nil, err
-	}
-	s.spec.Secrets[secret.Name] = secret.Value
-	return empty(), nil
-}
-
-func (s *specBuilderService) HasFunctions(_ context.Context, _ *emptypb.Empty) (*wrapperspb.BoolValue, error) {
-	return wrapperspb.Bool(len(s.spec.Functions) > 0), nil
-}
-
-func (s *specBuilderService) ListResources(_ context.Context, _ *emptypb.Empty) (*pb.ListResourcesResponse, error) {
-	return &pb.ListResourcesResponse{Resources: s.resources}, nil
 }
 
 func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) (*pb.GetSpecResponse, error) {
