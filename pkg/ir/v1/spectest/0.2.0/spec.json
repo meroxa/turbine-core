@@ -1,0 +1,56 @@
+{
+    "secrets": {
+        "key": "valuesecret"
+    },
+    "connectors": [
+        {
+            "uuid": "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+            "collection": "user_activity",
+            "type": "source",
+            "resource": "mypg",
+            "config": {
+                "logical_replication": true
+            }
+        },
+        {
+            "uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+            "collection": "user_activity_enriched",
+            "type": "destination",
+            "resource": "mypg"
+        }
+    ],
+    "functions": [
+        {
+            "uuid": "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+            "name": "user_activity_enriched",
+            "image": "ftorres/enrich:9",
+            "env_vars": {
+                "CLEARBIT_API_KEY": "token-1"
+            }
+        }
+    ],
+    "streams": [
+        {
+            "uuid": "12345",
+            "name": "my_stream1",
+            "from_uuid": "252bc5e1-666e-4985-a12a-42af81a5d2ab",
+            "to_uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea"
+        },
+        {
+            "uuid": "123456",
+            "name": "my_stream2",
+            "from_uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
+            "to_uuid": "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d"
+        }
+    ],
+    "definition": {
+        "git_sha": "3630e05a-98b7-43a0-aeb0-c9b5b0d4261c",
+        "metadata": {
+            "turbine": {
+                "language": "golang",
+                "version": "0.1.0"
+            },
+            "spec_version": "0.2.0"
+        }
+    }
+}
