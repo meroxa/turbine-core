@@ -2,18 +2,16 @@ package ir
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 	"sync"
 
-	"github.com/google/uuid"
 	"github.com/heimdalr/dag"
 )
 
 type (
-	ConnectorType string
-	Lang          string
+	PluginDirectionType string
+	Lang                string
 )
 
 const (
@@ -22,18 +20,16 @@ const (
 	Python     Lang = "python"
 	Ruby       Lang = "ruby"
 
-	ConnectorSource      ConnectorType = "source"
-	ConnectorDestination ConnectorType = "destination"
+	PluginSource      PluginDirectionType = "source"
+	PluginDestination PluginDirectionType = "destination"
 
-	SpecVersion_0_1_1 = "0.1.1"
-	SpecVersion_0_2_0 = "0.2.0"
+	SpecVersion_0_3_0 = "0.3.0"
 
-	LatestSpecVersion = SpecVersion_0_2_0
+	LatestSpecVersion = SpecVersion_0_3_0
 )
 
 var specVersions = []string{
-	SpecVersion_0_1_1,
-	SpecVersion_0_2_0,
+	SpecVersion_0_3_0,
 }
 
 type DeploymentSpec struct {
@@ -55,11 +51,11 @@ type StreamSpec struct {
 }
 
 type ConnectorSpec struct {
-	UUID       string                 `json:"uuid"`
-	Type       ConnectorType          `json:"type"`
-	Resource   string                 `json:"resource"`
-	Collection string                 `json:"collection"`
-	Config     map[string]interface{} `json:"config,omitempty"`
+	UUID         string                 `json:"uuid"`
+	Name         string                 `json:"name"`
+	PluginType   PluginDirectionType    `json:"plugin_type"`
+	PluginName   string                 `json:"plugin_name"`
+	PluginConfig map[string]interface{} `json:"plugin_config,omitempty"`
 }
 
 type FunctionSpec struct {
@@ -131,7 +127,7 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 	defer d.mu.Unlock()
 	d.init()
 
-	if c.Type != ConnectorSource {
+	if c.PluginType != PluginSource {
 		return fmt.Errorf("not a source connector")
 	}
 	d.Connectors = append(d.Connectors, *c)
@@ -152,7 +148,7 @@ func (d *DeploymentSpec) AddDestination(c *ConnectorSpec) error {
 	defer d.mu.Unlock()
 	d.init()
 
-	if c.Type != ConnectorDestination {
+	if c.PluginType != PluginDestination {
 		return fmt.Errorf("not a destination connector")
 	}
 	d.Connectors = append(d.Connectors, *c)
@@ -204,11 +200,6 @@ func (d *DeploymentSpec) getSpecVersion() string {
 func (d *DeploymentSpec) BuildDAG() (*dag.DAG, error) {
 	turbineDag := dag.NewDAG()
 
-	err := d.upgradeToLatestSpecVersion()
-	if err != nil {
-		return turbineDag, err
-	}
-
 	for i := range d.Connectors {
 		con := &d.Connectors[i]
 		if err := turbineDag.AddVertexByID(con.UUID, con); err != nil {
@@ -227,98 +218,7 @@ func (d *DeploymentSpec) BuildDAG() (*dag.DAG, error) {
 		}
 	}
 
-	return turbineDag, nil
-}
-
-// upgradeToLatestSpecVersion will ensure that simple topologies as defined in 0.1.1 are still compatible
-// currently, only supported migration is from 0.1.1 to 0.2.0.
-func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
-	if d.getSpecVersion() == LatestSpecVersion {
-		return nil
-	}
-
-	if d.getSpecVersion() == "" {
-		return fmt.Errorf("cannot upgrade to the latest version. spec version is not specified")
-	}
-
-	if d.getSpecVersion() != SpecVersion_0_1_1 || LatestSpecVersion != SpecVersion_0_2_0 {
-		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
-	}
-
-	if d.getSpecVersion() != SpecVersion_0_1_1 || LatestSpecVersion != SpecVersion_0_2_0 {
-		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
-	}
-
-	var sources, destinations []ConnectorSpec
-
-	// assign UUIDs to all connectors
-	for i, c := range d.Connectors {
-		if c.UUID == "" {
-			c.UUID = uuid.New().String()
-			d.Connectors[i].UUID = c.UUID
-		}
-
-		switch c.Type {
-		case ConnectorSource:
-			sources = append(sources, c)
-		case ConnectorDestination:
-			destinations = append(destinations, c)
-		}
-	}
-
-	// validate supported DAG in 0.1.1
-	if d.getSpecVersion() == SpecVersion_0_1_1 {
-		switch {
-		case len(d.Functions) > 1:
-			return fmt.Errorf("unsupported number of functions in spec version %q", SpecVersion_0_1_1)
-		case len(sources) > 1:
-			return fmt.Errorf("unsupported number of sources in spec version %q", SpecVersion_0_1_1)
-		}
-	}
-
-	if len(sources) == 0 {
-		return errors.New("not sources found in spec")
-	}
-
-	// assign UUIDs to all functions
-	for i, fn := range d.Functions {
-		if fn.UUID == "" {
-			fn.UUID = uuid.New().String()
-			d.Functions[i].UUID = fn.UUID
-		}
-	}
-
-	// create streams
-	// s -> n(d)
-	if len(d.Functions) == 0 {
-		for _, dest := range destinations {
-			d.Streams = append(d.Streams, StreamSpec{
-				UUID:     uuid.New().String(),
-				FromUUID: sources[0].UUID,
-				ToUUID:   dest.UUID,
-			})
-		}
-	}
-
-	// s -> f -> n(d)
-	if len(d.Functions) == 1 {
-		// s -> f
-		d.Streams = append(d.Streams, StreamSpec{
-			UUID:     uuid.New().String(),
-			FromUUID: sources[0].UUID,
-			ToUUID:   d.Functions[0].UUID,
-		})
-
-		// f -> n(d)
-		for _, dest := range destinations {
-			d.Streams = append(d.Streams, StreamSpec{
-				UUID:     uuid.New().String(),
-				FromUUID: d.Functions[0].UUID,
-				ToUUID:   dest.UUID,
-			})
-		}
-	}
-	return nil
+	return turbineDag, ValidateSpecVersion(d.Definition.Metadata.SpecVersion)
 }
 
 func (d *DeploymentSpec) init() {
