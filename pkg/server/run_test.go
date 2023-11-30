@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/meroxa/turbine-core/pkg/ir"
+	ir "github.com/meroxa/turbine-core/pkg/ir/v1"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/app"

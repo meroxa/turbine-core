@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/meroxa/turbine-core/pkg/ir"
+	ir "github.com/meroxa/turbine-core/pkg/ir/v1"
 
 	"github.com/stretchr/testify/require"
 )
