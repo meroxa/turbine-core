@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ir "github.com/meroxa/turbine-core/pkg/ir/v1"
+	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
 )
 
 func TestDeploymentSpec_BuildDAG_UnsupportedSpec(t *testing.T) {
