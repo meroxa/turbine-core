@@ -18,7 +18,7 @@ type specBuilderService struct {
 	pb.UnimplementedTurbineServiceServer
 
 	spec      *ir.DeploymentSpec
-	resources []*pb.Resource
+	//resources []*pb.Resource
 }
 
 func NewSpecBuilderService() *specBuilderService {
@@ -51,7 +51,20 @@ func (s *specBuilderService) AddSource(_ context.Context, req *pb.AddSourceReque
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return &pb.Resource{Name: req.Name}, nil
+
+	c := ir.ConnectorSpec{
+		UUID:       uuid.New().String(),
+		Name:       req.Name,
+		PluginType: ir.ConnectorSource,
+		PluginName: req.Plugin.Name,
+		PluginConfig:     configMap(req.Plugin.Configs),
+	}
+
+	if err := s.spec.AddSource(&c); err != nil {
+		return nil, err
+	}
+
+	return &pb.AddSourceResponse{StreamName: c.UUID}, nil
 }
 
 func (s *specBuilderService) ReadRecords(_ context.Context, req *pb.ReadRecordsRequest) (*pb.ReadRecordsResponse, error) {
@@ -59,35 +72,31 @@ func (s *specBuilderService) ReadRecords(_ context.Context, req *pb.ReadRecordsR
 		return nil, err
 	}
 
-	s.resources = append(s.resources, &pb.Resource{
-		Name:       req.GetResource().GetName(),
-		Source:     true,
-		Collection: req.GetCollection(),
-	})
-
-	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Collection: req.Collection,
-		Resource:   req.Resource.Name,
-		Type:       ir.ConnectorSource,
-		Config:     configMap(req.Configs),
+	return &pb.ReadRecordsResponse{
+		Records: &pb.Records{
+			StreamName: req.SourceStream,
+		},
 	}
-
-	if err := s.spec.AddSource(&c); err != nil {
-		return nil, err
-	}
-
-	return &pb.Collection{
-		Name:   req.Collection,
-		Stream: c.UUID,
-	}, nil
 }
 
 func (s *specBuilderService) AddDestination(_ context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return &pb.Resource{Name: req.Name}, nil
+
+	c := ir.ConnectorSpec{
+		UUID:       uuid.New().String(),
+		Name:       req.Name,
+		PluginType: ir.ConnectorDestination,
+		PluginName: req.Plugin.Name,
+		PluginConfig:     configMap(req.Plugin.Configs),
+	}
+
+	if err := s.spec.AddDestination(&c); err != nil {
+		return nil, err
+	}
+
+	return &pb.AddDestinationResponse{StreamName: c.UUID}, nil
 }
 
 func (s *specBuilderService) WriteRecords(_ context.Context, req *pb.WriteRecordsRequest) (*emptypb.Empty, error) {
@@ -95,28 +104,11 @@ func (s *specBuilderService) WriteRecords(_ context.Context, req *pb.WriteRecord
 		return nil, err
 	}
 
-	s.resources = append(s.resources, &pb.Resource{
-		Name:        req.Resource.Name,
-		Destination: true,
-		Collection:  req.TargetCollection,
-	})
-
-	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Collection: req.TargetCollection,
-		Resource:   req.Resource.Name,
-		Type:       ir.ConnectorDestination,
-		Config:     configMap(req.Configs),
-	}
-	if err := s.spec.AddDestination(&c); err != nil {
-		return nil, err
-	}
-
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
-		FromUUID: req.SourceCollection.Stream,
-		ToUUID:   c.UUID,
-		Name:     req.SourceCollection.Stream + "_" + c.UUID,
+		FromUUID: req.Records.StreamName,
+		ToUUID:   req.DestinationID,
+		Name:     req.Records.StreamName + "_" + req.DestinationID,
 	}); err != nil {
 		return nil, err
 	}

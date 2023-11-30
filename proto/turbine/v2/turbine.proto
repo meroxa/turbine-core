@@ -43,11 +43,11 @@ message AddSourceRequest {
 }
 
 message AddSourceResponse {
-  string id = 1 [(validate.rules).string.min_len = 1];
+  string streamName = 1 [(validate.rules).string.min_len = 1];
 }
 
 message ReadRecordsRequest {
-  string sourceID = 1 [(validate.rules).string.min_len = 1];
+  string sourceStream = 1 [(validate.rules).string.min_len = 1];
 }
 
 message ReadRecordsResponse {
@@ -73,11 +73,11 @@ message AddDestinationRequest {
 }
 
 message AddDestinationResponse {
-  string id = 1 [(validate.rules).string.min_len = 1];
+  string streamName = 1 [(validate.rules).string.min_len = 1];
 }
 
 message WriteRecordsRequest {
-  string destinationID = 1 [(validate.rules).string.min_len = 1];
+  string destinationStream = 1 [(validate.rules).string.min_len = 1];
   Records records = 2 [(validate.rules).message.required = true];
 }
 
@@ -90,7 +90,7 @@ message GetSpecResponse {
 }
 
 message Records {
-  string stream = 1 [(validate.rules).string.min_len = 1];
+  string streamName = 1 [(validate.rules).string.min_len = 1];
   repeated Record records = 2;
 }
 
@@ -101,7 +101,7 @@ message Record {
 }
 
 message Plugin {
-  string pluginName = 1 [(validate.rules).string.min_len = 1];
+  string Name = 1 [(validate.rules).string.min_len = 1];
   Configs configs = 3;
 }
 

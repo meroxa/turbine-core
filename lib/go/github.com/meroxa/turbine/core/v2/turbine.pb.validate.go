@@ -333,9 +333,9 @@ func (m *AddSourceResponse) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetId()) < 1 {
+	if utf8.RuneCountInString(m.GetStreamName()) < 1 {
 		err := AddSourceResponseValidationError{
-			field:  "Id",
+			field:  "StreamName",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {
@@ -1167,9 +1167,9 @@ func (m *AddDestinationResponse) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetId()) < 1 {
+	if utf8.RuneCountInString(m.GetStreamName()) < 1 {
 		err := AddDestinationResponseValidationError{
-			field:  "Id",
+			field:  "StreamName",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {
@@ -1636,9 +1636,9 @@ func (m *Records) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetStream()) < 1 {
+	if utf8.RuneCountInString(m.GetStreamName()) < 1 {
 		err := RecordsValidationError{
-			field:  "Stream",
+			field:  "StreamName",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {
@@ -1919,9 +1919,9 @@ func (m *Plugin) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetPluginName()) < 1 {
+	if utf8.RuneCountInString(m.GetName()) < 1 {
 		err := PluginValidationError{
-			field:  "PluginName",
+			field:  "Name",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {
