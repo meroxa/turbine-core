@@ -5,7 +5,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/meroxa/turbine-core/pkg/app"
+	"github.com/meroxa/turbine-core/v2/pkg/app"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -87,7 +87,6 @@ func setupAppJsonWithDeprecatedFields(t *testing.T) string {
 		[]byte(`{
 				  "name": "testapp",
 				  "language": "golang",
-				  "environment": "foobar",
 				  "resources": {
 				    "source_name": "fixtures/demo-cdc.json"
 				  }

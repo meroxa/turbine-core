@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/meroxa/turbine-core/pkg/app"
-	"github.com/meroxa/turbine-core/pkg/server/internal"
-
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
+	"github.com/meroxa/turbine-core/v2/pkg/app"
+	"github.com/meroxa/turbine-core/v2/pkg/server/internal"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -44,74 +43,74 @@ func (s *runService) Init(ctx context.Context, req *pb.InitRequest) (*emptypb.Em
 	return empty(), nil
 }
 
-func (s *runService) GetResource(ctx context.Context, req *pb.GetResourceRequest) (*pb.Resource, error) {
+func (s *runService) AddSource(ctx context.Context, req *pb.AddSourceRequest) (*pb.AddSourceResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	return &pb.Resource{
-		Name: req.Name,
+	return &pb.AddSourceResponse{
+		StreamName: req.Name,
 	}, nil
 }
 
-func (s *runService) ReadCollection(ctx context.Context, req *pb.ReadCollectionRequest) (*pb.Collection, error) {
+func (s *runService) ReadRecords(ctx context.Context, req *pb.ReadRecordsRequest) (*pb.ReadRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	fixtureFile, ok := s.config.Resources[req.Resource.Name]
+	fixtureFile, ok := s.config.Fixtures[req.SourceStream]
 	if !ok {
 		return nil, status.Error(
 			codes.InvalidArgument,
 			fmt.Sprintf(
-				"No fixture file found for resource %s. Ensure that the resource is declared in your app.json.",
-				req.Resource.Name,
+				"no fixture file found for source %s. Ensure that the source is declared in your app.json.",
+				req.SourceStream,
 			),
 		)
 	}
 
-	fixture := &internal.FixtureResource{
-		Collection: req.Collection,
-		File: path.Join(
-			s.appPath,
-			fixtureFile,
-		),
-	}
-
-	rr, err := fixture.ReadAll(ctx)
+	rr, err := internal.ReadFixture(ctx, path.Join(s.appPath, fixtureFile))
 	if err != nil {
 		return nil, err
 	}
-	return &pb.Collection{
-		Name:    req.Collection,
-		Records: rr,
+
+	return &pb.ReadRecordsResponse{
+		StreamRecords: &pb.StreamRecords{
+			StreamName: req.SourceStream,
+			Records:    rr,
+		},
 	}, nil
 }
 
-func (s *runService) WriteCollectionToResource(ctx context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+func (s *runService) AddDestination(ctx context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	internal.PrintRecords(
-		req.Resource.Name,
-		req.TargetCollection,
-		req.SourceCollection.Records,
-	)
+	return &pb.AddDestinationResponse{
+		StreamName: req.Name,
+	}, nil
+}
+
+func (s *runService) WriteRecords(ctx context.Context, req *pb.WriteRecordsRequest) (*emptypb.Empty, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	internal.PrintRecords(req.DestinationID, req.StreamRecords)
 
 	return empty(), nil
 }
 
-func (s *runService) AddProcessToCollection(ctx context.Context, req *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+func (s *runService) ProcessRecords(ctx context.Context, req *pb.ProcessRecordsRequest) (*pb.ProcessRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return req.Collection, nil
-}
 
-func (s *runService) RegisterSecret(ctx context.Context, req *pb.Secret) (*emptypb.Empty, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-	return empty(), nil
+	return &pb.ProcessRecordsResponse{
+		StreamRecords: &pb.StreamRecords{
+			StreamName: req.StreamRecords.StreamName,
+			Records:    req.StreamRecords.Records,
+		},
+	}, nil
 }

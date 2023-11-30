@@ -5,11 +5,7 @@ require:
 AllCops:
   TargetRubyVersion: 2.6
   Exclude:
-    - lib/service_services_pb.rb
-    - lib/service_pb.rb
-    - lib/turbine_services_pb.rb
-    - lib/validate/validate_pb.rb
-    - lib/turbine_pb.rb
+    - lib/**/*_pb.rb
 Style/Documentation:
   Enabled: false
 
