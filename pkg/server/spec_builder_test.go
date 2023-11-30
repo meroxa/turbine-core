@@ -176,7 +176,7 @@ func TestReadCollection(t *testing.T) {
 				require.NotEmpty(t, s.spec.Connectors)
 				require.Equal(t, s.spec.Connectors[0].Collection, res.Name)
 				require.Equal(t, s.spec.Connectors[0].UUID, res.Stream)
-				require.Equal(t, s.spec.Connectors[0].Direction, ir.ConnectorDirection("source"))
+				require.Equal(t, s.spec.Connectors[0].PluginType, ir.PluginDirectionType("source"))
 			}
 		})
 	}
@@ -209,13 +209,13 @@ func TestWriteCollectionToResource(t *testing.T) {
 					{
 						Collection: "accounts",
 						PluginName: "mongo",
-						Direction:  ir.ConnectorDestination,
+						PluginType: ir.PluginDestination,
 					},
 					{
-						Collection: "accounts_copy",
-						PluginName: "pg",
-						Direction:  ir.ConnectorDestination,
-						Config:     map[string]interface{}{},
+						Collection:   "accounts_copy",
+						PluginName:   "pg",
+						PluginType:   ir.PluginDestination,
+						PluginConfig: map[string]interface{}{},
 					},
 				},
 			},
@@ -245,8 +245,8 @@ func TestWriteCollectionToResource(t *testing.T) {
 					{
 						Collection: "accounts_copy",
 						PluginName: "pg",
-						Direction:  ir.ConnectorDestination,
-						Config: map[string]interface{}{
+						PluginType: ir.PluginDestination,
+						PluginConfig: map[string]interface{}{
 							"config":         "value",
 							"another_config": "another_value",
 						},
@@ -333,36 +333,6 @@ func TestAddProcessToCollection(t *testing.T) {
 	require.Equal(t, s.spec.Functions[0].Name, want.Functions[0].Name)
 	require.Equal(t, s.spec.Streams[0].FromUUID, read.Stream)
 	require.Equal(t, s.spec.Streams[0].ToUUID, res.Stream)
-}
-
-func TestRegisterSecret(t *testing.T) {
-	var (
-		ctx  = context.Background()
-		s    = NewSpecBuilderService()
-		want = &ir.DeploymentSpec{
-			Secrets: map[string]string{
-				"api_key":     "secret_key",
-				"another_key": "key",
-			},
-		}
-	)
-
-	res, err := s.RegisterSecret(ctx,
-		&pb.Secret{
-			Name:  "api_key",
-			Value: "secret_key",
-		})
-	require.Nil(t, err)
-	require.Equal(t, empty(), res)
-
-	res, err = s.RegisterSecret(ctx,
-		&pb.Secret{
-			Name:  "another_key",
-			Value: "key",
-		})
-	require.Nil(t, err)
-	require.Equal(t, empty(), res)
-	require.Equal(t, want.Secrets, s.spec.Secrets)
 }
 
 func TestHasFunctions(t *testing.T) {
@@ -595,14 +565,14 @@ func exampleDeploymentSpec() *ir.DeploymentSpec {
 				UUID:       "1",
 				Collection: "accounts",
 				PluginName: "mongo",
-				Direction:  ir.ConnectorSource,
+				PluginType: ir.PluginSource,
 			},
 			{
 				UUID:       "3",
 				Collection: "accounts_copy",
 				PluginName: "pg",
-				Direction:  ir.ConnectorDestination,
-				Config: map[string]interface{}{
+				PluginType: ir.PluginDestination,
+				PluginConfig: map[string]interface{}{
 					"config": "value",
 				},
 			},

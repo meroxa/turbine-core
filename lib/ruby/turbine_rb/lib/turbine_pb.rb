@@ -18,18 +18,23 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :turbineVersion, :string, 5
     end
     add_message "turbine_core.GetSourceRequest" do
-      optional :name, :string, 1
+      optional :pluginName, :string, 1
+      optional :name, :string, 2
+      optional :configs, :message, 3, "turbine_core.Configs"
     end
     add_message "turbine_core.GetDestinationRequest" do
-      optional :name, :string, 1
+      optional :pluginName, :string, 1
+      optional :name, :string, 2
+      optional :configs, :message, 3, "turbine_core.Configs"
     end
     add_message "turbine_core.Source" do
-      optional :name, :string, 1
-      optional :pluginName, :string, 2
+      optional :uuid, :string, 1
+      optional :name, :string, 2
     end
     add_message "turbine_core.Destination" do
-      optional :name, :string, 1
-      optional :pluginName, :string, 2
+      optional :uuid, :string, 1
+      optional :name, :string, 2
+      optional :collection, :string, 3
     end
     add_message "turbine_core.Collection" do
       optional :name, :string, 1
@@ -44,13 +49,10 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     add_message "turbine_core.ReadCollectionRequest" do
       optional :source, :message, 1, "turbine_core.Source"
       optional :collection, :string, 2
-      optional :configs, :message, 3, "turbine_core.Configs"
     end
     add_message "turbine_core.WriteCollectionRequest" do
       optional :destination, :message, 1, "turbine_core.Destination"
       optional :sourceCollection, :message, 2, "turbine_core.Collection"
-      optional :destinationCollection, :string, 3
-      optional :configs, :message, 4, "turbine_core.Configs"
     end
     add_message "turbine_core.Configs" do
       repeated :config, :message, 1, "turbine_core.Config"
@@ -65,10 +67,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     end
     add_message "turbine_core.ProcessCollectionRequest.Process" do
       optional :name, :string, 1
-    end
-    add_message "turbine_core.Secret" do
-      optional :name, :string, 1
-      optional :value, :string, 2
     end
     add_message "turbine_core.GetSpecRequest" do
       optional :image, :string, 1
@@ -99,7 +97,6 @@ module TurbineCore
   Config = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Config").msgclass
   ProcessCollectionRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessCollectionRequest").msgclass
   ProcessCollectionRequest::Process = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.ProcessCollectionRequest.Process").msgclass
-  Secret = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Secret").msgclass
   GetSpecRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetSpecRequest").msgclass
   GetSpecResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.GetSpecResponse").msgclass
   Language = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("turbine_core.Language").enummodule

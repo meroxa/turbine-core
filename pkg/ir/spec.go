@@ -10,8 +10,8 @@ import (
 )
 
 type (
-	ConnectorDirection string
-	Lang               string
+	PluginDirectionType string
+	Lang                string
 )
 
 const (
@@ -20,8 +20,8 @@ const (
 	Python     Lang = "python"
 	Ruby       Lang = "ruby"
 
-	ConnectorSource      ConnectorDirection = "source"
-	ConnectorDestination ConnectorDirection = "destination"
+	PluginSource      PluginDirectionType = "source"
+	PluginDestination PluginDirectionType = "destination"
 
 	SpecVersion_0_3_0 = "0.3.0"
 
@@ -51,11 +51,11 @@ type StreamSpec struct {
 }
 
 type ConnectorSpec struct {
-	UUID       string                 `json:"uuid"`
-	Direction  ConnectorDirection     `json:"direction"`
-	PluginName string                 `json:"plugin_name"`
-	Collection string                 `json:"collection"`
-	Config     map[string]interface{} `json:"config,omitempty"`
+	UUID         string                 `json:"uuid"`
+	Name         string                 `json:"name"`
+	PluginType   PluginDirectionType    `json:"plugin_type"`
+	PluginName   string                 `json:"plugin_name"`
+	PluginConfig map[string]interface{} `json:"plugin_config,omitempty"`
 }
 
 type FunctionSpec struct {
@@ -127,7 +127,7 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 	defer d.mu.Unlock()
 	d.init()
 
-	if c.Direction != ConnectorSource {
+	if c.PluginType != PluginSource {
 		return fmt.Errorf("not a source connector")
 	}
 	d.Connectors = append(d.Connectors, *c)
@@ -148,7 +148,7 @@ func (d *DeploymentSpec) AddDestination(c *ConnectorSpec) error {
 	defer d.mu.Unlock()
 	d.init()
 
-	if c.Direction != ConnectorDestination {
+	if c.PluginType != PluginDestination {
 		return fmt.Errorf("not a destination connector")
 	}
 	d.Connectors = append(d.Connectors, *c)

@@ -44,7 +44,7 @@ func (a App) Run(v turbine.Turbine) error {
 	//
 	// source.Records("collection_name", turbine.ConnectionOptions{turbine.ResourceConfig{Field: "incrementing.field.name", Value:"id"}})
 
-	rr, err := source.Records("collection_name", nil)
+	rr, err := source.Read("collection_name", nil)
 	if err != nil {
 		return err
 	}

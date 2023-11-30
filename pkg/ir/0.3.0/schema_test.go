@@ -1,9 +1,8 @@
-package ir_test
+package ir
 
 import (
 	"testing"
 
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,7 +27,7 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -44,7 +43,7 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -63,7 +62,7 @@ func Test_ValidSpec(t *testing.T) {
 					{
 						"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 						"collection": "users",
-						"direction": "source",
+						"plugin_type": "source",
 						"plugin_name": "postgres"
 					}
 				],
@@ -85,7 +84,7 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -147,7 +146,7 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"direction": "some random direction",
+								"plugin_type": "some random direction",
 								"plugin_name": "postgres"
 							}
 						],
@@ -172,7 +171,7 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"direction": "destination",
+								"plugin_type": "destination",
 								"plugin_name": "postgres"
 							}
 						],
@@ -196,12 +195,12 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users_processed",
-								"direction": "destination",
+								"plugin_type": "destination",
 								"plugin_name": "postgres"
 							},
 							{
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -225,19 +224,19 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users_processed",
-								"direction": "destination",
+								"plugin_type": "destination",
 								"plugin_name": "postgres"
 							},
 							{
 								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users_copy",
-								"direction": "destination",
+								"plugin_type": "destination",
 								"plugin_name": "postgres"
 							},
 							{
 								"uuid":   "9e9e8e88-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -261,19 +260,19 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users_processed",
-								"direction": "destination",
+								"plugin_type": "destination",
 								"plugin_name": "postgres"
 							},
 							{
 								"uuid":   "9839888cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "accounts",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							},
 							{
 								"uuid":   "02929383-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -297,19 +296,19 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users_processed",
-								"direction": "destination",
+								"plugin_type": "destination",
 								"plugin_name": "postgres"
 							},
 							{
 								"uuid":  "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
 								"collection": "users_processed",
-								"direction": "destination",
+								"plugin_type": "destination",
 								"plugin_name": "postgres"
 							},
 							{
 								"uuid":  "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -334,7 +333,7 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -359,7 +358,7 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -387,7 +386,7 @@ func Test_ValidSpec(t *testing.T) {
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 								"collection": "users",
-								"direction": "source",
+								"plugin_type": "source",
 								"plugin_name": "postgres"
 							}
 						],
@@ -418,7 +417,7 @@ func Test_ValidSpec(t *testing.T) {
 					{
 						"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
 						"collection": "users",
-						"direction": "source",
+						"plugin_type": "source",
 						"plugin_name": "postgres"
 					}
 				],
@@ -464,14 +463,14 @@ func Test_ValidSpec(t *testing.T) {
 						"connectors": [
 							{
 								"uuid":   "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
-								"direction": "source",
+								"plugin_type": "source",
 								"config": {},
 								"plugin_name": "postgres",
 								"collection": "sequences"
 							},
 							{
 								"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
-								"direction": "destination",
+								"plugin_type": "destination",
 								"config": {},
 								"plugin_name": "postgres",
 								"collection": "test_py_feature_branch"
@@ -506,14 +505,14 @@ func Test_ValidSpec(t *testing.T) {
 					"connectors": [
 						{
 							"uuid": "13ae6f06-9fd0-4395-906e-9bba9a76ffc0",
-							"direction": "source",
+							"plugin_type": "source",
 							"config": {},
 							"plugin_name": "postgres",
 							"collection": "sequences"
 						},
 						{
 							"uuid": "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
-							"direction": "destination",
+							"plugin_type": "destination",
 							"config": {},
 							"plugin_name": "postgres",
 							"collection": "test_py_feature_branch"
@@ -548,7 +547,7 @@ func Test_ValidSpec(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
-			err := ir.ValidateSpec([]byte(tc.spec), tc.specVersion)
+			err := ValidateSpec([]byte(tc.spec), tc.specVersion)
 			if tc.err == "" {
 				require.NoError(t, err)
 			} else {

@@ -43,14 +43,15 @@ turbine_proto:
 		-v $(CURDIR)/proto:/defs \
 		-v $(CURDIR)/lib/go:/out \
 		namely/protoc-all  \
-			-f ./turbine/v1/turbine.proto \
+			-f ./turbine/0.3.0/turbine.proto \
 			-l go --with-validator -o /out
 
+# TODO: remove this
 .PHONY: process_ruby_proto
 process_ruby_proto:
 	docker run \
 		--rm \
-		-v $(CURDIR)/proto/process/v1:/defs \
+		-v $(CURDIR)/proto/process/0.2.0:/defs \
 		-v $(CURDIR)/lib/ruby/turbine_rb/lib:/out \
 		namely/protoc-all  \
 			-f ./service.proto \
@@ -60,7 +61,7 @@ process_ruby_proto:
 turbine_ruby_proto:
 	docker run \
 		--rm \
-		-v $(CURDIR)/proto/turbine/v1:/defs \
+		-v $(CURDIR)/proto/turbine/0.3.0:/defs \
 		-v $(CURDIR)/lib/ruby/turbine_rb/lib:/out \
 		namely/protoc-all  \
 			-f ./turbine.proto \

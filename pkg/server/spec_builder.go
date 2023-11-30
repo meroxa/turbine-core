@@ -49,14 +49,38 @@ func (s *specBuilderService) GetSource(_ context.Context, req *pb.GetSourceReque
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return &pb.Source{Name: req.Name}, nil
+
+	c := ir.ConnectorSpec{
+		UUID:         uuid.New().String(),
+		Name:         req.Name,
+		PluginName:   req.PluginName,
+		PluginType:   ir.PluginSource,
+		PluginConfig: configMap(req.Configs),
+	}
+
+	if err := s.spec.AddSource(&c); err != nil {
+		return nil, err
+	}
+
+	return &pb.Source{Uuid: c.UUID}, nil
 }
 
 func (s *specBuilderService) GetDestination(_ context.Context, req *pb.GetDestinationRequest) (*pb.Destination, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return &pb.Destination{Name: req.Name}, nil
+
+	c := ir.ConnectorSpec{
+		UUID:         uuid.New().String(),
+		PluginName:   req.PluginName,
+		PluginType:   ir.PluginDestination,
+		PluginConfig: configMap(req.Configs),
+	}
+	if err := s.spec.AddDestination(&c); err != nil {
+		return nil, err
+	}
+
+	return &pb.Destination{Uuid: c.UUID}, nil
 }
 
 func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadCollectionRequest) (*pb.Collection, error) {
@@ -64,21 +88,9 @@ func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadColle
 		return nil, err
 	}
 
-	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Collection: req.Collection,
-		PluginName: req.Source.Name,
-		Direction:  ir.ConnectorSource,
-		Config:     configMap(req.Configs),
-	}
-
-	if err := s.spec.AddSource(&c); err != nil {
-		return nil, err
-	}
-
 	return &pb.Collection{
 		Name:   req.Collection,
-		Stream: c.UUID,
+		Stream: req.Source.Uuid,
 	}, nil
 }
 
@@ -87,22 +99,11 @@ func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *p
 		return nil, err
 	}
 
-	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Collection: req.DestinationCollection,
-		PluginName: req.Destination.Name,
-		Direction:  ir.ConnectorDestination,
-		Config:     configMap(req.Configs),
-	}
-	if err := s.spec.AddDestination(&c); err != nil {
-		return nil, err
-	}
-
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
 		FromUUID: req.SourceCollection.Stream,
-		ToUUID:   c.UUID,
-		Name:     req.SourceCollection.Stream + "_" + c.UUID,
+		ToUUID:   req.Destination.Uuid,
+		Name:     req.SourceCollection.Stream + "_" + req.Destination.Uuid,
 	}); err != nil {
 		return nil, err
 	}
@@ -136,14 +137,6 @@ func (s *specBuilderService) AddProcessToCollection(_ context.Context, req *pb.P
 		Name:   req.Collection.Name,
 		Stream: f.UUID,
 	}, nil
-}
-
-func (s *specBuilderService) RegisterSecret(_ context.Context, secret *pb.Secret) (*emptypb.Empty, error) {
-	if err := secret.Validate(); err != nil {
-		return nil, err
-	}
-	s.spec.Secrets[secret.Name] = secret.Value
-	return empty(), nil
 }
 
 func (s *specBuilderService) HasFunctions(_ context.Context, _ *emptypb.Empty) (*wrapperspb.BoolValue, error) {

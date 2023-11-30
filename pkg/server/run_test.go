@@ -261,57 +261,6 @@ func Test_AddProccessToCollection(t *testing.T) {
 	}
 }
 
-func Test_RegisterSecret(t *testing.T) {
-	ctx := context.Background()
-	tests := []struct {
-		desc    string
-		setup   func() *pb.Secret
-		wantErr error
-	}{
-		{
-			desc:    "fails when secret name is invalid",
-			wantErr: errors.New("invalid Secret.Name: value length must be at least 1 runes"),
-			setup: func() *pb.Secret {
-				return &pb.Secret{
-					Value: "secret-name",
-				}
-			},
-		},
-		{
-			desc:    "fails when secret value is invalid",
-			wantErr: errors.New("invalid Secret.Value: value length must be at least 1 runes"),
-			setup: func() *pb.Secret {
-				return &pb.Secret{
-					Name: "secret-value",
-				}
-			},
-		},
-		{
-			desc: "success",
-			setup: func() *pb.Secret {
-				return &pb.Secret{
-					Name:  "secret-name",
-					Value: "secret-value",
-				}
-			},
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.desc, func(t *testing.T) {
-			s := &runService{}
-			req := tc.setup()
-
-			_, err := s.RegisterSecret(ctx, req)
-			if tc.wantErr != nil {
-				assert.ErrorContains(t, err, tc.wantErr.Error())
-			} else {
-				assert.NoError(t, err)
-			}
-		})
-	}
-}
-
 func Test_ReadCollection(t *testing.T) {
 	ctx := context.Background()
 	tempdir := t.TempDir()
@@ -508,7 +457,8 @@ func Test_WriteCollectionToResource(t *testing.T) {
 			setup: func() *pb.WriteCollectionRequest {
 				return &pb.WriteCollectionRequest{
 					Destination: &pb.Destination{
-						Name: "resource",
+						Name:       "resource",
+						Collection: "target-collection",
 					},
 					SourceCollection: &pb.Collection{
 						Name: "collection",
@@ -519,7 +469,6 @@ func Test_WriteCollectionToResource(t *testing.T) {
 							},
 						},
 					},
-					DestinationCollection: "target-collection",
 				}
 			},
 		},
@@ -552,7 +501,7 @@ func Test_WriteCollectionToResource(t *testing.T) {
 			}
 
 			output, err := capture(func() error {
-				_, err := s.WriteCollectionToResource(ctx, req)
+				_, err := s.WriteCollectionToDestination(ctx, req)
 				return err
 			})
 			if tc.wantErr != nil {

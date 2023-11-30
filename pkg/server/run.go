@@ -98,14 +98,14 @@ func (s *runService) ReadCollection(ctx context.Context, req *pb.ReadCollectionR
 	}, nil
 }
 
-func (s *runService) WriteCollectionToResource(ctx context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+func (s *runService) WriteCollectionToDestination(ctx context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
 	internal.PrintRecords(
 		req.Destination.Name,
-		req.DestinationCollection,
+		req.Destination.Collection,
 		req.SourceCollection.Records,
 	)
 
@@ -117,11 +117,4 @@ func (s *runService) AddProcessToCollection(ctx context.Context, req *pb.Process
 		return nil, err
 	}
 	return req.Collection, nil
-}
-
-func (s *runService) RegisterSecret(ctx context.Context, req *pb.Secret) (*emptypb.Empty, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-	return empty(), nil
 }

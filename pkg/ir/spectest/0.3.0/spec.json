@@ -5,18 +5,20 @@
     "connectors": [
         {
             "uuid": "252bc5e1-666e-4985-a12a-42af81a5d2ab",
-            "collection": "user_activity",
-            "direction": "source",
+            "plugin_type": "source",
             "plugin_name": "postgres",
-            "config": {
-                "logical_replication": true
+            "plugin_config": {
+                "logical_replication": true,
+                "collection": "user_activity"
             }
         },
         {
             "uuid": "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
-            "collection": "user_activity_enriched",
-            "direction": "destination",
-            "plugin_name": "postgres"
+            "plugin_type": "destination",
+            "plugin_name": "postgres",
+            "plugin_config": {
+                "collection": "user_activity_enriched"
+            }
         }
     ],
     "functions": [

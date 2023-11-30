@@ -190,26 +190,6 @@ func (mr *MockClientMockRecorder) ReadCollection(ctx, in interface{}, opts ...in
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadCollection", reflect.TypeOf((*MockClient)(nil).ReadCollection), varargs...)
 }
 
-// RegisterSecret mocks base method.
-func (m *MockClient) RegisterSecret(ctx context.Context, in *core.Secret, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "RegisterSecret", varargs...)
-	ret0, _ := ret[0].(*emptypb.Empty)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// RegisterSecret indicates an expected call of RegisterSecret.
-func (mr *MockClientMockRecorder) RegisterSecret(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterSecret", reflect.TypeOf((*MockClient)(nil).RegisterSecret), varargs...)
-}
-
 // WriteCollectionToDestination mocks base method.
 func (m *MockClient) WriteCollectionToDestination(ctx context.Context, in *core.WriteCollectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	m.ctrl.T.Helper()

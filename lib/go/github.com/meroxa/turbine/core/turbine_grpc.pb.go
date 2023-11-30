@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.6
-// source: turbine/v1/turbine.proto
+// source: turbine/0.3.0/turbine.proto
 
 package core
 
@@ -353,5 +353,5 @@ var TurbineService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "turbine/v1/turbine.proto",
+	Metadata: "turbine/0.3.0/turbine.proto",
 }
