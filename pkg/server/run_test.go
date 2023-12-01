@@ -80,7 +80,7 @@ func Test_Init(t *testing.T) {
 						[]byte(fmt.Sprintf(`{
 							"name": "app",
 							"language": "%s",
-							"resources": {
+							"fixtures": {
 								"demopg": "%s"
 							}
 						}`, ir.Ruby, filepath.Join("fixtures", "demo.json"))),
