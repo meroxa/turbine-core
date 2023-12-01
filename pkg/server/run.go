@@ -64,7 +64,7 @@ func (s *runService) ReadRecords(ctx context.Context, req *pb.ReadRecordsRequest
 		return nil, status.Error(
 			codes.InvalidArgument,
 			fmt.Sprintf(
-				"No fixture file found for source %s. Ensure that the source is declared in your app.json.",
+				"no fixture file found for source %s. Ensure that the source is declared in your app.json.",
 				req.SourceStream,
 			),
 		)
