@@ -70,21 +70,16 @@ func (s *runService) ReadRecords(ctx context.Context, req *pb.ReadRecordsRequest
 		)
 	}
 
-	fixture := &internal.FixtureResource{
-		Collection: req.Collection,
-		File: path.Join(
-			s.appPath,
-			fixtureFile,
-		),
-	}
-
-	rr, err := fixture.ReadAll(ctx)
+	rr, err := internal.ReadFixture(ctx, path.Join(s.appPath, fixtureFile))
 	if err != nil {
 		return nil, err
 	}
-	return &pb.Collection{
-		Name:    req.Collection,
-		Records: rr,
+
+	return &pb.ReadRecordsResponse{
+		StreamRecords: &pb.StreamRecords{
+			StreamName: req.SourceStream,
+			Records:    rr,
+		},
 	}, nil
 }
 
@@ -103,11 +98,7 @@ func (s *runService) WriteRecords(ctx context.Context, req *pb.WriteRecordsReque
 		return nil, err
 	}
 
-	internal.PrintRecords(
-		req.Resource.Name,
-		req.TargetCollection,
-		req.SourceCollection.Records,
-	)
+	internal.PrintRecords(req.DestinationID, req.StreamRecords)
 
 	return empty(), nil
 }
@@ -116,5 +107,11 @@ func (s *runService) ProcessRecords(ctx context.Context, req *pb.ProcessRecordsR
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return req.Collection, nil
+
+	return &pb.ProcessRecordsResponse{
+		StreamRecords: &pb.StreamRecords{
+			StreamName: req.StreamRecords.StreamName,
+			// Records will come from the processing function in the SDK and not the gRPC server
+		},
+	}, nil
 }

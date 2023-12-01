@@ -9,7 +9,6 @@ import (
 func Test_ValidSpec(t *testing.T) {
 	t.Skipf("Skip until json spec is updated")
 
-
 	testCases := []struct {
 		desc        string
 		specVersion string

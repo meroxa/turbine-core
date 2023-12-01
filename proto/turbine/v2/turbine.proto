@@ -51,7 +51,7 @@ message ReadRecordsRequest {
 }
 
 message ReadRecordsResponse {
-  Records records = 1 [(validate.rules).message.required = true];
+  StreamRecords streamRecords = 1 [(validate.rules).message.required = true];
 }
 
 message ProcessRecordsRequest {
@@ -60,11 +60,11 @@ message ProcessRecordsRequest {
   }
 
   Process process = 1 [(validate.rules).message.required = true];
-  Records records = 2 [(validate.rules).message.required = true];
+  StreamRecords streamRecords = 2 [(validate.rules).message.required = true];
 }
 
 message ProcessRecordsResponse {
-  Records records = 1 [(validate.rules).message.required = true];
+  StreamRecords streamRecords = 1 [(validate.rules).message.required = true];
 }
 
 message AddDestinationRequest {
@@ -77,8 +77,8 @@ message AddDestinationResponse {
 }
 
 message WriteRecordsRequest {
-  string destinationStream = 1 [(validate.rules).string.min_len = 1];
-  Records records = 2 [(validate.rules).message.required = true];
+  string destinationID = 1 [(validate.rules).string.min_len = 1];
+  StreamRecords streamRecords = 2 [(validate.rules).message.required = true];
 }
 
 message GetSpecRequest {
@@ -89,7 +89,8 @@ message GetSpecResponse {
   bytes spec = 1;
 }
 
-message Records {
+// Represents a collection of records consumed from a stream.
+message StreamRecords {
   string streamName = 1 [(validate.rules).string.min_len = 1];
   repeated Record records = 2;
 }

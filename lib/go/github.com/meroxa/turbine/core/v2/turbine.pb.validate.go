@@ -559,9 +559,9 @@ func (m *ReadRecordsResponse) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetRecords() == nil {
+	if m.GetStreamRecords() == nil {
 		err := ReadRecordsResponseValidationError{
-			field:  "Records",
+			field:  "StreamRecords",
 			reason: "value is required",
 		}
 		if !all {
@@ -571,11 +571,11 @@ func (m *ReadRecordsResponse) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetRecords()).(type) {
+		switch v := interface{}(m.GetStreamRecords()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, ReadRecordsResponseValidationError{
-					field:  "Records",
+					field:  "StreamRecords",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -583,16 +583,16 @@ func (m *ReadRecordsResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, ReadRecordsResponseValidationError{
-					field:  "Records",
+					field:  "StreamRecords",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetRecords()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetStreamRecords()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return ReadRecordsResponseValidationError{
-				field:  "Records",
+				field:  "StreamRecords",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -741,9 +741,9 @@ func (m *ProcessRecordsRequest) validate(all bool) error {
 		}
 	}
 
-	if m.GetRecords() == nil {
+	if m.GetStreamRecords() == nil {
 		err := ProcessRecordsRequestValidationError{
-			field:  "Records",
+			field:  "StreamRecords",
 			reason: "value is required",
 		}
 		if !all {
@@ -753,11 +753,11 @@ func (m *ProcessRecordsRequest) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetRecords()).(type) {
+		switch v := interface{}(m.GetStreamRecords()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, ProcessRecordsRequestValidationError{
-					field:  "Records",
+					field:  "StreamRecords",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -765,16 +765,16 @@ func (m *ProcessRecordsRequest) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, ProcessRecordsRequestValidationError{
-					field:  "Records",
+					field:  "StreamRecords",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetRecords()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetStreamRecords()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return ProcessRecordsRequestValidationError{
-				field:  "Records",
+				field:  "StreamRecords",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -883,9 +883,9 @@ func (m *ProcessRecordsResponse) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetRecords() == nil {
+	if m.GetStreamRecords() == nil {
 		err := ProcessRecordsResponseValidationError{
-			field:  "Records",
+			field:  "StreamRecords",
 			reason: "value is required",
 		}
 		if !all {
@@ -895,11 +895,11 @@ func (m *ProcessRecordsResponse) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetRecords()).(type) {
+		switch v := interface{}(m.GetStreamRecords()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, ProcessRecordsResponseValidationError{
-					field:  "Records",
+					field:  "StreamRecords",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -907,16 +907,16 @@ func (m *ProcessRecordsResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, ProcessRecordsResponseValidationError{
-					field:  "Records",
+					field:  "StreamRecords",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetRecords()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetStreamRecords()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return ProcessRecordsResponseValidationError{
-				field:  "Records",
+				field:  "StreamRecords",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -1280,9 +1280,9 @@ func (m *WriteRecordsRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetDestinationStream()) < 1 {
+	if utf8.RuneCountInString(m.GetDestinationID()) < 1 {
 		err := WriteRecordsRequestValidationError{
-			field:  "DestinationStream",
+			field:  "DestinationID",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {
@@ -1291,9 +1291,9 @@ func (m *WriteRecordsRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetRecords() == nil {
+	if m.GetStreamRecords() == nil {
 		err := WriteRecordsRequestValidationError{
-			field:  "Records",
+			field:  "StreamRecords",
 			reason: "value is required",
 		}
 		if !all {
@@ -1303,11 +1303,11 @@ func (m *WriteRecordsRequest) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetRecords()).(type) {
+		switch v := interface{}(m.GetStreamRecords()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, WriteRecordsRequestValidationError{
-					field:  "Records",
+					field:  "StreamRecords",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -1315,16 +1315,16 @@ func (m *WriteRecordsRequest) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, WriteRecordsRequestValidationError{
-					field:  "Records",
+					field:  "StreamRecords",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetRecords()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetStreamRecords()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return WriteRecordsRequestValidationError{
-				field:  "Records",
+				field:  "StreamRecords",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -1615,21 +1615,22 @@ var _ interface {
 	ErrorName() string
 } = GetSpecResponseValidationError{}
 
-// Validate checks the field values on Records with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
+// Validate checks the field values on StreamRecords with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *Records) Validate() error {
+func (m *StreamRecords) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on Records with the rules defined in the
-// proto definition for this message. If any rules are violated, the result is
-// a list of violation errors wrapped in RecordsMultiError, or nil if none found.
-func (m *Records) ValidateAll() error {
+// ValidateAll checks the field values on StreamRecords with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in StreamRecordsMultiError, or
+// nil if none found.
+func (m *StreamRecords) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *Records) validate(all bool) error {
+func (m *StreamRecords) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1637,7 +1638,7 @@ func (m *Records) validate(all bool) error {
 	var errors []error
 
 	if utf8.RuneCountInString(m.GetStreamName()) < 1 {
-		err := RecordsValidationError{
+		err := StreamRecordsValidationError{
 			field:  "StreamName",
 			reason: "value length must be at least 1 runes",
 		}
@@ -1654,7 +1655,7 @@ func (m *Records) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, RecordsValidationError{
+					errors = append(errors, StreamRecordsValidationError{
 						field:  fmt.Sprintf("Records[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -1662,7 +1663,7 @@ func (m *Records) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, RecordsValidationError{
+					errors = append(errors, StreamRecordsValidationError{
 						field:  fmt.Sprintf("Records[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -1671,7 +1672,7 @@ func (m *Records) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return RecordsValidationError{
+				return StreamRecordsValidationError{
 					field:  fmt.Sprintf("Records[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -1682,18 +1683,19 @@ func (m *Records) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return RecordsMultiError(errors)
+		return StreamRecordsMultiError(errors)
 	}
 
 	return nil
 }
 
-// RecordsMultiError is an error wrapping multiple validation errors returned
-// by Records.ValidateAll() if the designated constraints aren't met.
-type RecordsMultiError []error
+// StreamRecordsMultiError is an error wrapping multiple validation errors
+// returned by StreamRecords.ValidateAll() if the designated constraints
+// aren't met.
+type StreamRecordsMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m RecordsMultiError) Error() string {
+func (m StreamRecordsMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1702,11 +1704,11 @@ func (m RecordsMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m RecordsMultiError) AllErrors() []error { return m }
+func (m StreamRecordsMultiError) AllErrors() []error { return m }
 
-// RecordsValidationError is the validation error returned by Records.Validate
-// if the designated constraints aren't met.
-type RecordsValidationError struct {
+// StreamRecordsValidationError is the validation error returned by
+// StreamRecords.Validate if the designated constraints aren't met.
+type StreamRecordsValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1714,22 +1716,22 @@ type RecordsValidationError struct {
 }
 
 // Field function returns field value.
-func (e RecordsValidationError) Field() string { return e.field }
+func (e StreamRecordsValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e RecordsValidationError) Reason() string { return e.reason }
+func (e StreamRecordsValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e RecordsValidationError) Cause() error { return e.cause }
+func (e StreamRecordsValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e RecordsValidationError) Key() bool { return e.key }
+func (e StreamRecordsValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e RecordsValidationError) ErrorName() string { return "RecordsValidationError" }
+func (e StreamRecordsValidationError) ErrorName() string { return "StreamRecordsValidationError" }
 
 // Error satisfies the builtin error interface
-func (e RecordsValidationError) Error() string {
+func (e StreamRecordsValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1741,14 +1743,14 @@ func (e RecordsValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sRecords.%s: %s%s",
+		"invalid %sStreamRecords.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = RecordsValidationError{}
+var _ error = StreamRecordsValidationError{}
 
 var _ interface {
 	Field() string
@@ -1756,7 +1758,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = RecordsValidationError{}
+} = StreamRecordsValidationError{}
 
 // Validate checks the field values on Record with the rules defined in the
 // proto definition for this message. If any rules are violated, the first

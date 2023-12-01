@@ -72,7 +72,7 @@ func (s *specBuilderService) ReadRecords(_ context.Context, req *pb.ReadRecordsR
 	}
 
 	return &pb.ReadRecordsResponse{
-		Records: &pb.Records{
+		StreamRecords: &pb.StreamRecords{
 			StreamName: req.SourceStream,
 		},
 	}, nil
@@ -105,9 +105,9 @@ func (s *specBuilderService) WriteRecords(_ context.Context, req *pb.WriteRecord
 
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
-		FromUUID: req.Records.StreamName,
-		ToUUID:   req.DestinationStream,
-		Name:     req.Records.StreamName + "_" + req.DestinationStream,
+		FromUUID: req.StreamRecords.StreamName,
+		ToUUID:   req.DestinationID,
+		Name:     req.StreamRecords.StreamName + "_" + req.DestinationID,
 	}); err != nil {
 		return nil, err
 	}
@@ -130,17 +130,17 @@ func (s *specBuilderService) ProcessRecords(_ context.Context, req *pb.ProcessRe
 
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
-		FromUUID: req.Records.StreamName,
+		FromUUID: req.StreamRecords.StreamName,
 		ToUUID:   f.UUID,
-		Name:     req.Records.StreamName + "_" + f.UUID,
+		Name:     req.StreamRecords.StreamName + "_" + f.UUID,
 	}); err != nil {
 		return nil, err
 	}
 
 	return &pb.ProcessRecordsResponse{
-		Records: &pb.Records{
+		StreamRecords: &pb.StreamRecords{
 			StreamName: f.UUID,
-			Records:    req.Records.Records,
+			Records:    req.StreamRecords.Records,
 		},
 	}, nil
 }
