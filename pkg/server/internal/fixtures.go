@@ -11,7 +11,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core/v2"
 )
 
 type FixtureResource struct {

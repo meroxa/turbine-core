@@ -130,15 +130,18 @@ func (s *specBuilderService) ProcessRecords(_ context.Context, req *pb.ProcessRe
 
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
-		FromUUID: req.Collection.Stream,
+		FromUUID: req.Records.StreamName,
 		ToUUID:   f.UUID,
-		Name:     req.Collection.Stream + "_" + f.UUID,
+		Name:     req.Records.StreamName + "_" + f.UUID,
 	}); err != nil {
 		return nil, err
 	}
 
 	return &pb.ProcessRecordsResponse{
-		Records: req.Records,
+		Records: &pb.Records{
+			StreamName: f.UUID,
+			Records:    req.Records.Records,
+		},
 	}, nil
 }
 

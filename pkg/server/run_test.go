@@ -13,7 +13,7 @@ import (
 
 	ir "github.com/meroxa/turbine-core/pkg/ir/v1"
 
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core/v2"
 	"github.com/meroxa/turbine-core/pkg/app"
 
 	"github.com/stretchr/testify/assert"
@@ -80,7 +80,6 @@ func Test_Init(t *testing.T) {
 						[]byte(fmt.Sprintf(`{
 							"name": "app",
 							"language": "%s",
-							"environment": "common",
 							"resources": {
 								"demopg": "%s"
 							}
@@ -109,9 +108,8 @@ func Test_Init(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, s.appPath, req.ConfigFilePath)
 				assert.Equal(t, s.config, app.Config{
-					Name:     "app",
-					Pipeline: "turbine-pipeline-app",
-					Resources: map[string]string{
+					Name: "app",
+					Fixtures: map[string]string{
 						"demopg": filepath.Join("fixtures", "demo.json"),
 					},
 					Language: ir.Ruby,
@@ -311,7 +309,7 @@ func Test_ReadCollection(t *testing.T) {
 			srv: &runService{
 				appPath: tempdir,
 				config: app.Config{
-					Resources: map[string]string{
+					Fixtures: map[string]string{
 						"resource": "fixture.json",
 					},
 				},
@@ -331,7 +329,7 @@ func Test_ReadCollection(t *testing.T) {
 			srv: &runService{
 				appPath: path.Join(tempdir),
 				config: app.Config{
-					Resources: map[string]string{
+					Fixtures: map[string]string{
 						"resource": "fixture.json",
 					},
 				},
@@ -374,7 +372,7 @@ func Test_ReadCollection(t *testing.T) {
 			srv: &runService{
 				appPath: path.Join(tempdir),
 				config: app.Config{
-					Resources: map[string]string{
+					Fixtures: map[string]string{
 						"resource123": "fixture.json",
 					},
 				},
