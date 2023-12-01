@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	ir "github.com/meroxa/turbine-core/pkg/ir/v1"
+	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -326,36 +326,6 @@ func TestAddProcessToCollection(t *testing.T) {
 	require.Equal(t, s.spec.Streams[0].ToUUID, res.Stream)
 }
 
-func TestRegisterSecret(t *testing.T) {
-	var (
-		ctx  = context.Background()
-		s    = NewSpecBuilderService()
-		want = &ir.DeploymentSpec{
-			Secrets: map[string]string{
-				"api_key":     "secret_key",
-				"another_key": "key",
-			},
-		}
-	)
-
-	res, err := s.RegisterSecret(ctx,
-		&pb.Secret{
-			Name:  "api_key",
-			Value: "secret_key",
-		})
-	require.Nil(t, err)
-	require.Equal(t, empty(), res)
-
-	res, err = s.RegisterSecret(ctx,
-		&pb.Secret{
-			Name:  "another_key",
-			Value: "key",
-		})
-	require.Nil(t, err)
-	require.Equal(t, empty(), res)
-	require.Equal(t, want.Secrets, s.spec.Secrets)
-}
-
 func TestHasFunctions(t *testing.T) {
 	tests := []struct {
 		description     string
@@ -393,71 +363,6 @@ func TestHasFunctions(t *testing.T) {
 			res, err := s.HasFunctions(ctx, empty())
 			require.Nil(t, err)
 			require.Equal(t, test.want, res.Value)
-		})
-	}
-}
-
-func TestListResources(t *testing.T) {
-	tests := []struct {
-		description     string
-		populateService func(*specBuilderService) *specBuilderService
-		want            *pb.ListResourcesResponse
-	}{
-		{
-			description: "service with no resources",
-			want:        &pb.ListResourcesResponse{},
-		},
-		{
-			description: "service with resources",
-			populateService: func(s *specBuilderService) *specBuilderService {
-				s.resources = []*pb.Resource{
-					{
-						Name: "pg",
-
-						Source:     true,
-						Collection: "in",
-					},
-					{
-						Name: "mongo",
-
-						Destination: true,
-						Collection:  "out",
-					},
-				}
-				return s
-			},
-			want: &pb.ListResourcesResponse{
-				Resources: []*pb.Resource{
-					{
-						Name: "pg",
-
-						Source:     true,
-						Collection: "in",
-					},
-					{
-						Name: "mongo",
-
-						Destination: true,
-						Collection:  "out",
-					},
-				},
-			},
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.description, func(t *testing.T) {
-			var (
-				ctx = context.Background()
-				s   = NewSpecBuilderService()
-			)
-			if test.populateService != nil {
-				s = test.populateService(s)
-			}
-
-			res, err := s.ListResources(ctx, empty())
-			require.Nil(t, err)
-			require.Equal(t, test.want, res)
 		})
 	}
 }
@@ -649,24 +554,26 @@ func exampleDeploymentSpec() *ir.DeploymentSpec {
 		Connectors: []ir.ConnectorSpec{
 			{
 				UUID:       "1",
-				Collection: "accounts",
-				Resource:   "mongo",
-				Type:       ir.ConnectorSource,
+				PluginName: "mongo",
+				PluginType: ir.PluginSource,
+				PluginConfig: map[string]interface{}{
+					"collection": "accounts",
+				},
 			},
 			{
 				UUID:       "3",
-				Collection: "accounts_copy",
-				Resource:   "pg",
-				Type:       ir.ConnectorDestination,
-				Config: map[string]interface{}{
-					"config": "value",
+				PluginName: "postgres",
+				PluginType: ir.PluginDestination,
+				PluginConfig: map[string]interface{}{
+					"collection": "accounts_copy",
+					"config":     "value",
 				},
 			},
 		},
 		Definition: ir.DefinitionSpec{
 			GitSha: "gitsh",
 			Metadata: ir.MetadataSpec{
-				SpecVersion: "0.2.0",
+				SpecVersion: "0.3.0",
 				Turbine: ir.TurbineSpec{
 					Language: ir.GoLang,
 					Version:  "10",

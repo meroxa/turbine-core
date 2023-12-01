@@ -9,7 +9,6 @@ import (
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core/v2"
 	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 var _ pb.TurbineServiceServer = (*specBuilderService)(nil)
@@ -17,7 +16,7 @@ var _ pb.TurbineServiceServer = (*specBuilderService)(nil)
 type specBuilderService struct {
 	pb.UnimplementedTurbineServiceServer
 
-	spec      *ir.DeploymentSpec
+	spec *ir.DeploymentSpec
 	//resources []*pb.Resource
 }
 
@@ -53,11 +52,11 @@ func (s *specBuilderService) AddSource(_ context.Context, req *pb.AddSourceReque
 	}
 
 	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Name:       req.Name,
-		PluginType: ir.ConnectorSource,
-		PluginName: req.Plugin.Name,
-		PluginConfig:     configMap(req.Plugin.Configs),
+		UUID:         uuid.New().String(),
+		Name:         req.Name,
+		PluginType:   ir.PluginSource,
+		PluginName:   req.Plugin.Name,
+		PluginConfig: configMap(req.Plugin.Configs),
 	}
 
 	if err := s.spec.AddSource(&c); err != nil {
@@ -76,7 +75,7 @@ func (s *specBuilderService) ReadRecords(_ context.Context, req *pb.ReadRecordsR
 		Records: &pb.Records{
 			StreamName: req.SourceStream,
 		},
-	}
+	}, nil
 }
 
 func (s *specBuilderService) AddDestination(_ context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
@@ -85,11 +84,11 @@ func (s *specBuilderService) AddDestination(_ context.Context, req *pb.AddDestin
 	}
 
 	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Name:       req.Name,
-		PluginType: ir.ConnectorDestination,
-		PluginName: req.Plugin.Name,
-		PluginConfig:     configMap(req.Plugin.Configs),
+		UUID:         uuid.New().String(),
+		Name:         req.Name,
+		PluginType:   ir.PluginDestination,
+		PluginName:   req.Plugin.Name,
+		PluginConfig: configMap(req.Plugin.Configs),
 	}
 
 	if err := s.spec.AddDestination(&c); err != nil {
@@ -107,8 +106,8 @@ func (s *specBuilderService) WriteRecords(_ context.Context, req *pb.WriteRecord
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
 		FromUUID: req.Records.StreamName,
-		ToUUID:   req.DestinationID,
-		Name:     req.Records.StreamName + "_" + req.DestinationID,
+		ToUUID:   req.DestinationStream,
+		Name:     req.Records.StreamName + "_" + req.DestinationStream,
 	}); err != nil {
 		return nil, err
 	}
@@ -138,9 +137,8 @@ func (s *specBuilderService) ProcessRecords(_ context.Context, req *pb.ProcessRe
 		return nil, err
 	}
 
-	return &pb.Collection{
-		Name:   req.Collection.Name,
-		Stream: f.UUID,
+	return &pb.ProcessRecordsResponse{
+		Records: req.Records,
 	}, nil
 }
 

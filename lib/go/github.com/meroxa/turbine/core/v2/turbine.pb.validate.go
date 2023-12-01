@@ -446,9 +446,9 @@ func (m *ReadRecordsRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetSourceID()) < 1 {
+	if utf8.RuneCountInString(m.GetSourceStream()) < 1 {
 		err := ReadRecordsRequestValidationError{
-			field:  "SourceID",
+			field:  "SourceStream",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {
@@ -1280,9 +1280,9 @@ func (m *WriteRecordsRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetDestinationID()) < 1 {
+	if utf8.RuneCountInString(m.GetDestinationStream()) < 1 {
 		err := WriteRecordsRequestValidationError{
-			field:  "DestinationID",
+			field:  "DestinationStream",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {

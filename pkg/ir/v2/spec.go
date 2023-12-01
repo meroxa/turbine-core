@@ -10,8 +10,8 @@ import (
 )
 
 type (
-	PluginDirectionType string
-	Lang                string
+	DirectionType string
+	Lang          string
 )
 
 const (
@@ -20,8 +20,8 @@ const (
 	Python     Lang = "python"
 	Ruby       Lang = "ruby"
 
-	PluginSource      PluginDirectionType = "source"
-	PluginDestination PluginDirectionType = "destination"
+	PluginSource      DirectionType = "source"
+	PluginDestination DirectionType = "destination"
 
 	SpecVersion_0_3_0 = "0.3.0"
 
@@ -53,7 +53,7 @@ type StreamSpec struct {
 type ConnectorSpec struct {
 	UUID         string                 `json:"uuid"`
 	Name         string                 `json:"name"`
-	PluginType   PluginDirectionType    `json:"plugin_type"`
+	PluginType   DirectionType          `json:"plugin_type"`
 	PluginName   string                 `json:"plugin_name"`
 	PluginConfig map[string]interface{} `json:"plugin_config,omitempty"`
 }
