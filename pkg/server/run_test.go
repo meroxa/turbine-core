@@ -434,12 +434,6 @@ func Test_ProcessRecords(t *testing.T) {
 					Process: &pb.ProcessRecordsRequest_Process{Name: "my-process"},
 					StreamRecords: &pb.StreamRecords{
 						StreamName: "my-stream",
-						//Records: []*pb.Record{
-						//	{
-						//		Key:   "1",
-						//		Value: []byte(`val1`),
-						//	},
-						//},
 					},
 				}
 			},
@@ -457,7 +451,6 @@ func Test_ProcessRecords(t *testing.T) {
 			} else {
 				if assert.NoError(t, err) {
 					assert.Equal(t, c.StreamRecords.StreamName, req.StreamRecords.StreamName)
-					//assert.Equal(t, c.StreamRecords.Records, req.StreamRecords.Records)
 				}
 			}
 		})
