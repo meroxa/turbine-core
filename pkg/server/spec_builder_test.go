@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"testing"
+
 	"github.com/google/uuid"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core/v2"
 	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestInit(t *testing.T) {
@@ -111,20 +112,11 @@ func TestAddSource(t *testing.T) {
 				Name: "my-source",
 				Plugin: &pb.Plugin{
 					Name: "builtin:postgres@1.0.0",
-					Configs: &pb.Configs{Config: []*pb.Configs_Config{
-						{
-							Field: "collection",
-							Value: "accounts",
-						},
-						{
-							Field: "config",
-							Value: "value",
-						},
-						{
-							Field: "another_config",
-							Value: "another_value",
-						},
-					}},
+					Config: map[string]string{
+						"collection":     "accounts",
+						"config":         "value",
+						"another_config": "another_value",
+					},
 				},
 			},
 		},
@@ -191,12 +183,9 @@ func TestAddDestination(t *testing.T) {
 				Name: "my-destination",
 				Plugin: &pb.Plugin{
 					Name: "builtin:postgres@1.0.0",
-					Configs: &pb.Configs{Config: []*pb.Configs_Config{
-						{
-							Field: "collection",
-							Value: "accounts_copy",
-						},
-					}},
+					Config: map[string]string{
+						"collection": "accounts_copy",
+					},
 				},
 			},
 			want: &ir.DeploymentSpec{
@@ -205,7 +194,7 @@ func TestAddDestination(t *testing.T) {
 						Name:       "my-destination",
 						PluginName: "builtin:postgres@1.0.0",
 						PluginType: ir.PluginDestination,
-						PluginConfig: map[string]interface{}{
+						PluginConfig: map[string]string{
 							"collection": "accounts_copy",
 						},
 					},
@@ -357,47 +346,6 @@ func TestProcessRecords(t *testing.T) {
 	require.Equal(t, s.spec.Functions[0].Name, want.Functions[0].Name)
 	require.Equal(t, s.spec.Streams[0].FromUUID, asr.StreamName)
 	require.Equal(t, s.spec.Streams[0].ToUUID, res.StreamRecords.StreamName)
-}
-
-func TestHasFunctions(t *testing.T) {
-	tests := []struct {
-		description     string
-		populateService func(*specBuilderService) *specBuilderService
-		want            bool
-	}{
-		{
-			description: "service with no functions",
-			want:        false,
-		},
-		{
-			description: "service with function",
-			populateService: func(s *specBuilderService) *specBuilderService {
-				s.spec.Functions = []ir.FunctionSpec{
-					{
-						Name: "addition",
-					},
-				}
-				return s
-			},
-			want: true,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.description, func(t *testing.T) {
-			var (
-				ctx = context.Background()
-				s   = NewSpecBuilderService()
-			)
-			if test.populateService != nil {
-				s = test.populateService(s)
-			}
-
-			res, err := s.HasFunctions(ctx, empty())
-			require.Nil(t, err)
-			require.Equal(t, test.want, res.Value)
-		})
-	}
 }
 
 func TestGetSpec(t *testing.T) {
@@ -589,7 +537,7 @@ func exampleDeploymentSpec() *ir.DeploymentSpec {
 				UUID:       "1",
 				PluginName: "mongo",
 				PluginType: ir.PluginSource,
-				PluginConfig: map[string]interface{}{
+				PluginConfig: map[string]string{
 					"collection": "accounts",
 				},
 			},
@@ -597,7 +545,7 @@ func exampleDeploymentSpec() *ir.DeploymentSpec {
 				UUID:       "3",
 				PluginName: "postgres",
 				PluginType: ir.PluginDestination,
-				PluginConfig: map[string]interface{}{
+				PluginConfig: map[string]string{
 					"collection": "accounts_copy",
 					"config":     "value",
 				},
