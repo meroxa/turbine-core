@@ -40,10 +40,17 @@ proto: turbine_proto process_ruby_proto turbine_ruby_proto
 turbine_proto:
 	docker run \
 		--rm \
-		-v $(CURDIR)/proto:/defs \
+		-v $(CURDIR)/:/defs \
 		-v $(CURDIR)/lib/go:/out \
 		namely/protoc-all  \
-			-f ./turbine/v1/turbine.proto \
+			-f ./proto/turbine/v1/turbine.proto \
+			-l go --with-validator -o /out
+	docker run \
+		--rm \
+		-v $(CURDIR)/:/defs \
+		-v $(CURDIR)/lib/go:/out \
+		namely/protoc-all  \
+			-f ./proto/turbine/v2/turbine.proto \
 			-l go --with-validator -o /out
 
 .PHONY: process_ruby_proto
