@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"strings"
 
 	"github.com/google/uuid"
@@ -164,6 +165,10 @@ func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) 
 	}
 
 	return &pb.GetSpecResponse{Spec: spec}, nil
+}
+
+func (s *specBuilderService) HasFunctions(_ context.Context, _ *emptypb.Empty) (*wrapperspb.BoolValue, error) {
+	return wrapperspb.Bool(len(s.spec.Functions) > 0), nil
 }
 
 func configMap(configs *pb.Configs) map[string]any {
