@@ -36,7 +36,6 @@ type DeploymentSpec struct {
 	mu          sync.Mutex
 	turbineDag  dag.DAG
 	dagInitOnce sync.Once
-	Secrets     map[string]string `json:"secrets,omitempty"`
 	Connectors  []ConnectorSpec   `json:"connectors"`
 	Functions   []FunctionSpec    `json:"functions,omitempty"`
 	Streams     []StreamSpec      `json:"streams,omitempty"`
