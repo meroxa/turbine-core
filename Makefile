@@ -40,37 +40,30 @@ proto: turbine_proto process_ruby_proto turbine_ruby_proto
 turbine_proto:
 	docker run \
 		--rm \
-		-v $(CURDIR)/:/defs \
+		-v $(CURDIR)/proto:/defs \
 		-v $(CURDIR)/lib/go:/out \
 		namely/protoc-all  \
-			-f ./proto/turbine/v1/turbine.proto \
-			-l go --with-validator -o /out
-	docker run \
-		--rm \
-		-v $(CURDIR)/:/defs \
-		-v $(CURDIR)/lib/go:/out \
-		namely/protoc-all  \
-			-f ./proto/turbine/v2/turbine.proto \
+			-f ./turbine_v2.proto \
 			-l go --with-validator -o /out
 
 .PHONY: process_ruby_proto
 process_ruby_proto:
 	docker run \
 		--rm \
-		-v $(CURDIR)/proto/process/v1:/defs \
+		-v $(CURDIR)/proto:/defs \
 		-v $(CURDIR)/lib/ruby/turbine_rb/lib:/out \
 		namely/protoc-all  \
-			-f ./service.proto \
+			-f ./process_v1.proto \
 			-l ruby -o /out
 
 .PHONY: turbine_ruby_proto
 turbine_ruby_proto:
 	docker run \
 		--rm \
-		-v $(CURDIR)/proto/turbine/v1:/defs \
+		-v $(CURDIR)/proto:/defs \
 		-v $(CURDIR)/lib/ruby/turbine_rb/lib:/out \
 		namely/protoc-all  \
-			-f ./turbine.proto \
+			-f ./turbine_v2.proto \
 			-l ruby -o /out
 
 mockgen-install:

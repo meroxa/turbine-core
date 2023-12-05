@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core/v2"
+	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
 )
 
 type fixtureRecord struct {

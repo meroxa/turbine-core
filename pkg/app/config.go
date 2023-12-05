@@ -8,7 +8,7 @@ import (
 	"path"
 	"path/filepath"
 
-	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 type Config struct {

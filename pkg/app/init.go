@@ -9,28 +9,32 @@ import (
 	"path/filepath"
 	"text/template"
 
-	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 type AppInit struct {
-	AppName  string
-	Language ir.Lang
-	Path     string
-}
-
-// AppInitTemplate will be used to replace data evaluations provided by the user
-type AppInitTemplate struct {
-	AppName string
+	AppName      string
+	AppPath      string
+	TemplatePath string
 }
 
 //go:embed all:templates
 var templateFS embed.FS
 
 func NewAppInit(appName string, language ir.Lang, path string) *AppInit {
+	var templateDir string
+
+	switch a.Language {
+	case ir.Golang:
+		templateDir = filepath.Join("templates", _+string(a.Language))
+	default:
+		templateDir = filepath.Join("templates", string(a.Language))
+	}
+
 	return &AppInit{
-		AppName:  appName,
-		Language: language,
-		Path:     path,
+		AppName:      appName,
+		AppPath:      filepath.Join(a.Path, a.AppName),
+		TemplatePath: templateDir,
 	}
 }
 
@@ -40,7 +44,9 @@ func (a *AppInit) applytemplate(srcDir, destDir, fileName string) error {
 		return err
 	}
 
-	appTrait := AppInitTemplate{
+	appTrait := struct {
+		AppName string
+	}{
 		AppName: a.AppName,
 	}
 
@@ -146,8 +152,5 @@ func (a *AppInit) duplicateDirectory(srcDir, destDir string) error {
 // Init will be used from the CLI to generate a new application directory based on the existing
 // content on `/templates`.
 func (a *AppInit) Init() error {
-	rootSrcDir := filepath.Join("templates", string(a.Language))
-	rootDestDir := filepath.Join(a.Path, a.AppName)
-
-	return a.duplicateDirectory(rootSrcDir, rootDestDir)
+	return a.duplicateDirectory(a.TemplateDir, a.AppPath)
 }

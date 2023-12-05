@@ -8,7 +8,7 @@ import (
 	"github.com/meroxa/turbine-core/pkg/app"
 	"github.com/meroxa/turbine-core/pkg/server/internal"
 
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core/v2"
+	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"

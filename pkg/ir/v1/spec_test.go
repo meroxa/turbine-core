@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ir "github.com/meroxa/turbine-core/pkg/ir/v1"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 func TestDeploymentSpec_BuildDAG_UnsupportedUpgrade(t *testing.T) {
