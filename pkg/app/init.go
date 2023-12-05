@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"text/template"
 
-	ir "github.com/meroxa/turbine-core/pkg/ir/v1"
+	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
 )
 
 type AppInit struct {
