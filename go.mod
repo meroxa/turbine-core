@@ -7,7 +7,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.4.0
 	github.com/heimdalr/dag v1.3.1
-	github.com/meroxa/turbine-go/v3 v3.0.0-20231205001929-0cea5192f350
+	github.com/meroxa/turbine-go/v3 v3.0.0-20231205151452-5c5878f49294
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/grpc v1.59.0
