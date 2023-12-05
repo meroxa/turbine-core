@@ -3,6 +3,7 @@ package ir
 import (
 	_ "embed"
 	"encoding/json"
+
 	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
 
 	"github.com/santhosh-tekuri/jsonschema/v5"

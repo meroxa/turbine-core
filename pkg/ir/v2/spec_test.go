@@ -3,10 +3,11 @@ package ir_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"os"
 	"path"
 	"testing"
+
+	"github.com/google/uuid"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -51,24 +52,21 @@ func Test_DeploymentSpec(t *testing.T) {
 	}
 
 	expectedSpec := &ir.DeploymentSpec{
-		Secrets: map[string]string{
-			"key": "valuesecret",
-		},
 		Connectors: []ir.ConnectorSpec{
 			{
 				UUID:       "252bc5e1-666e-4985-a12a-42af81a5d2ab",
 				PluginType: ir.PluginSource,
 				PluginName: "postgres",
-				PluginConfig: map[string]interface{}{
+				PluginConfig: map[string]string{
 					"collection":          "user_activity",
-					"logical_replication": true,
+					"logical_replication": "true",
 				},
 			},
 			{
 				UUID:       "dde3bf4e-0848-4579-b05d-7e6dcfae61ea",
 				PluginType: ir.PluginDestination,
 				PluginName: "postgres",
-				PluginConfig: map[string]interface{}{
+				PluginConfig: map[string]string{
 					"collection": "user_activity_enriched",
 				},
 			},
@@ -168,9 +166,6 @@ func Test_SetImageForFunctions(t *testing.T) {
 
 func Test_MarshalUnmarshal(t *testing.T) {
 	spec := &ir.DeploymentSpec{
-		Secrets: map[string]string{
-			"a secret": "with value",
-		},
 		Functions: []ir.FunctionSpec{
 			{
 				UUID: "3",
@@ -182,7 +177,7 @@ func Test_MarshalUnmarshal(t *testing.T) {
 				UUID:       "1",
 				PluginName: "mongo",
 				PluginType: ir.PluginSource,
-				PluginConfig: map[string]interface{}{
+				PluginConfig: map[string]string{
 					"collection": "accounts",
 				},
 			},
@@ -190,7 +185,7 @@ func Test_MarshalUnmarshal(t *testing.T) {
 				UUID:       "2",
 				PluginName: "pg",
 				PluginType: ir.PluginDestination,
-				PluginConfig: map[string]interface{}{
+				PluginConfig: map[string]string{
 					"collection": "accounts_copy",
 					"config":     "value",
 				},
@@ -237,7 +232,7 @@ func Test_AllowMultipleSources(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -249,7 +244,7 @@ func Test_AllowMultipleSources(t *testing.T) {
 			UUID:       "2",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts2",
 				"config":     "value",
 			},
@@ -265,7 +260,7 @@ func Test_EnsureNonDuplicateSources(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -277,7 +272,7 @@ func Test_EnsureNonDuplicateSources(t *testing.T) {
 		UUID:       "1",
 		PluginName: "mongo",
 		PluginType: ir.PluginSource,
-		PluginConfig: map[string]interface{}{
+		PluginConfig: map[string]string{
 			"collection": "accounts2",
 			"config":     "value",
 		},
@@ -294,7 +289,7 @@ func Test_BadStream(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -320,7 +315,7 @@ func Test_WrongSourceConnector(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -337,7 +332,7 @@ func Test_WrongDestinationConnector(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -359,7 +354,7 @@ func Test_Scenario1(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -392,7 +387,7 @@ func Test_Scenario1(t *testing.T) {
 			UUID:       "3",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy",
 				"config":     "value",
 			},
@@ -430,7 +425,7 @@ func Test_DAGScenario2(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -463,7 +458,7 @@ func Test_DAGScenario2(t *testing.T) {
 			UUID:       "3",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy",
 				"config":     "value",
 			},
@@ -488,7 +483,7 @@ func Test_DAGScenario2(t *testing.T) {
 			UUID:       "4",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy",
 				"config":     "value",
 			},
@@ -526,7 +521,7 @@ func Test_DAGScenario3(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -559,7 +554,7 @@ func Test_DAGScenario3(t *testing.T) {
 			UUID:       "3",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy",
 				"config":     "value",
 			},
@@ -624,7 +619,7 @@ func Test_DAGScenario4(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -680,7 +675,7 @@ func Test_DAGScenario5(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -731,7 +726,7 @@ func Test_DAGScenario5(t *testing.T) {
 			UUID:       "4",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy",
 				"config":     "value",
 			},
@@ -778,7 +773,7 @@ func Test_DAGScenario6(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -829,7 +824,7 @@ func Test_DAGScenario6(t *testing.T) {
 			UUID:       "4",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy",
 				"config":     "value",
 			},
@@ -852,7 +847,7 @@ func Test_DAGScenario6(t *testing.T) {
 			UUID:       "5",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy_2",
 				"config":     "value",
 			},
@@ -893,7 +888,7 @@ func Test_DAGScenario6(t *testing.T) {
 			UUID:       "7",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy_3",
 				"config":     "value",
 			},
@@ -930,7 +925,7 @@ func Test_DAGScenario7(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -963,7 +958,7 @@ func Test_DAGScenario7(t *testing.T) {
 			UUID:       "3",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy",
 				"config":     "value",
 			},
@@ -988,7 +983,7 @@ func Test_DAGScenario7(t *testing.T) {
 			UUID:       "4",
 			PluginName: "pg",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts_copy",
 				"config":     "value",
 			},
@@ -1023,7 +1018,7 @@ func Test_Scenario8(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -1065,7 +1060,7 @@ func Test_Scenario9(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -1079,7 +1074,7 @@ func Test_Scenario9(t *testing.T) {
 			UUID:       "2",
 			PluginName: "mongo",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -1116,7 +1111,7 @@ func Test_Scenario10(t *testing.T) {
 			UUID:       "1",
 			PluginName: "mongo",
 			PluginType: ir.PluginSource,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},
@@ -1161,7 +1156,7 @@ func Test_Scenario10(t *testing.T) {
 			UUID:       "4",
 			PluginName: "mongo",
 			PluginType: ir.PluginDestination,
-			PluginConfig: map[string]interface{}{
+			PluginConfig: map[string]string{
 				"collection": "accounts",
 				"config":     "value",
 			},

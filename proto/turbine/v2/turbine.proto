@@ -102,15 +102,6 @@ message Record {
 }
 
 message Plugin {
-  string Name = 1 [(validate.rules).string.min_len = 1];
-  Configs configs = 3;
-}
-
-message Configs {
-  message Config {
-    string field = 1 [(validate.rules).string.min_len = 1];
-    string value = 2;
-  }
-
-  repeated Config config = 1;
+  string name = 1 [(validate.rules).string.min_len = 1];
+  map<string, string> config = 2;
 }

@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"strings"
 
 	"github.com/google/uuid"
@@ -18,14 +17,12 @@ type specBuilderService struct {
 	pb.UnimplementedTurbineServiceServer
 
 	spec *ir.DeploymentSpec
-	//resources []*pb.Resource
+	// resources []*pb.Resource
 }
 
 func NewSpecBuilderService() *specBuilderService {
 	return &specBuilderService{
-		spec: &ir.DeploymentSpec{
-			Secrets: make(map[string]string),
-		},
+		spec: &ir.DeploymentSpec{},
 	}
 }
 
@@ -57,7 +54,7 @@ func (s *specBuilderService) AddSource(_ context.Context, req *pb.AddSourceReque
 		Name:         req.Name,
 		PluginType:   ir.PluginSource,
 		PluginName:   req.Plugin.Name,
-		PluginConfig: configMap(req.Plugin.Configs),
+		PluginConfig: req.Plugin.Config,
 	}
 
 	if err := s.spec.AddSource(&c); err != nil {
@@ -89,7 +86,7 @@ func (s *specBuilderService) AddDestination(_ context.Context, req *pb.AddDestin
 		Name:         req.Name,
 		PluginType:   ir.PluginDestination,
 		PluginName:   req.Plugin.Name,
-		PluginConfig: configMap(req.Plugin.Configs),
+		PluginConfig: req.Plugin.Config,
 	}
 
 	if err := s.spec.AddDestination(&c); err != nil {
@@ -165,20 +162,4 @@ func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) 
 	}
 
 	return &pb.GetSpecResponse{Spec: spec}, nil
-}
-
-func (s *specBuilderService) HasFunctions(_ context.Context, _ *emptypb.Empty) (*wrapperspb.BoolValue, error) {
-	return wrapperspb.Bool(len(s.spec.Functions) > 0), nil
-}
-
-func configMap(configs *pb.Configs) map[string]any {
-	if configs == nil {
-		return nil
-	}
-
-	m := make(map[string]any)
-	for _, c := range configs.Config {
-		m[c.Field] = c.Value
-	}
-	return m
 }
