@@ -42,7 +42,7 @@ func NewTurbineServiceClient(cc grpc.ClientConnInterface) TurbineServiceClient {
 
 func (c *turbineServiceClient) Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/Init", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/turbine_core_v2.TurbineService/Init", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *turbineServiceClient) Init(ctx context.Context, in *InitRequest, opts .
 
 func (c *turbineServiceClient) AddSource(ctx context.Context, in *AddSourceRequest, opts ...grpc.CallOption) (*AddSourceResponse, error) {
 	out := new(AddSourceResponse)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/AddSource", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/turbine_core_v2.TurbineService/AddSource", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (c *turbineServiceClient) AddSource(ctx context.Context, in *AddSourceReque
 
 func (c *turbineServiceClient) ReadRecords(ctx context.Context, in *ReadRecordsRequest, opts ...grpc.CallOption) (*ReadRecordsResponse, error) {
 	out := new(ReadRecordsResponse)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/ReadRecords", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/turbine_core_v2.TurbineService/ReadRecords", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (c *turbineServiceClient) ReadRecords(ctx context.Context, in *ReadRecordsR
 
 func (c *turbineServiceClient) ProcessRecords(ctx context.Context, in *ProcessRecordsRequest, opts ...grpc.CallOption) (*ProcessRecordsResponse, error) {
 	out := new(ProcessRecordsResponse)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/ProcessRecords", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/turbine_core_v2.TurbineService/ProcessRecords", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (c *turbineServiceClient) ProcessRecords(ctx context.Context, in *ProcessRe
 
 func (c *turbineServiceClient) AddDestination(ctx context.Context, in *AddDestinationRequest, opts ...grpc.CallOption) (*AddDestinationResponse, error) {
 	out := new(AddDestinationResponse)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/AddDestination", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/turbine_core_v2.TurbineService/AddDestination", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (c *turbineServiceClient) AddDestination(ctx context.Context, in *AddDestin
 
 func (c *turbineServiceClient) WriteRecords(ctx context.Context, in *WriteRecordsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/WriteRecords", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/turbine_core_v2.TurbineService/WriteRecords", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (c *turbineServiceClient) WriteRecords(ctx context.Context, in *WriteRecord
 
 func (c *turbineServiceClient) GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error) {
 	out := new(GetSpecResponse)
-	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/GetSpec", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/turbine_core_v2.TurbineService/GetSpec", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func _TurbineService_Init_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/Init",
+		FullMethod: "/turbine_core_v2.TurbineService/Init",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TurbineServiceServer).Init(ctx, req.(*InitRequest))
@@ -181,7 +181,7 @@ func _TurbineService_AddSource_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/AddSource",
+		FullMethod: "/turbine_core_v2.TurbineService/AddSource",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TurbineServiceServer).AddSource(ctx, req.(*AddSourceRequest))
@@ -199,7 +199,7 @@ func _TurbineService_ReadRecords_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/ReadRecords",
+		FullMethod: "/turbine_core_v2.TurbineService/ReadRecords",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TurbineServiceServer).ReadRecords(ctx, req.(*ReadRecordsRequest))
@@ -217,7 +217,7 @@ func _TurbineService_ProcessRecords_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/ProcessRecords",
+		FullMethod: "/turbine_core_v2.TurbineService/ProcessRecords",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TurbineServiceServer).ProcessRecords(ctx, req.(*ProcessRecordsRequest))
@@ -235,7 +235,7 @@ func _TurbineService_AddDestination_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/AddDestination",
+		FullMethod: "/turbine_core_v2.TurbineService/AddDestination",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TurbineServiceServer).AddDestination(ctx, req.(*AddDestinationRequest))
@@ -253,7 +253,7 @@ func _TurbineService_WriteRecords_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/WriteRecords",
+		FullMethod: "/turbine_core_v2.TurbineService/WriteRecords",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TurbineServiceServer).WriteRecords(ctx, req.(*WriteRecordsRequest))
@@ -271,7 +271,7 @@ func _TurbineService_GetSpec_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/turbine_core.TurbineService/GetSpec",
+		FullMethod: "/turbine_core_v2.TurbineService/GetSpec",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TurbineServiceServer).GetSpec(ctx, req.(*GetSpecRequest))
@@ -283,7 +283,7 @@ func _TurbineService_GetSpec_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var TurbineService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "turbine_core.TurbineService",
+	ServiceName: "turbine_core_v2.TurbineService",
 	HandlerType: (*TurbineServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
