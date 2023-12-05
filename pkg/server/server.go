@@ -29,13 +29,11 @@ type turbineCoreServer struct {
 	*grpc.Server
 }
 
-/*
 func NewRunServer() *turbineCoreServer {
 	s := grpc.NewServer()
 	pb.RegisterTurbineServiceServer(s, NewRunService())
 	return &turbineCoreServer{Server: s}
 }
-*/
 
 func NewSpecBuilderServer() *turbineCoreServer {
 	s := grpc.NewServer()
