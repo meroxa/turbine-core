@@ -1,6 +1,6 @@
 module github.com/meroxa/turbine-core/v2
 
-go 1.20
+go 1.21.4
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v1.0.2

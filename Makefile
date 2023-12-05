@@ -1,43 +1,50 @@
-MOCKGEN_VERSION   ?= v1.6.0
+export CGO_ENABLED=0
 
-.PHONY: gomod
-gomod:
-	go mod tidy && go mod vendor
+# Target "all" should stay at the top of the file, we want it to be the default target.
+.PHONY: all
+all: lint test
 
-.PHONY: vet
-vet:
-	go vet ./...
+### Help (lists all documented targets) ###
 
-.PHONY: gofumpt
-gofumpt:
-	go install mvdan.cc/gofumpt@latest
+.PHONY: help
+help:
+	@grep -E '^[a-zA-Z_-]+%?:.*?## .*$$' $(MAKEFILE_LIST) | sed 's/^*://g' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: fmt
-fmt: gofumpt
-	gofumpt -l -w .
+### General targets ###
 
-.PHONY: generate
-generate: mockgen-install
-	go generate ./...
+.PHONY: build
+build:
+	@echo "Nothing to build in turbine-core"
+
+.PHONY: clean
+clean:
+	@echo "Nothing to clean in  turbine-core"
 
 .PHONY: test
-test: vet
-	go test `go list ./... | grep -v 'turbine-core\/pkg\/app\/templates\/go'` \
-	-coverprofile=c.out \
-	-covermode=atomic \
-	-v
+test: ## Run unit tests.
+	CGO_ENABLED=1 go test $(GOTEST_FLAGS) -short -race -cover -covermode=atomic ./...
 
-.PHONY: test_turbine_rb
-test_turbine_rb:
-	cd lib/ruby/turbine_rb && \
-		bundler install && \
-		bundler exec rake
+### Custom targets ###
+
+.PHONY: fmt
+fmt: ## Format Go files using gofumpt and gci.
+	gofumpt -l -w .
+	gci write --skip-generated  .
+
+.PHONY: generate
+generate: ## Run go generate.
+	go generate ./...
+
+.PHONY: lint
+lint: ## Lint Go files using golangci-lint.
+	golangci-lint run -v
+
+.PHONY: test-integration
+test-integration: ## Run integration tests.
+	go test $(GOTEST_FLAGS) -cover -covermode=atomic -run Integration ./...
 
 .PHONY: proto
-proto: turbine_proto process_ruby_proto turbine_ruby_proto
-
-.PHONY: turbine_proto
-turbine_proto:
+proto: ## Generate Turbine GoLang gRPC bindings
 	docker run \
 		--rm \
 		-v $(CURDIR)/proto:/defs \
@@ -45,26 +52,12 @@ turbine_proto:
 		namely/protoc-all  \
 			-f ./turbine_v2.proto \
 			-l go --with-validator -o /out
+ruby-sdk-%:
+	make -C $(CURDIR)/lib/ruby $*
 
-.PHONY: process_ruby_proto
-process_ruby_proto:
-	docker run \
-		--rm \
-		-v $(CURDIR)/proto:/defs \
-		-v $(CURDIR)/lib/ruby/turbine_rb/lib:/out \
-		namely/protoc-all  \
-			-f ./process_v1.proto \
-			-l ruby -o /out
 
-.PHONY: turbine_ruby_proto
-turbine_ruby_proto:
-	docker run \
-		--rm \
-		-v $(CURDIR)/proto:/defs \
-		-v $(CURDIR)/lib/ruby/turbine_rb/lib:/out \
-		namely/protoc-all  \
-			-f ./turbine_v2.proto \
-			-l ruby -o /out
 
-mockgen-install:
-	go install github.com/golang/mock/mockgen@$(MOCKGEN_VERSION)
+
+
+
+
