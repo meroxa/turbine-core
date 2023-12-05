@@ -10,17 +10,18 @@ import (
 	"runtime/debug"
 	"strings"
 
-	sdk "github.com/meroxa/turbine-go/v2/pkg/turbine"
+	sdk "github.com/meroxa/turbine-go/v3/pkg/turbine"
 
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	"github.com/meroxa/turbine-core/pkg/client"
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core/v2"
+	client "github.com/meroxa/turbine-core/pkg/client/v2"
 )
 
 var _ sdk.Turbine = (*builder)(nil)
 
 type builder struct {
-	client.Client
+	c          client.Client
 	runProcess bool
+	config     *sdk.OptionConfig
 }
 
 func NewBuildClient(ctx context.Context, turbineCoreAddress, gitSha, appPath string, runProcess bool) (*builder, error) {
@@ -30,8 +31,11 @@ func NewBuildClient(ctx context.Context, turbineCoreAddress, gitSha, appPath str
 	}
 
 	b := &builder{
-		Client:     c,
+		c:          c,
 		runProcess: runProcess,
+		config: &sdk.OptionConfig{
+			PluginConfig: make(map[string]string),
+		},
 	}
 
 	appName, err := appName(appPath)
@@ -52,30 +56,72 @@ func NewBuildClient(ctx context.Context, turbineCoreAddress, gitSha, appPath str
 		TurbineVersion: version,
 	}
 
-	if _, err = b.Init(ctx, &req); err != nil {
+	if _, err = b.c.Init(ctx, &req); err != nil {
 		return nil, err
 	}
 
 	return b, nil
 }
 
-func (b *builder) Resources(name string) (sdk.Resource, error) {
-	return b.ResourcesWithContext(context.Background(), name)
+func (b *builder) Source(name, pluginName string, opts ...sdk.Option) (sdk.Source, error) {
+	return b.SourceWithContext(context.Background(), name, pluginName, opts...)
 }
 
-func (b *builder) ResourcesWithContext(ctx context.Context, name string) (sdk.Resource, error) {
-	r, err := b.GetResource(
-		ctx,
-		&pb.GetResourceRequest{
-			Name: name,
-		})
+func (b *builder) SourceWithContext(
+	ctx context.Context,
+	name string,
+	pluginName string,
+	opts ...sdk.Option,
+) (sdk.Source, error) {
+	for _, opt := range opts {
+		opt(b.config)
+	}
+
+	resp, err := b.c.AddSource(ctx, &pb.AddSourceRequest{
+		Name: name,
+		Plugin: &pb.Plugin{
+			Name:   pluginName,
+			Config: b.config.PluginConfig,
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &resource{
-		Resource: r,
-		Client:   b.Client,
+	return &source{
+		streamName: resp.StreamName,
+		c:          b.c,
+	}, nil
+}
+
+func (b *builder) Destination(name, pluginName string, opts ...sdk.Option) (sdk.Destination, error) {
+	return b.DestinationWithContext(context.Background(), name, pluginName, opts...)
+}
+
+func (b *builder) DestinationWithContext(
+	ctx context.Context,
+	name string,
+	pluginName string,
+	opts ...sdk.Option,
+) (sdk.Destination, error) {
+	for _, opt := range opts {
+		opt(b.config)
+	}
+
+	resp, err := b.c.AddDestination(ctx, &pb.AddDestinationRequest{
+		Name: name,
+		Plugin: &pb.Plugin{
+			Name:   pluginName,
+			Config: b.config.PluginConfig,
+		},
+	})
+	if err != nil {
+		return nil, err // todo wrap errors
+	}
+
+	return &destination{
+		id: resp.StreamName,
+		c:  b.c,
 	}, nil
 }
 
@@ -115,7 +161,7 @@ func turbineGoVersion(ctx context.Context) (string, error) {
 	}
 
 	for _, m := range bi.Deps {
-		if m.Path == "github.com/meroxa/turbine-go/v2" { // this path is the same, regardless of OS
+		if m.Path == "github.com/meroxa/turbine-go/v3" { // this path is the same, regardless of OS
 			return parse(m.Version), nil
 		}
 	}

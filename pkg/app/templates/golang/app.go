@@ -8,8 +8,8 @@ import (
 	"log"
 
 	// Dependencies of Turbine
-	"github.com/meroxa/turbine-go/v2/pkg/turbine"
-	"github.com/meroxa/turbine-go/v2/pkg/turbine/cmd"
+	"github.com/meroxa/turbine-go/v3/pkg/turbine"
+	"github.com/meroxa/turbine-go/v3/pkg/turbine/cmd"
 )
 
 func main() {
@@ -20,31 +20,26 @@ var _ turbine.App = (*App)(nil)
 
 type App struct{}
 
-func (a App) Run(v turbine.Turbine) error {
-	// To configure your data stores as resources on the Meroxa Platform
-	// use the Meroxa Dashboard, CLI, or Meroxa Terraform Provider.
-	// For more details refer to: https://docs.meroxa.com/
-	//
+func (a App) Run(t turbine.Turbine) error {
 	// Identify an upstream data store for your data app
-	// with the `Resources` function
-	// Replace `source_name` with the resource name the
-	// data store was configured with on Meroxa.
+	// with the `Source` function
+	// Replace `source_name` with the source name of your choice
+	// and use the desired Conduit Plugin you'd like to use.
 
-	source, err := v.Resources("source_name")
+	pg, err := t.Source("source_name", "postgres", turbine.WithPluginConfig(map[string]string{
+		"url":                     "url",
+		"key":                     "key",
+		"table":                   "records",
+		"columns":                 "key,column1,column2,column3",
+		"cdcMode":                 "logrepl",
+		"logrepl.publicationName": "meroxademo",
+		"logrepl.slotName":        "meroxademo",
+	}))
 	if err != nil {
 		return err
 	}
 
-	// Specify which upstream records to pull
-	// with the `Records` function
-	// Replace `collection_name` with a table, collection,
-	// or bucket name in your data store.
-	// If a configuration is needed for your source,
-	// you can pass it as a second argument to the `Records` function. For example:
-	//
-	// source.Records("collection_name", turbine.ConnectionOptions{turbine.ResourceConfig{Field: "incrementing.field.name", Value:"id"}})
-
-	rr, err := source.Records("collection_name", nil)
+	records, err := pg.Read()
 	if err != nil {
 		return err
 	}
@@ -53,34 +48,28 @@ func (a App) Run(v turbine.Turbine) error {
 	// with the `Process` function
 	// Replace `Anonymize` with the name of your function code.
 
-	res, err := v.Process(rr, Anonymize{})
+	processed, err := t.Process(records, Anonymize{})
 	if err != nil {
 		return err
 	}
 
 	// Identify a downstream data store for your data app
-	// with the `Resources` function
-	// Replace `destination_name` with the resource name the
-	// data store was configured with on Meroxa.
+	// with the `Destination` function
+	// Replace `destination_name` with the destination name of your choice
+	// and use the desired Conduit Plugin you'd like to use.
 
-	dest, err := v.Resources("destination_name")
+	s3, err := t.Destination("destination_name", "s3",
+		turbine.WithPluginConfig(
+			map[string]string{
+				"aws.accessKeyId":     "id",
+				"aws.secretAccessKey": "key",
+				"aws.region":          "us-east-1",
+				"aws.bucket":          "bucket_name",
+			}))
 	if err != nil {
 		return err
 	}
-
-	// Specify where to write records downstream
-	// using the `Write` function
-	// Replace `collection_archive` with a table, collection,
-	// or bucket name in your data store.
-	// If a configuration is needed, you can also use i.e.
-	//
-	// dest.WriteWithConfig(
-	//  res,
-	//  "my-archive",
-	//  turbine.ConnectionOptions{turbine.ResourceConfig{Field: "buffer.flush.time", Value: "10"}}
-	// )
-
-	err = dest.Write(res, "collection_archive")
+	err = s3.Write(processed)
 	if err != nil {
 		return err
 	}
