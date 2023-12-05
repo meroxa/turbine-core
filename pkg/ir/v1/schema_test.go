@@ -3,7 +3,7 @@ package ir_test
 import (
 	"testing"
 
-	ir "github.com/meroxa/turbine-core/pkg/ir/v1"
+	ir "github.com/meroxa/turbine-core/v2/pkg/ir/v1"
 	"github.com/stretchr/testify/require"
 )
 

@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core/v2"
-	ir "github.com/meroxa/turbine-core/pkg/ir/v2"
+	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -550,7 +550,7 @@ func exampleDeploymentSpec() *ir.DeploymentSpec {
 		Definition: ir.DefinitionSpec{
 			GitSha: "gitsh",
 			Metadata: ir.MetadataSpec{
-				SpecVersion: "0.3.0",
+				SpecVersion: "v3",
 				Turbine: ir.TurbineSpec{
 					Language: ir.GoLang,
 					Version:  "10",

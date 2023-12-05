@@ -9,10 +9,9 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	core "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	core "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
 	grpc "google.golang.org/grpc"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // MockClient is a mock of Client interface.
@@ -38,24 +37,44 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
 }
 
-// AddProcessToCollection mocks base method.
-func (m *MockClient) AddProcessToCollection(ctx context.Context, in *core.ProcessCollectionRequest, opts ...grpc.CallOption) (*core.Collection, error) {
+// AddDestination mocks base method.
+func (m *MockClient) AddDestination(ctx context.Context, in *core.AddDestinationRequest, opts ...grpc.CallOption) (*core.AddDestinationResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "AddProcessToCollection", varargs...)
-	ret0, _ := ret[0].(*core.Collection)
+	ret := m.ctrl.Call(m, "AddDestination", varargs...)
+	ret0, _ := ret[0].(*core.AddDestinationResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// AddProcessToCollection indicates an expected call of AddProcessToCollection.
-func (mr *MockClientMockRecorder) AddProcessToCollection(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+// AddDestination indicates an expected call of AddDestination.
+func (mr *MockClientMockRecorder) AddDestination(ctx, in interface{}, opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddProcessToCollection", reflect.TypeOf((*MockClient)(nil).AddProcessToCollection), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddDestination", reflect.TypeOf((*MockClient)(nil).AddDestination), varargs...)
+}
+
+// AddSource mocks base method.
+func (m *MockClient) AddSource(ctx context.Context, in *core.AddSourceRequest, opts ...grpc.CallOption) (*core.AddSourceResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "AddSource", varargs...)
+	ret0, _ := ret[0].(*core.AddSourceResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AddSource indicates an expected call of AddSource.
+func (mr *MockClientMockRecorder) AddSource(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddSource", reflect.TypeOf((*MockClient)(nil).AddSource), varargs...)
 }
 
 // Close mocks base method.
@@ -68,26 +87,6 @@ func (m *MockClient) Close() {
 func (mr *MockClientMockRecorder) Close() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockClient)(nil).Close))
-}
-
-// GetResource mocks base method.
-func (m *MockClient) GetResource(ctx context.Context, in *core.GetResourceRequest, opts ...grpc.CallOption) (*core.Resource, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetResource", varargs...)
-	ret0, _ := ret[0].(*core.Resource)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetResource indicates an expected call of GetResource.
-func (mr *MockClientMockRecorder) GetResource(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResource", reflect.TypeOf((*MockClient)(nil).GetResource), varargs...)
 }
 
 // GetSpec mocks base method.
@@ -110,26 +109,6 @@ func (mr *MockClientMockRecorder) GetSpec(ctx, in interface{}, opts ...interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSpec", reflect.TypeOf((*MockClient)(nil).GetSpec), varargs...)
 }
 
-// HasFunctions mocks base method.
-func (m *MockClient) HasFunctions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "HasFunctions", varargs...)
-	ret0, _ := ret[0].(*wrapperspb.BoolValue)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// HasFunctions indicates an expected call of HasFunctions.
-func (mr *MockClientMockRecorder) HasFunctions(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasFunctions", reflect.TypeOf((*MockClient)(nil).HasFunctions), varargs...)
-}
-
 // Init mocks base method.
 func (m *MockClient) Init(ctx context.Context, in *core.InitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	m.ctrl.T.Helper()
@@ -150,82 +129,62 @@ func (mr *MockClientMockRecorder) Init(ctx, in interface{}, opts ...interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Init", reflect.TypeOf((*MockClient)(nil).Init), varargs...)
 }
 
-// ListResources mocks base method.
-func (m *MockClient) ListResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*core.ListResourcesResponse, error) {
+// ProcessRecords mocks base method.
+func (m *MockClient) ProcessRecords(ctx context.Context, in *core.ProcessRecordsRequest, opts ...grpc.CallOption) (*core.ProcessRecordsResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "ListResources", varargs...)
-	ret0, _ := ret[0].(*core.ListResourcesResponse)
+	ret := m.ctrl.Call(m, "ProcessRecords", varargs...)
+	ret0, _ := ret[0].(*core.ProcessRecordsResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListResources indicates an expected call of ListResources.
-func (mr *MockClientMockRecorder) ListResources(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+// ProcessRecords indicates an expected call of ProcessRecords.
+func (mr *MockClientMockRecorder) ProcessRecords(ctx, in interface{}, opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResources", reflect.TypeOf((*MockClient)(nil).ListResources), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProcessRecords", reflect.TypeOf((*MockClient)(nil).ProcessRecords), varargs...)
 }
 
-// ReadCollection mocks base method.
-func (m *MockClient) ReadCollection(ctx context.Context, in *core.ReadCollectionRequest, opts ...grpc.CallOption) (*core.Collection, error) {
+// ReadRecords mocks base method.
+func (m *MockClient) ReadRecords(ctx context.Context, in *core.ReadRecordsRequest, opts ...grpc.CallOption) (*core.ReadRecordsResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "ReadCollection", varargs...)
-	ret0, _ := ret[0].(*core.Collection)
+	ret := m.ctrl.Call(m, "ReadRecords", varargs...)
+	ret0, _ := ret[0].(*core.ReadRecordsResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadCollection indicates an expected call of ReadCollection.
-func (mr *MockClientMockRecorder) ReadCollection(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+// ReadRecords indicates an expected call of ReadRecords.
+func (mr *MockClientMockRecorder) ReadRecords(ctx, in interface{}, opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadCollection", reflect.TypeOf((*MockClient)(nil).ReadCollection), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRecords", reflect.TypeOf((*MockClient)(nil).ReadRecords), varargs...)
 }
 
-// RegisterSecret mocks base method.
-func (m *MockClient) RegisterSecret(ctx context.Context, in *core.Secret, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+// WriteRecords mocks base method.
+func (m *MockClient) WriteRecords(ctx context.Context, in *core.WriteRecordsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "RegisterSecret", varargs...)
+	ret := m.ctrl.Call(m, "WriteRecords", varargs...)
 	ret0, _ := ret[0].(*emptypb.Empty)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// RegisterSecret indicates an expected call of RegisterSecret.
-func (mr *MockClientMockRecorder) RegisterSecret(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+// WriteRecords indicates an expected call of WriteRecords.
+func (mr *MockClientMockRecorder) WriteRecords(ctx, in interface{}, opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterSecret", reflect.TypeOf((*MockClient)(nil).RegisterSecret), varargs...)
-}
-
-// WriteCollectionToResource mocks base method.
-func (m *MockClient) WriteCollectionToResource(ctx context.Context, in *core.WriteCollectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "WriteCollectionToResource", varargs...)
-	ret0, _ := ret[0].(*emptypb.Empty)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// WriteCollectionToResource indicates an expected call of WriteCollectionToResource.
-func (mr *MockClientMockRecorder) WriteCollectionToResource(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteCollectionToResource", reflect.TypeOf((*MockClient)(nil).WriteCollectionToResource), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteRecords", reflect.TypeOf((*MockClient)(nil).WriteRecords), varargs...)
 }
