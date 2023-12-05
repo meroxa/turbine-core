@@ -517,7 +517,6 @@ func TestGetSpec(t *testing.T) {
 				require.NoError(t, err)
 				require.Equal(t, test.want.Connectors, got.Connectors)
 				require.Equal(t, test.want.Functions, got.Functions)
-				require.Equal(t, test.want.Secrets, got.Secrets)
 				require.Equal(t, test.want.Streams, got.Streams)
 			} else {
 				require.Error(t, err)
@@ -529,9 +528,6 @@ func TestGetSpec(t *testing.T) {
 
 func exampleDeploymentSpec() *ir.DeploymentSpec {
 	return &ir.DeploymentSpec{
-		Secrets: map[string]string{
-			"a secret": "with value",
-		},
 		Connectors: []ir.ConnectorSpec{
 			{
 				UUID:       "1",

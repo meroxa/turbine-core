@@ -52,9 +52,6 @@ func Test_DeploymentSpec(t *testing.T) {
 	}
 
 	expectedSpec := &ir.DeploymentSpec{
-		Secrets: map[string]string{
-			"key": "valuesecret",
-		},
 		Connectors: []ir.ConnectorSpec{
 			{
 				UUID:       "252bc5e1-666e-4985-a12a-42af81a5d2ab",
@@ -169,9 +166,6 @@ func Test_SetImageForFunctions(t *testing.T) {
 
 func Test_MarshalUnmarshal(t *testing.T) {
 	spec := &ir.DeploymentSpec{
-		Secrets: map[string]string{
-			"a secret": "with value",
-		},
 		Functions: []ir.FunctionSpec{
 			{
 				UUID: "3",

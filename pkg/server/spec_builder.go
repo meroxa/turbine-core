@@ -22,9 +22,7 @@ type specBuilderService struct {
 
 func NewSpecBuilderService() *specBuilderService {
 	return &specBuilderService{
-		spec: &ir.DeploymentSpec{
-			Secrets: make(map[string]string),
-		},
+		spec: &ir.DeploymentSpec{},
 	}
 }
 
