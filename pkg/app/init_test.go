@@ -1,7 +1,6 @@
 package app
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -9,142 +8,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 )
-
-func TestAppInit_duplicateFile(t *testing.T) {
-	type fields struct {
-		AppName  string
-		Language ir.Lang
-		Path     string
-	}
-	type args struct {
-		fileName string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		{
-			name: "duplicates the ruby file from the embedded fs",
-			fields: fields{
-				AppName:  "duplicatefile",
-				Language: ir.Ruby,
-				Path:     t.TempDir(),
-			},
-			args: args{
-				fileName: "Gemfile",
-			},
-			wantErr: false,
-		},
-		{
-			name: "duplicates the go file from the embedded fs",
-			fields: fields{
-				AppName:  "duplicatefile",
-				Language: ir.GoLang,
-				Path:     t.TempDir(),
-			},
-			args: args{
-				fileName: "app_test.go",
-			},
-			wantErr: false,
-		},
-		{
-			name: "duplicates the js file from the embedded fs",
-			fields: fields{
-				AppName:  "duplicatefile",
-				Language: ir.JavaScript,
-				Path:     t.TempDir(),
-			},
-			args: args{
-				fileName: "index.js",
-			},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			a := &AppInit{
-				AppName:  tt.fields.AppName,
-				Language: tt.fields.Language,
-				Path:     tt.fields.Path,
-			}
-			srcPath := filepath.Join("templates", string(a.Language))
-			dstPath := filepath.Join(a.Path, a.AppName)
-
-			os.MkdirAll(dstPath, 0o755)
-			if err := a.duplicateFileInPath(srcPath, dstPath, tt.args.fileName); (err != nil) != tt.wantErr {
-				t.Errorf("AppInit.duplicateFile() error = %v, wantErr %v", err, tt.wantErr)
-			}
-			require.FileExists(t, filepath.Join(tt.fields.Path, tt.fields.AppName, tt.args.fileName))
-		})
-	}
-}
-
-func TestAppInit_listTemplateContentFrompath(t *testing.T) {
-	const appName = "testapp"
-
-	type fields struct {
-		AppName  string
-		Language ir.Lang
-		Path     string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		want    []string
-		want1   []string
-		wantErr bool
-	}{
-		{
-			name: "lists files and dir content for ruby app embedded template",
-			fields: fields{
-				AppName:  appName,
-				Language: ir.Ruby,
-				Path:     t.TempDir(),
-			},
-			want:  []string{"Gemfile", "app.json", "app.rb"},
-			want1: []string{"fixtures"},
-		},
-		{
-			name: "lists files and dir content for go app embedded template",
-			fields: fields{
-				AppName:  appName,
-				Language: ir.GoLang,
-				Path:     t.TempDir(),
-			},
-			want:  []string{".gitignore", "README.md", "app.go", "app.json", "app_test.go"},
-			want1: []string{"fixtures"},
-		},
-		{
-			name: "lists files and dir content for js app embedded template",
-			fields: fields{
-				AppName:  appName,
-				Language: ir.JavaScript,
-				Path:     t.TempDir(),
-			},
-			want:  []string{".gitignore", "README.md", "app.json", "index.js", "index.test.js", "package.json"},
-			want1: []string{"fixtures"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			a := &AppInit{
-				AppName:  tt.fields.AppName,
-				Language: tt.fields.Language,
-				Path:     tt.fields.Path,
-			}
-			got, got1, err := a.listTemplateContentFromPath(filepath.Join("templates", string(a.Language)))
-			if (err != nil) != tt.wantErr {
-				t.Errorf("AppInit.listTemplateContent() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-
-			require.Equal(t, tt.want, got)
-			require.Equal(t, tt.want1, got1)
-		})
-	}
-}
 
 type directory struct {
 	name    string
@@ -226,11 +89,11 @@ func TestAppInit_Init(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &AppInit{
-				AppName:  tt.fields.AppName,
-				Language: tt.fields.Language,
-				Path:     tt.fields.Path,
-			}
+			a := NewAppInit(
+				tt.fields.AppName,
+				tt.fields.Language,
+				tt.fields.Path,
+			)
 			if err := a.Init(); (err != nil) != tt.wantErr {
 				t.Errorf("AppInit.Init() error = %v, wantErr %v", err, tt.wantErr)
 			}

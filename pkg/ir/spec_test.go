@@ -16,7 +16,7 @@ import (
 )
 
 func TestDeploymentSpec_BuildDAG_UnsupportedSpec(t *testing.T) {
-	jsonSpec, err := os.ReadFile(path.Join("spectest", "0.0.0", "spec.json"))
+	jsonSpec, err := os.ReadFile(path.Join("v3", "spectest", "spec_unsupported.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,11 +27,11 @@ func TestDeploymentSpec_BuildDAG_UnsupportedSpec(t *testing.T) {
 	}
 
 	_, err = spec.BuildDAG()
-	assert.ErrorContains(t, err, "spec version \"0.0.0\" is invalid, supported versions: 0.3.0")
+	assert.ErrorContains(t, err, "spec version \"0.0.0\" is invalid, supported versions: v3")
 }
 
 func TestDeploymentSpec_BuildDAG_EmptySpec(t *testing.T) {
-	jsonSpec, err := os.ReadFile(path.Join("spectest", "empty", "spec.json"))
+	jsonSpec, err := os.ReadFile(path.Join("v3", "spectest", "spec_empty_ver.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,11 +42,11 @@ func TestDeploymentSpec_BuildDAG_EmptySpec(t *testing.T) {
 	}
 
 	_, err = spec.BuildDAG()
-	assert.ErrorContains(t, err, "spec version \"\" is invalid, supported versions: 0.3.0")
+	assert.ErrorContains(t, err, "spec version \"\" is invalid, supported versions: v3")
 }
 
 func Test_DeploymentSpec(t *testing.T) {
-	jsonSpec, err := os.ReadFile(path.Join("spectest", "0.3.0", "spec.json"))
+	jsonSpec, err := os.ReadFile(path.Join("v3", "spectest", "spec.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -120,14 +120,13 @@ func Test_ValidateVersion(t *testing.T) {
 	}{
 		{
 			name:         "using valid spec version",
-			specVersions: []string{"0.3.0"},
+			specVersions: []string{"v3"},
 			wantError:    nil,
 		},
-		{},
 		{
 			name:         "using invalid spec version",
 			specVersions: []string{"0.0.0"},
-			wantError:    fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: 0.3.0"),
+			wantError:    fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: v3"),
 		},
 	}
 

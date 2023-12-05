@@ -13,28 +13,28 @@ import (
 )
 
 type AppInit struct {
-	AppName      string
-	AppPath      string
-	TemplatePath string
+	appName      string
+	appPath      string
+	templatePath string
 }
 
 //go:embed all:templates
 var templateFS embed.FS
 
-func NewAppInit(appName string, language ir.Lang, path string) *AppInit {
+func NewAppInit(appName string, lang ir.Lang, path string) *AppInit {
 	var templateDir string
 
-	switch a.Language {
-	case ir.Golang:
-		templateDir = filepath.Join("templates", _+string(a.Language))
+	switch lang {
+	case ir.GoLang:
+		templateDir = filepath.Join("templates", "_"+string(lang))
 	default:
-		templateDir = filepath.Join("templates", string(a.Language))
+		templateDir = filepath.Join("templates", string(lang))
 	}
 
 	return &AppInit{
-		AppName:      appName,
-		AppPath:      filepath.Join(a.Path, a.AppName),
-		TemplatePath: templateDir,
+		appName:      appName,
+		appPath:      filepath.Join(path, appName),
+		templatePath: templateDir,
 	}
 }
 
@@ -47,7 +47,7 @@ func (a *AppInit) applytemplate(srcDir, destDir, fileName string) error {
 	appTrait := struct {
 		AppName string
 	}{
-		AppName: a.AppName,
+		AppName: a.appName,
 	}
 
 	f, err := os.Create(filepath.Join(destDir, fileName))
@@ -152,5 +152,5 @@ func (a *AppInit) duplicateDirectory(srcDir, destDir string) error {
 // Init will be used from the CLI to generate a new application directory based on the existing
 // content on `/templates`.
 func (a *AppInit) Init() error {
-	return a.duplicateDirectory(a.TemplateDir, a.AppPath)
+	return a.duplicateDirectory(a.templatePath, a.appPath)
 }
