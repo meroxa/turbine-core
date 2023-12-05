@@ -8,11 +8,9 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 func TestDeploymentSpec_BuildDAG_UnsupportedSpec(t *testing.T) {

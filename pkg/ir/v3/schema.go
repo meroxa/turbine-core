@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"github.com/meroxa/turbine-core/v2/pkg/ir"
-
 	"github.com/santhosh-tekuri/jsonschema/v5"
 )
 
