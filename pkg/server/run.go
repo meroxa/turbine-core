@@ -110,7 +110,7 @@ func (s *runService) ProcessRecords(ctx context.Context, req *pb.ProcessRecordsR
 	return &pb.ProcessRecordsResponse{
 		StreamRecords: &pb.StreamRecords{
 			StreamName: req.StreamRecords.StreamName,
-			// Records will come from the processing function in the SDK and not the gRPC server
+			Records:    req.StreamRecords.Records,
 		},
 	}, nil
 }
