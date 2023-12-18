@@ -165,7 +165,7 @@ func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) 
 		return nil, err
 	}
 
-	if err := s.spec.SetImageForFunctions(req.Image); err != nil {
+	if err := s.spec.SetSourceForFunctions("k8s", req.Image); err != nil {
 		return nil, err
 	}
 

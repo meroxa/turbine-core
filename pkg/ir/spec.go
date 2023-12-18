@@ -63,9 +63,13 @@ type ConnectorSpec struct {
 }
 
 type FunctionSpec struct {
-	UUID  string `json:"uuid"`
-	Name  string `json:"name"`
-	Image string `json:"image"`
+	UUID       string            `json:"uuid"`
+	Name       string            `json:"name"`
+	Type       string            `json:"type"`
+	Source     string            `json:"source"`
+	Replicas   string            `json:"replicas"`
+	APIVersion string            `json:"api_version"`
+	EnvVars    map[string]string `json:"env_vars,omitempty"`
 }
 
 type DefinitionSpec struct {
@@ -97,16 +101,19 @@ func ValidateSpecVersion(ver string) error {
 	)
 }
 
-func (d *DeploymentSpec) SetImageForFunctions(image string) error {
+func (d *DeploymentSpec) SetSourceForFunctions(ftype, source string) error {
 	switch {
-	case image == "" && len(d.Functions) > 0:
-		return fmt.Errorf("empty image for functions")
-	case image != "" && len(d.Functions) == 0:
+	case ftype == "":
+		return fmt.Errorf("empty function type ")
+	case source == "" && len(d.Functions) > 0:
+		return fmt.Errorf("empty function source")
+	case source != "" && len(d.Functions) == 0:
 		return fmt.Errorf("cannot set image without defined functions")
 	}
 
 	for i := range d.Functions {
-		d.Functions[i].Image = image
+		d.Functions[i].Type = ftype
+		d.Functions[i].Source = source
 	}
 	return nil
 }

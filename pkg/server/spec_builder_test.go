@@ -520,9 +520,10 @@ func TestGetSpec(t *testing.T) {
 			populateService: func(s *specBuilderService) *specBuilderService {
 				s.spec = exampleDeploymentSpec()
 				s.spec.Functions = append(s.spec.Functions, ir.FunctionSpec{
-					UUID:  "2",
-					Name:  "function",
-					Image: "some/image",
+					UUID:   "2",
+					Name:   "function",
+					Type:   "k8s",
+					Source: "some/image",
 				})
 				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "1_2",
@@ -545,9 +546,10 @@ func TestGetSpec(t *testing.T) {
 				s := exampleDeploymentSpec()
 				s.AddFunction(
 					&ir.FunctionSpec{
-						UUID:  "2",
-						Name:  "function",
-						Image: "some/image",
+						UUID:   "2",
+						Name:   "function",
+						Type:   "k8s",
+						Source: "some/image",
 					},
 				)
 				s.Streams = append(s.Streams, ir.StreamSpec{
@@ -572,9 +574,10 @@ func TestGetSpec(t *testing.T) {
 			populateService: func(s *specBuilderService) *specBuilderService {
 				s.spec = exampleDeploymentSpec()
 				s.spec.Functions = append(s.spec.Functions, ir.FunctionSpec{
-					UUID:  "2",
-					Name:  "function",
-					Image: "some/image",
+					UUID:   "2",
+					Name:   "function",
+					Type:   "k8s",
+					Source: "some/image",
 				})
 				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "1_2",
@@ -597,9 +600,10 @@ func TestGetSpec(t *testing.T) {
 				s := exampleDeploymentSpec()
 				s.AddFunction(
 					&ir.FunctionSpec{
-						UUID:  "2",
-						Name:  "function",
-						Image: "some/image",
+						UUID:   "2",
+						Name:   "function",
+						Type:   "k8s",
+						Source: "some/image",
 					},
 				)
 

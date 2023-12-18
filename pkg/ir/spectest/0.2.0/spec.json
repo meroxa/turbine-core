@@ -23,7 +23,8 @@
         {
             "uuid": "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
             "name": "user_activity_enriched",
-            "image": "ftorres/enrich:9",
+            "type": "k8s",
+            "source": "ftorres/enrich:9",
             "env_vars": {
                 "CLEARBIT_API_KEY": "token-1"
             }

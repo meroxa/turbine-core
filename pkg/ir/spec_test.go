@@ -143,9 +143,13 @@ func Test_DeploymentSpec(t *testing.T) {
 		},
 		Functions: []ir.FunctionSpec{
 			{
-				UUID:  "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
-				Name:  "user_activity_enriched",
-				Image: "ftorres/enrich:9",
+				UUID:   "2ff03fff-6f3e-4f7d-aef8-59c9670bb75d",
+				Name:   "user_activity_enriched",
+				Type:   "k8s",
+				Source: "ftorres/enrich:9",
+				EnvVars: map[string]string{
+					"CLEARBIT_API_KEY": "token-1",
+				},
 			},
 		},
 		Definition: ir.DefinitionSpec{
@@ -216,7 +220,8 @@ func Test_ValidateVersion(t *testing.T) {
 }
 
 func Test_SetImageForFunctions(t *testing.T) {
-	image := "some/image"
+	functionType := "k8s"
+	source := "some/image"
 	spec := &ir.DeploymentSpec{
 		Functions: []ir.FunctionSpec{
 			{
@@ -227,10 +232,11 @@ func Test_SetImageForFunctions(t *testing.T) {
 			},
 		},
 	}
-	spec.SetImageForFunctions(image)
+	spec.SetSourceForFunctions(functionType, source)
 
 	for _, f := range spec.Functions {
-		require.Equal(t, f.Image, image)
+		require.Equal(t, f.Type, functionType)
+		require.Equal(t, f.Source, source)
 	}
 }
 
@@ -1193,9 +1199,10 @@ func Test_Scenario10(t *testing.T) {
 
 	err = spec.AddFunction(
 		&ir.FunctionSpec{
-			UUID:  "2",
-			Name:  "function",
-			Image: "test",
+			UUID:   "2",
+			Name:   "function",
+			Type:   "k8s",
+			Source: "test",
 		},
 	)
 
@@ -1214,9 +1221,10 @@ func Test_Scenario10(t *testing.T) {
 
 	err = spec.AddFunction(
 		&ir.FunctionSpec{
-			UUID:  "3",
-			Name:  "function2",
-			Image: "test",
+			UUID:   "3",
+			Name:   "function2",
+			Type:   "k8s",
+			Source: "test",
 		},
 	)
 
