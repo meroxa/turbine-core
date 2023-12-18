@@ -25,15 +25,15 @@ const (
 	ConnectorSource      ConnectorType = "source"
 	ConnectorDestination ConnectorType = "destination"
 
-	SpecVersion_V1 = "0.1.1"
-	SpecVersion_V2 = "0.2.0"
+	SpecVersion_0_1_1 = "0.1.1"
+	SpecVersion_0_2_0 = "0.2.0"
 
-	LatestSpecVersion = SpecVersion_V2
+	LatestSpecVersion = SpecVersion_0_2_0
 )
 
 var specVersions = []string{
-	SpecVersion_V1,
-	SpecVersion_V2,
+	SpecVersion_0_1_1,
+	SpecVersion_0_2_0,
 }
 
 type DeploymentSpec struct {
@@ -241,11 +241,11 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 		return fmt.Errorf("cannot upgrade to the latest version. spec version is not specified")
 	}
 
-	if d.getSpecVersion() != SpecVersion_V1 || LatestSpecVersion != SpecVersion_V2 {
+	if d.getSpecVersion() != SpecVersion_0_1_1 || LatestSpecVersion != SpecVersion_0_2_0 {
 		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
 	}
 
-	if d.getSpecVersion() != SpecVersion_V1 || LatestSpecVersion != SpecVersion_V2 {
+	if d.getSpecVersion() != SpecVersion_0_1_1 || LatestSpecVersion != SpecVersion_0_2_0 {
 		return fmt.Errorf("unsupported upgrade from spec version %q to %q", d.getSpecVersion(), LatestSpecVersion)
 	}
 
@@ -267,12 +267,12 @@ func (d *DeploymentSpec) upgradeToLatestSpecVersion() error {
 	}
 
 	// validate supported DAG in 0.1.1
-	if d.getSpecVersion() == SpecVersion_V1 {
+	if d.getSpecVersion() == SpecVersion_0_1_1 {
 		switch {
 		case len(d.Functions) > 1:
-			return fmt.Errorf("unsupported number of functions in spec version %q", SpecVersion_V1)
+			return fmt.Errorf("unsupported number of functions in spec version %q", SpecVersion_0_1_1)
 		case len(sources) > 1:
-			return fmt.Errorf("unsupported number of sources in spec version %q", SpecVersion_V1)
+			return fmt.Errorf("unsupported number of sources in spec version %q", SpecVersion_0_1_1)
 		}
 	}
 
