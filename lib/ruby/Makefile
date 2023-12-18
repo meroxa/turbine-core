@@ -22,7 +22,7 @@ process_proto: ## Generate function gRPC bindings
 		-v $(PROTO):/defs \
 		-v $(CURDIR)/turbine_rb/lib:/out \
 		namely/protoc-all  \
-			-f ./process_v1.proto \
+			-f ./process_v0.proto \
 			-l ruby -o /out
 
 .PHONY: turbine_proto
@@ -32,6 +32,6 @@ turbine_proto: ## Generate turbine gRPC bindings
 		-v $(PROTO):/defs \
 		-v $(CURDIR)/turbine_rb/lib:/out \
 		namely/protoc-all  \
-			-f ./turbine_v2.proto \
+			-f ./turbine_v1.proto \
 			-l ruby -o /out
 

@@ -1,16 +1,16 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema#",
-    "$id": "https://api.meroxa.io/spec/v2/turbine.ir.schema.json",
+    "$schema": "https://json-schema.org/draft/2019-09/schema#",
+    "$id": "https://api.meroxa.io/spec/turbine.ir.schema.json",
     "title": "Turbine intermediate representation schema",
     "type": "object",
     "properties": {
         "connectors": {
             "type": "array",
-            "prefixItems": [
+            "items": [
                 {
                     "type": "object",
                     "properties": {
-                        "name": {
+                        "collection": {
                             "type": "string",
                             "minLength": 1
                         },
@@ -19,25 +19,25 @@
                             "minLength": 0,
                             "maxLength": 36
                         },
-                        "plugin_type": {
+                        "type": {
                             "type": "string",
                             "enum": [
                                 "source",
                                 "destination"
                             ]
                         },
-                        "plugin_name": {
+                        "resource": {
                             "type": "string",
                             "minLength": 1
                         },
-                        "plugin_config": {
+                        "config": {
                             "type": "object"
                         }
                     },
                     "required": [
-                        "name",
-                        "plugin_type",
-                        "plugin_name"
+                        "collection",
+                        "type",
+                        "resource"
                     ]
                 }
             ],
@@ -46,7 +46,7 @@
         },
         "functions": {
             "type": "array",
-            "prefixItems": [
+            "items": [
                 {
                     "type": "object",
                     "properties": {
@@ -76,7 +76,7 @@
         },
         "streams": {
             "type": "array",
-            "prefixItems": [
+            "items": [
                 {
                     "type": "object",
                     "properties": {

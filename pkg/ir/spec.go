@@ -23,12 +23,12 @@ const (
 	PluginSource      DirectionType = "source"
 	PluginDestination DirectionType = "destination"
 
-	SpecVersion_v3    = "v3"
-	LatestSpecVersion = SpecVersion_v3
+	SpecVersion_v1    = "v1"
+	LatestSpecVersion = SpecVersion_v1
 )
 
 var specVersions = []string{
-	SpecVersion_v3,
+	SpecVersion_v1,
 }
 
 type DeploymentSpec struct {

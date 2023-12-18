@@ -550,7 +550,7 @@ func exampleDeploymentSpec() *ir.DeploymentSpec {
 		Definition: ir.DefinitionSpec{
 			GitSha: "gitsh",
 			Metadata: ir.MetadataSpec{
-				SpecVersion: "v3",
+				SpecVersion: "v1",
 				Turbine: ir.TurbineSpec{
 					Language: ir.GoLang,
 					Version:  "10",

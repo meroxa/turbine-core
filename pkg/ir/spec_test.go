@@ -14,7 +14,7 @@ import (
 )
 
 func TestDeploymentSpec_BuildDAG_UnsupportedSpec(t *testing.T) {
-	jsonSpec, err := os.ReadFile(path.Join("v3", "spectest", "spec_unsupported.json"))
+	jsonSpec, err := os.ReadFile(path.Join("v1", "spectest", "spec_unsupported.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,11 +25,11 @@ func TestDeploymentSpec_BuildDAG_UnsupportedSpec(t *testing.T) {
 	}
 
 	_, err = spec.BuildDAG()
-	assert.ErrorContains(t, err, "spec version \"0.0.0\" is invalid, supported versions: v3")
+	assert.ErrorContains(t, err, "spec version \"0.0.0\" is invalid, supported versions: v1")
 }
 
 func TestDeploymentSpec_BuildDAG_EmptySpec(t *testing.T) {
-	jsonSpec, err := os.ReadFile(path.Join("v3", "spectest", "spec_empty_ver.json"))
+	jsonSpec, err := os.ReadFile(path.Join("v1", "spectest", "spec_empty_ver.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,11 +40,11 @@ func TestDeploymentSpec_BuildDAG_EmptySpec(t *testing.T) {
 	}
 
 	_, err = spec.BuildDAG()
-	assert.ErrorContains(t, err, "spec version \"\" is invalid, supported versions: v3")
+	assert.ErrorContains(t, err, "spec version \"\" is invalid, supported versions: v1")
 }
 
 func Test_DeploymentSpec(t *testing.T) {
-	jsonSpec, err := os.ReadFile(path.Join("v3", "spectest", "spec.json"))
+	jsonSpec, err := os.ReadFile(path.Join("v1", "spectest", "spec.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,7 +83,7 @@ func Test_DeploymentSpec(t *testing.T) {
 					Language: ir.GoLang,
 					Version:  "0.1.0",
 				},
-				SpecVersion: "v3",
+				SpecVersion: "v1",
 			},
 		},
 		Streams: []ir.StreamSpec{
@@ -118,13 +118,13 @@ func Test_ValidateVersion(t *testing.T) {
 	}{
 		{
 			name:         "using valid spec version",
-			specVersions: []string{"v3"},
+			specVersions: []string{"v1"},
 			wantError:    nil,
 		},
 		{
 			name:         "using invalid spec version",
 			specVersions: []string{"0.0.0"},
-			wantError:    fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: v3"),
+			wantError:    fmt.Errorf("spec version \"0.0.0\" is invalid, supported versions: v1"),
 		},
 	}
 
@@ -205,7 +205,7 @@ func Test_MarshalUnmarshal(t *testing.T) {
 		Definition: ir.DefinitionSpec{
 			GitSha: "gitsh",
 			Metadata: ir.MetadataSpec{
-				SpecVersion: "v3",
+				SpecVersion: "v1",
 				Turbine: ir.TurbineSpec{
 					Language: ir.GoLang,
 					Version:  "10",
@@ -344,7 +344,7 @@ func Test_WrongDestinationConnector(t *testing.T) {
 // ( src_con ) → (stream) → (function) → (stream) → (dest1)
 func Test_Scenario1(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v3
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v1
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -415,7 +415,7 @@ func Test_Scenario1(t *testing.T) {
 //	    (stream) → (dest2)
 func Test_DAGScenario2(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v3
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v1
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -915,7 +915,7 @@ func Test_DAGScenario6(t *testing.T) {
 //	(stream) → (dest2)
 func Test_DAGScenario7(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v3
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v1
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1008,7 +1008,7 @@ func Test_DAGScenario7(t *testing.T) {
 // ( src_con ) → (stream) → (func)
 func Test_Scenario8(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v3
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v1
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1050,7 +1050,7 @@ func Test_Scenario8(t *testing.T) {
 // ( src_con ) → (stream) → (destination)
 func Test_Scenario9(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v3
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v1
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1189,7 +1189,7 @@ func Test_ValidateDAG(t *testing.T) {
 			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					Metadata: ir.MetadataSpec{
-						SpecVersion: ir.SpecVersion_v3,
+						SpecVersion: ir.SpecVersion_v1,
 					},
 				},
 			},
@@ -1200,7 +1200,7 @@ func Test_ValidateDAG(t *testing.T) {
 			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					Metadata: ir.MetadataSpec{
-						SpecVersion: ir.SpecVersion_v3,
+						SpecVersion: ir.SpecVersion_v1,
 					},
 				},
 				Connectors: []ir.ConnectorSpec{
@@ -1221,7 +1221,7 @@ func Test_ValidateDAG(t *testing.T) {
 			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					Metadata: ir.MetadataSpec{
-						SpecVersion: ir.SpecVersion_v3,
+						SpecVersion: ir.SpecVersion_v1,
 					},
 				},
 				Connectors: []ir.ConnectorSpec{

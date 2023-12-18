@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v3.21.6
-// source: turbine_v2.proto
+// source: turbine_v1.proto
 
 package core
 
@@ -59,11 +59,11 @@ func (x Language) String() string {
 }
 
 func (Language) Descriptor() protoreflect.EnumDescriptor {
-	return file_turbine_v2_proto_enumTypes[0].Descriptor()
+	return file_turbine_v1_proto_enumTypes[0].Descriptor()
 }
 
 func (Language) Type() protoreflect.EnumType {
-	return &file_turbine_v2_proto_enumTypes[0]
+	return &file_turbine_v1_proto_enumTypes[0]
 }
 
 func (x Language) Number() protoreflect.EnumNumber {
@@ -72,7 +72,7 @@ func (x Language) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Language.Descriptor instead.
 func (Language) EnumDescriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{0}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{0}
 }
 
 type InitRequest struct {
@@ -90,7 +90,7 @@ type InitRequest struct {
 func (x *InitRequest) Reset() {
 	*x = InitRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[0]
+		mi := &file_turbine_v1_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -103,7 +103,7 @@ func (x *InitRequest) String() string {
 func (*InitRequest) ProtoMessage() {}
 
 func (x *InitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[0]
+	mi := &file_turbine_v1_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -116,7 +116,7 @@ func (x *InitRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InitRequest.ProtoReflect.Descriptor instead.
 func (*InitRequest) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{0}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *InitRequest) GetAppName() string {
@@ -166,7 +166,7 @@ type AddSourceRequest struct {
 func (x *AddSourceRequest) Reset() {
 	*x = AddSourceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[1]
+		mi := &file_turbine_v1_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -179,7 +179,7 @@ func (x *AddSourceRequest) String() string {
 func (*AddSourceRequest) ProtoMessage() {}
 
 func (x *AddSourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[1]
+	mi := &file_turbine_v1_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -192,7 +192,7 @@ func (x *AddSourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddSourceRequest.ProtoReflect.Descriptor instead.
 func (*AddSourceRequest) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{1}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *AddSourceRequest) GetName() string {
@@ -220,7 +220,7 @@ type AddSourceResponse struct {
 func (x *AddSourceResponse) Reset() {
 	*x = AddSourceResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[2]
+		mi := &file_turbine_v1_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -233,7 +233,7 @@ func (x *AddSourceResponse) String() string {
 func (*AddSourceResponse) ProtoMessage() {}
 
 func (x *AddSourceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[2]
+	mi := &file_turbine_v1_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -246,7 +246,7 @@ func (x *AddSourceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddSourceResponse.ProtoReflect.Descriptor instead.
 func (*AddSourceResponse) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{2}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *AddSourceResponse) GetStreamName() string {
@@ -267,7 +267,7 @@ type ReadRecordsRequest struct {
 func (x *ReadRecordsRequest) Reset() {
 	*x = ReadRecordsRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[3]
+		mi := &file_turbine_v1_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -280,7 +280,7 @@ func (x *ReadRecordsRequest) String() string {
 func (*ReadRecordsRequest) ProtoMessage() {}
 
 func (x *ReadRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[3]
+	mi := &file_turbine_v1_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -293,7 +293,7 @@ func (x *ReadRecordsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadRecordsRequest.ProtoReflect.Descriptor instead.
 func (*ReadRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{3}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ReadRecordsRequest) GetSourceStream() string {
@@ -314,7 +314,7 @@ type ReadRecordsResponse struct {
 func (x *ReadRecordsResponse) Reset() {
 	*x = ReadRecordsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[4]
+		mi := &file_turbine_v1_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -327,7 +327,7 @@ func (x *ReadRecordsResponse) String() string {
 func (*ReadRecordsResponse) ProtoMessage() {}
 
 func (x *ReadRecordsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[4]
+	mi := &file_turbine_v1_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -340,7 +340,7 @@ func (x *ReadRecordsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadRecordsResponse.ProtoReflect.Descriptor instead.
 func (*ReadRecordsResponse) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{4}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ReadRecordsResponse) GetStreamRecords() *StreamRecords {
@@ -362,7 +362,7 @@ type ProcessRecordsRequest struct {
 func (x *ProcessRecordsRequest) Reset() {
 	*x = ProcessRecordsRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[5]
+		mi := &file_turbine_v1_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -375,7 +375,7 @@ func (x *ProcessRecordsRequest) String() string {
 func (*ProcessRecordsRequest) ProtoMessage() {}
 
 func (x *ProcessRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[5]
+	mi := &file_turbine_v1_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -388,7 +388,7 @@ func (x *ProcessRecordsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProcessRecordsRequest.ProtoReflect.Descriptor instead.
 func (*ProcessRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{5}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ProcessRecordsRequest) GetProcess() *ProcessRecordsRequest_Process {
@@ -416,7 +416,7 @@ type ProcessRecordsResponse struct {
 func (x *ProcessRecordsResponse) Reset() {
 	*x = ProcessRecordsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[6]
+		mi := &file_turbine_v1_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -429,7 +429,7 @@ func (x *ProcessRecordsResponse) String() string {
 func (*ProcessRecordsResponse) ProtoMessage() {}
 
 func (x *ProcessRecordsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[6]
+	mi := &file_turbine_v1_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -442,7 +442,7 @@ func (x *ProcessRecordsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProcessRecordsResponse.ProtoReflect.Descriptor instead.
 func (*ProcessRecordsResponse) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{6}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ProcessRecordsResponse) GetStreamRecords() *StreamRecords {
@@ -464,7 +464,7 @@ type AddDestinationRequest struct {
 func (x *AddDestinationRequest) Reset() {
 	*x = AddDestinationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[7]
+		mi := &file_turbine_v1_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -477,7 +477,7 @@ func (x *AddDestinationRequest) String() string {
 func (*AddDestinationRequest) ProtoMessage() {}
 
 func (x *AddDestinationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[7]
+	mi := &file_turbine_v1_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -490,7 +490,7 @@ func (x *AddDestinationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDestinationRequest.ProtoReflect.Descriptor instead.
 func (*AddDestinationRequest) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{7}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *AddDestinationRequest) GetName() string {
@@ -518,7 +518,7 @@ type AddDestinationResponse struct {
 func (x *AddDestinationResponse) Reset() {
 	*x = AddDestinationResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[8]
+		mi := &file_turbine_v1_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -531,7 +531,7 @@ func (x *AddDestinationResponse) String() string {
 func (*AddDestinationResponse) ProtoMessage() {}
 
 func (x *AddDestinationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[8]
+	mi := &file_turbine_v1_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -544,7 +544,7 @@ func (x *AddDestinationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDestinationResponse.ProtoReflect.Descriptor instead.
 func (*AddDestinationResponse) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{8}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *AddDestinationResponse) GetStreamName() string {
@@ -566,7 +566,7 @@ type WriteRecordsRequest struct {
 func (x *WriteRecordsRequest) Reset() {
 	*x = WriteRecordsRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[9]
+		mi := &file_turbine_v1_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -579,7 +579,7 @@ func (x *WriteRecordsRequest) String() string {
 func (*WriteRecordsRequest) ProtoMessage() {}
 
 func (x *WriteRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[9]
+	mi := &file_turbine_v1_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -592,7 +592,7 @@ func (x *WriteRecordsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WriteRecordsRequest.ProtoReflect.Descriptor instead.
 func (*WriteRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{9}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *WriteRecordsRequest) GetDestinationID() string {
@@ -620,7 +620,7 @@ type GetSpecRequest struct {
 func (x *GetSpecRequest) Reset() {
 	*x = GetSpecRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[10]
+		mi := &file_turbine_v1_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -633,7 +633,7 @@ func (x *GetSpecRequest) String() string {
 func (*GetSpecRequest) ProtoMessage() {}
 
 func (x *GetSpecRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[10]
+	mi := &file_turbine_v1_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -646,7 +646,7 @@ func (x *GetSpecRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSpecRequest.ProtoReflect.Descriptor instead.
 func (*GetSpecRequest) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{10}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetSpecRequest) GetImage() string {
@@ -667,7 +667,7 @@ type GetSpecResponse struct {
 func (x *GetSpecResponse) Reset() {
 	*x = GetSpecResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[11]
+		mi := &file_turbine_v1_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -680,7 +680,7 @@ func (x *GetSpecResponse) String() string {
 func (*GetSpecResponse) ProtoMessage() {}
 
 func (x *GetSpecResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[11]
+	mi := &file_turbine_v1_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -693,7 +693,7 @@ func (x *GetSpecResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSpecResponse.ProtoReflect.Descriptor instead.
 func (*GetSpecResponse) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{11}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetSpecResponse) GetSpec() []byte {
@@ -716,7 +716,7 @@ type StreamRecords struct {
 func (x *StreamRecords) Reset() {
 	*x = StreamRecords{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[12]
+		mi := &file_turbine_v1_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -729,7 +729,7 @@ func (x *StreamRecords) String() string {
 func (*StreamRecords) ProtoMessage() {}
 
 func (x *StreamRecords) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[12]
+	mi := &file_turbine_v1_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -742,7 +742,7 @@ func (x *StreamRecords) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamRecords.ProtoReflect.Descriptor instead.
 func (*StreamRecords) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{12}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *StreamRecords) GetStreamName() string {
@@ -772,7 +772,7 @@ type Record struct {
 func (x *Record) Reset() {
 	*x = Record{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[13]
+		mi := &file_turbine_v1_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -785,7 +785,7 @@ func (x *Record) String() string {
 func (*Record) ProtoMessage() {}
 
 func (x *Record) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[13]
+	mi := &file_turbine_v1_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -798,7 +798,7 @@ func (x *Record) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Record.ProtoReflect.Descriptor instead.
 func (*Record) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{13}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *Record) GetKey() string {
@@ -834,7 +834,7 @@ type Plugin struct {
 func (x *Plugin) Reset() {
 	*x = Plugin{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[14]
+		mi := &file_turbine_v1_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -847,7 +847,7 @@ func (x *Plugin) String() string {
 func (*Plugin) ProtoMessage() {}
 
 func (x *Plugin) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[14]
+	mi := &file_turbine_v1_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -860,7 +860,7 @@ func (x *Plugin) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Plugin.ProtoReflect.Descriptor instead.
 func (*Plugin) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{14}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *Plugin) GetName() string {
@@ -888,7 +888,7 @@ type ProcessRecordsRequest_Process struct {
 func (x *ProcessRecordsRequest_Process) Reset() {
 	*x = ProcessRecordsRequest_Process{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_turbine_v2_proto_msgTypes[15]
+		mi := &file_turbine_v1_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -901,7 +901,7 @@ func (x *ProcessRecordsRequest_Process) String() string {
 func (*ProcessRecordsRequest_Process) ProtoMessage() {}
 
 func (x *ProcessRecordsRequest_Process) ProtoReflect() protoreflect.Message {
-	mi := &file_turbine_v2_proto_msgTypes[15]
+	mi := &file_turbine_v1_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -914,7 +914,7 @@ func (x *ProcessRecordsRequest_Process) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProcessRecordsRequest_Process.ProtoReflect.Descriptor instead.
 func (*ProcessRecordsRequest_Process) Descriptor() ([]byte, []int) {
-	return file_turbine_v2_proto_rawDescGZIP(), []int{5, 0}
+	return file_turbine_v1_proto_rawDescGZIP(), []int{5, 0}
 }
 
 func (x *ProcessRecordsRequest_Process) GetName() string {
@@ -924,10 +924,10 @@ func (x *ProcessRecordsRequest_Process) GetName() string {
 	return ""
 }
 
-var File_turbine_v2_proto protoreflect.FileDescriptor
+var File_turbine_v1_proto protoreflect.FileDescriptor
 
-var file_turbine_v2_proto_rawDesc = []byte{
-	0x0a, 0x10, 0x74, 0x75, 0x72, 0x62, 0x69, 0x6e, 0x65, 0x5f, 0x76, 0x32, 0x2e, 0x70, 0x72, 0x6f,
+var file_turbine_v1_proto_rawDesc = []byte{
+	0x0a, 0x10, 0x74, 0x75, 0x72, 0x62, 0x69, 0x6e, 0x65, 0x5f, 0x76, 0x31, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x12, 0x0f, 0x74, 0x75, 0x72, 0x62, 0x69, 0x6e, 0x65, 0x5f, 0x63, 0x6f, 0x72, 0x65,
 	0x5f, 0x76, 0x32, 0x1a, 0x1b, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x62, 0x75, 0x66, 0x2f, 0x65, 0x6d, 0x70, 0x74, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
@@ -1088,20 +1088,20 @@ var file_turbine_v2_proto_rawDesc = []byte{
 }
 
 var (
-	file_turbine_v2_proto_rawDescOnce sync.Once
-	file_turbine_v2_proto_rawDescData = file_turbine_v2_proto_rawDesc
+	file_turbine_v1_proto_rawDescOnce sync.Once
+	file_turbine_v1_proto_rawDescData = file_turbine_v1_proto_rawDesc
 )
 
-func file_turbine_v2_proto_rawDescGZIP() []byte {
-	file_turbine_v2_proto_rawDescOnce.Do(func() {
-		file_turbine_v2_proto_rawDescData = protoimpl.X.CompressGZIP(file_turbine_v2_proto_rawDescData)
+func file_turbine_v1_proto_rawDescGZIP() []byte {
+	file_turbine_v1_proto_rawDescOnce.Do(func() {
+		file_turbine_v1_proto_rawDescData = protoimpl.X.CompressGZIP(file_turbine_v1_proto_rawDescData)
 	})
-	return file_turbine_v2_proto_rawDescData
+	return file_turbine_v1_proto_rawDescData
 }
 
-var file_turbine_v2_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_turbine_v2_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
-var file_turbine_v2_proto_goTypes = []interface{}{
+var file_turbine_v1_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_turbine_v1_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_turbine_v1_proto_goTypes = []interface{}{
 	(Language)(0),                         // 0: turbine_core_v2.Language
 	(*InitRequest)(nil),                   // 1: turbine_core_v2.InitRequest
 	(*AddSourceRequest)(nil),              // 2: turbine_core_v2.AddSourceRequest
@@ -1123,7 +1123,7 @@ var file_turbine_v2_proto_goTypes = []interface{}{
 	(*timestamppb.Timestamp)(nil),         // 18: google.protobuf.Timestamp
 	(*emptypb.Empty)(nil),                 // 19: google.protobuf.Empty
 }
-var file_turbine_v2_proto_depIdxs = []int32{
+var file_turbine_v1_proto_depIdxs = []int32{
 	0,  // 0: turbine_core_v2.InitRequest.language:type_name -> turbine_core_v2.Language
 	15, // 1: turbine_core_v2.AddSourceRequest.plugin:type_name -> turbine_core_v2.Plugin
 	13, // 2: turbine_core_v2.ReadRecordsResponse.streamRecords:type_name -> turbine_core_v2.StreamRecords
@@ -1156,13 +1156,13 @@ var file_turbine_v2_proto_depIdxs = []int32{
 	0,  // [0:11] is the sub-list for field type_name
 }
 
-func init() { file_turbine_v2_proto_init() }
-func file_turbine_v2_proto_init() {
-	if File_turbine_v2_proto != nil {
+func init() { file_turbine_v1_proto_init() }
+func file_turbine_v1_proto_init() {
+	if File_turbine_v1_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_turbine_v2_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*InitRequest); i {
 			case 0:
 				return &v.state
@@ -1174,7 +1174,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AddSourceRequest); i {
 			case 0:
 				return &v.state
@@ -1186,7 +1186,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AddSourceResponse); i {
 			case 0:
 				return &v.state
@@ -1198,7 +1198,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ReadRecordsRequest); i {
 			case 0:
 				return &v.state
@@ -1210,7 +1210,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ReadRecordsResponse); i {
 			case 0:
 				return &v.state
@@ -1222,7 +1222,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ProcessRecordsRequest); i {
 			case 0:
 				return &v.state
@@ -1234,7 +1234,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ProcessRecordsResponse); i {
 			case 0:
 				return &v.state
@@ -1246,7 +1246,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AddDestinationRequest); i {
 			case 0:
 				return &v.state
@@ -1258,7 +1258,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AddDestinationResponse); i {
 			case 0:
 				return &v.state
@@ -1270,7 +1270,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*WriteRecordsRequest); i {
 			case 0:
 				return &v.state
@@ -1282,7 +1282,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetSpecRequest); i {
 			case 0:
 				return &v.state
@@ -1294,7 +1294,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetSpecResponse); i {
 			case 0:
 				return &v.state
@@ -1306,7 +1306,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*StreamRecords); i {
 			case 0:
 				return &v.state
@@ -1318,7 +1318,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Record); i {
 			case 0:
 				return &v.state
@@ -1330,7 +1330,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Plugin); i {
 			case 0:
 				return &v.state
@@ -1342,7 +1342,7 @@ func file_turbine_v2_proto_init() {
 				return nil
 			}
 		}
-		file_turbine_v2_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+		file_turbine_v1_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ProcessRecordsRequest_Process); i {
 			case 0:
 				return &v.state
@@ -1359,19 +1359,19 @@ func file_turbine_v2_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_turbine_v2_proto_rawDesc,
+			RawDescriptor: file_turbine_v1_proto_rawDesc,
 			NumEnums:      1,
 			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_turbine_v2_proto_goTypes,
-		DependencyIndexes: file_turbine_v2_proto_depIdxs,
-		EnumInfos:         file_turbine_v2_proto_enumTypes,
-		MessageInfos:      file_turbine_v2_proto_msgTypes,
+		GoTypes:           file_turbine_v1_proto_goTypes,
+		DependencyIndexes: file_turbine_v1_proto_depIdxs,
+		EnumInfos:         file_turbine_v1_proto_enumTypes,
+		MessageInfos:      file_turbine_v1_proto_msgTypes,
 	}.Build()
-	File_turbine_v2_proto = out.File
-	file_turbine_v2_proto_rawDesc = nil
-	file_turbine_v2_proto_goTypes = nil
-	file_turbine_v2_proto_depIdxs = nil
+	File_turbine_v1_proto = out.File
+	file_turbine_v1_proto_rawDesc = nil
+	file_turbine_v1_proto_goTypes = nil
+	file_turbine_v1_proto_depIdxs = nil
 }

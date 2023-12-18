@@ -4,7 +4,6 @@ import (
 	_ "embed"
 	"encoding/json"
 
-	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	"github.com/santhosh-tekuri/jsonschema/v5"
 )
 
@@ -12,7 +11,7 @@ import (
 var turbineIRSchema string
 
 func ValidateSpec(spec []byte, specVersion string) error {
-	err := ir.ValidateSpecVersion(specVersion)
+	err := ValidateSpecVersion(specVersion)
 	if err != nil {
 		return err
 	}
@@ -28,7 +27,7 @@ func ValidateSpec(spec []byte, specVersion string) error {
 	}
 
 	if err := sch.Validate(v); err != nil {
-		return ir.NewSpecValidationError(err)
+		return NewSpecValidationError(err)
 	}
 
 	return nil
