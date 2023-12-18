@@ -417,7 +417,7 @@ func Test_WrongDestinationConnector(t *testing.T) {
 // ( src_con ) → (stream) → (function) → (stream) → (dest1)
 func Test_Scenario1(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_V2
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -488,7 +488,7 @@ func Test_Scenario1(t *testing.T) {
 //	    (stream) → (dest2)
 func Test_DAGScenario2(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_V2
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -988,7 +988,7 @@ func Test_DAGScenario6(t *testing.T) {
 //	(stream) → (dest2)
 func Test_DAGScenario7(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_V2
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1081,7 +1081,7 @@ func Test_DAGScenario7(t *testing.T) {
 // ( src_con ) → (stream) → (func)
 func Test_Scenario8(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_V2
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1123,7 +1123,7 @@ func Test_Scenario8(t *testing.T) {
 // ( src_con ) → (stream) → (destination)
 func Test_Scenario9(t *testing.T) {
 	var spec ir.DeploymentSpec
-	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_0_2_0
+	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_V2
 
 	err := spec.AddSource(
 		&ir.ConnectorSpec{
@@ -1262,7 +1262,7 @@ func Test_ValidateDAG(t *testing.T) {
 			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					Metadata: ir.MetadataSpec{
-						SpecVersion: ir.SpecVersion_0_2_0,
+						SpecVersion: ir.SpecVersion_V2,
 					},
 				},
 			},
@@ -1273,7 +1273,7 @@ func Test_ValidateDAG(t *testing.T) {
 			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					Metadata: ir.MetadataSpec{
-						SpecVersion: ir.SpecVersion_0_1_1,
+						SpecVersion: ir.SpecVersion_V1,
 					},
 				},
 				Connectors: []ir.ConnectorSpec{
@@ -1285,14 +1285,14 @@ func Test_ValidateDAG(t *testing.T) {
 					},
 				},
 			},
-			wantError: fmt.Errorf("unsupported number of sources in spec version %q", ir.SpecVersion_0_1_1),
+			wantError: fmt.Errorf("unsupported number of sources in spec version %q", ir.SpecVersion_V1),
 		},
 		{
 			name: "only one source",
 			spec: &ir.DeploymentSpec{
 				Definition: ir.DefinitionSpec{
 					Metadata: ir.MetadataSpec{
-						SpecVersion: ir.SpecVersion_0_1_1,
+						SpecVersion: ir.SpecVersion_V1,
 					},
 				},
 				Connectors: []ir.ConnectorSpec{
