@@ -6,7 +6,7 @@ import (
 	"context"
 	"time"
 
-	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
+	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

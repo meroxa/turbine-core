@@ -6,27 +6,21 @@ import (
 	"fmt"
 	"os"
 	"text/tabwriter"
-	"time"
 
-	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"github.com/conduitio/conduit-commons/opencdc"
+	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
+	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 )
 
-type fixtureRecord struct {
-	Key       interface{}
-	Value     map[string]interface{}
-	Timestamp string
-}
-
-func ReadFixture(ctx context.Context, file string) ([]*pb.Record, error) {
+func ReadFixture(ctx context.Context, file string) ([]*opencdcv1.Record, error) {
 	b, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
 
 	var (
-		rr             []*pb.Record
-		fixtureRecords []fixtureRecord
+		rr             []*opencdcv1.Record
+		fixtureRecords []*opencdc.Record
 	)
 
 	if err := json.Unmarshal(b, &fixtureRecords); err != nil {
@@ -40,20 +34,18 @@ func ReadFixture(ctx context.Context, file string) ([]*pb.Record, error) {
 	return rr, nil
 }
 
-func wrapRecord(m fixtureRecord) *pb.Record {
-	b, _ := json.Marshal(m.Value)
-
-	ts := timestamppb.New(time.Now())
-	if m.Timestamp != "" {
-		t, _ := time.Parse(time.RFC3339, m.Timestamp)
-		ts = timestamppb.New(t)
+func wrapRecord(r *opencdc.Record) *opencdcv1.Record {
+	return &opencdcv1.Record{
+		Position:  []byte(r.Position),
+		Operation: opencdcv1.Operation(r.Operation),
+		Metadata:  r.Metadata,
+		Key:       nil, /* &v1.Data{Data: raw/structured} */
+		Payload:   nil, /* &v1.Change{Before: &v1.Data{Data: //}, After...} */
 	}
+}
 
-	return &pb.Record{
-		Key:       fmt.Sprintf("%v", m.Key),
-		Value:     b,
-		Timestamp: ts,
-	}
+func unwrapRecord(r *opencdcv1.Record) *opencdc.Record {
+	return &opencdc.Record{}
 }
 
 func PrintRecords(name string, sr *pb.StreamRecords) {
@@ -63,7 +55,8 @@ func PrintRecords(name string, sr *pb.StreamRecords) {
 	fmt.Fprintln(w, "index\trecord")
 	fmt.Fprintln(w, "----\t----")
 	for i, r := range sr.Records {
-		fmt.Fprintf(w, "%d\t%s\n", i, string(r.Value))
+		unwrapped := unwrapRecord(r)
+		fmt.Fprintf(w, "%d\t%s\n", i, string(unwrapped.Bytes()))
 		fmt.Fprintln(w, "----\t----")
 	}
 	fmt.Fprintf(w, "records written\t%d\n", len(sr.Records))

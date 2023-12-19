@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	core "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
+	core "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	grpc "google.golang.org/grpc"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )

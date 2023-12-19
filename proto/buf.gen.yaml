@@ -1,0 +1,24 @@
+version: v1
+managed:
+  enabled: true
+  optimize_for: CODE_SIZE
+  go_package_prefix:
+    default: "buf.build/meroxa/turbine-core"
+    except:
+      - buf.build/googleapis/googleapis
+      - buf.build/envoyproxy/protoc-gen-validate
+    override:
+      buf.build/conduitio/conduit-connector-protocol: github.com/conduitio/conduit-connector-protocol/proto
+plugins:
+  - plugin: buf.build/protocolbuffers/go:v1.31.0
+    out: .
+    opt:
+      - paths=source_relative
+  - plugin: buf.build/grpc/go:v1.3.0
+    out: .
+    opt:
+      - paths=source_relative
+  - plugin: buf.build/bufbuild/validate-go
+    out: .
+    opt:
+      - paths=source_relative

@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/v2/pkg/app"
 	"github.com/meroxa/turbine-core/v2/pkg/ir"
+	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

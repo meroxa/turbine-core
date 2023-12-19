@@ -1,0 +1,12 @@
+version: v1
+name: "buf.build/meroxa/turbine-core"
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/conduitio/conduit-connector-protocol
+  - buf.build/envoyproxy/protoc-gen-validate

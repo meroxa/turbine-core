@@ -1,0 +1,22 @@
+version: 2.0
+pipelines:
+  - id: pg-cdc-to-file
+    status: running
+    description: >
+      Example pipeline reading from postgres and writing into file "demo-cdc.json"
+      Note that the output file will contain the whole OpenCDC record,
+      the field "payload.after" will contain the base64 encoded line
+      written in "demo-cdc.json".
+    connectors:
+      - id: pg-cdc
+        type: source
+        plugin: builtin:postgres
+        settings:
+          url: postgres://demo:demo@localhost/demo
+          table: "orders"
+          cdcMode: "logrepl"
+      - id: example.out
+        type: destination
+        plugin: builtin:file
+        settings:
+          path: ./demo-cdc.json
