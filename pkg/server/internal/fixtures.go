@@ -5,19 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 	"text/tabwriter"
 	"time"
 
+	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
 	"google.golang.org/protobuf/types/known/timestamppb"
-
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 )
-
-type FixtureResource struct {
-	File       string
-	Collection string
-}
 
 type fixtureRecord struct {
 	Key       interface{}
@@ -25,35 +18,23 @@ type fixtureRecord struct {
 	Timestamp string
 }
 
-func (f *FixtureResource) ReadAll(ctx context.Context) ([]*pb.Record, error) {
-	b, err := os.ReadFile(f.File)
+func ReadFixture(ctx context.Context, file string) ([]*pb.Record, error) {
+	b, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
 
-	var rr []*pb.Record
-	if f.Collection == "" {
-		// hacky hack because of https://github.com/golang/go/issues/22518
-		first := strings.Index(string(b), "[")
-		last := strings.LastIndex(string(b), "]")
+	var (
+		rr             []*pb.Record
+		fixtureRecords []fixtureRecord
+	)
 
-		substr := b[first : last+1]
+	if err := json.Unmarshal(b, &fixtureRecords); err != nil {
+		return nil, err
+	}
 
-		var records []fixtureRecord
-		if err := json.Unmarshal(substr, &records); err != nil {
-			return nil, err
-		}
-		for _, r := range records {
-			rr = append(rr, wrapRecord(r))
-		}
-	} else {
-		var records map[string][]fixtureRecord
-		if err := json.Unmarshal(b, &records); err != nil {
-			return nil, err
-		}
-		for _, r := range records[f.Collection] {
-			rr = append(rr, wrapRecord(r))
-		}
+	for _, r := range fixtureRecords {
+		rr = append(rr, wrapRecord(r))
 	}
 
 	return rr, nil
@@ -75,16 +56,16 @@ func wrapRecord(m fixtureRecord) *pb.Record {
 	}
 }
 
-func PrintRecords(name, collection string, rr []*pb.Record) {
+func PrintRecords(name string, sr *pb.StreamRecords) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.AlignRight|tabwriter.Debug)
-	fmt.Fprintf(w, "Destination %s/%s\n", name, collection)
+	fmt.Fprintf(w, "Destination %s\n", name)
 	fmt.Fprintf(w, "----------------------\n")
 	fmt.Fprintln(w, "index\trecord")
 	fmt.Fprintln(w, "----\t----")
-	for i, r := range rr {
+	for i, r := range sr.Records {
 		fmt.Fprintf(w, "%d\t%s\n", i, string(r.Value))
 		fmt.Fprintln(w, "----\t----")
 	}
-	fmt.Fprintf(w, "records written\t%d\n", len(rr))
+	fmt.Fprintf(w, "records written\t%d\n", len(sr.Records))
 	w.Flush()
 }

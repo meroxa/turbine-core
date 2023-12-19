@@ -5,10 +5,9 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	"github.com/meroxa/turbine-core/pkg/ir"
+	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 var _ pb.TurbineServiceServer = (*specBuilderService)(nil)
@@ -16,15 +15,13 @@ var _ pb.TurbineServiceServer = (*specBuilderService)(nil)
 type specBuilderService struct {
 	pb.UnimplementedTurbineServiceServer
 
-	spec      *ir.DeploymentSpec
-	resources []*pb.Resource
+	spec *ir.DeploymentSpec
+	// resources []*pb.Resource
 }
 
 func NewSpecBuilderService() *specBuilderService {
 	return &specBuilderService{
-		spec: &ir.DeploymentSpec{
-			Secrets: make(map[string]string),
-		},
+		spec: &ir.DeploymentSpec{},
 	}
 }
 
@@ -46,69 +43,68 @@ func (s *specBuilderService) Init(_ context.Context, req *pb.InitRequest) (*empt
 	return empty(), nil
 }
 
-func (s *specBuilderService) GetResource(_ context.Context, req *pb.GetResourceRequest) (*pb.Resource, error) {
+func (s *specBuilderService) AddSource(_ context.Context, req *pb.AddSourceRequest) (*pb.AddSourceResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return &pb.Resource{Name: req.Name}, nil
-}
-
-func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadCollectionRequest) (*pb.Collection, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-
-	s.resources = append(s.resources, &pb.Resource{
-		Name:       req.GetResource().GetName(),
-		Source:     true,
-		Collection: req.GetCollection(),
-	})
 
 	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Collection: req.Collection,
-		Resource:   req.Resource.Name,
-		Type:       ir.ConnectorSource,
-		Config:     configMap(req.Configs),
+		UUID:         uuid.New().String(),
+		Name:         req.Name,
+		PluginType:   ir.PluginSource,
+		PluginName:   req.Plugin.Name,
+		PluginConfig: req.Plugin.Config,
 	}
 
 	if err := s.spec.AddSource(&c); err != nil {
 		return nil, err
 	}
 
-	return &pb.Collection{
-		Name:   req.Collection,
-		Stream: c.UUID,
-	}, nil
+	return &pb.AddSourceResponse{StreamName: c.UUID}, nil
 }
 
-func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+func (s *specBuilderService) ReadRecords(_ context.Context, req *pb.ReadRecordsRequest) (*pb.ReadRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	s.resources = append(s.resources, &pb.Resource{
-		Name:        req.Resource.Name,
-		Destination: true,
-		Collection:  req.TargetCollection,
-	})
+	return &pb.ReadRecordsResponse{
+		StreamRecords: &pb.StreamRecords{
+			StreamName: req.SourceStream,
+		},
+	}, nil
+}
+
+func (s *specBuilderService) AddDestination(_ context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
 
 	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Collection: req.TargetCollection,
-		Resource:   req.Resource.Name,
-		Type:       ir.ConnectorDestination,
-		Config:     configMap(req.Configs),
+		UUID:         uuid.New().String(),
+		Name:         req.Name,
+		PluginType:   ir.PluginDestination,
+		PluginName:   req.Plugin.Name,
+		PluginConfig: req.Plugin.Config,
 	}
+
 	if err := s.spec.AddDestination(&c); err != nil {
+		return nil, err
+	}
+
+	return &pb.AddDestinationResponse{StreamName: c.UUID}, nil
+}
+
+func (s *specBuilderService) WriteRecords(_ context.Context, req *pb.WriteRecordsRequest) (*emptypb.Empty, error) {
+	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
-		FromUUID: req.SourceCollection.Stream,
-		ToUUID:   c.UUID,
-		Name:     req.SourceCollection.Stream + "_" + c.UUID,
+		FromUUID: req.StreamRecords.StreamName,
+		ToUUID:   req.DestinationID,
+		Name:     req.StreamRecords.StreamName + "_" + req.DestinationID,
 	}); err != nil {
 		return nil, err
 	}
@@ -116,7 +112,7 @@ func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *p
 	return empty(), nil
 }
 
-func (s *specBuilderService) AddProcessToCollection(_ context.Context, req *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+func (s *specBuilderService) ProcessRecords(_ context.Context, req *pb.ProcessRecordsRequest) (*pb.ProcessRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -131,33 +127,19 @@ func (s *specBuilderService) AddProcessToCollection(_ context.Context, req *pb.P
 
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
-		FromUUID: req.Collection.Stream,
+		FromUUID: req.StreamRecords.StreamName,
 		ToUUID:   f.UUID,
-		Name:     req.Collection.Stream + "_" + f.UUID,
+		Name:     req.StreamRecords.StreamName + "_" + f.UUID,
 	}); err != nil {
 		return nil, err
 	}
 
-	return &pb.Collection{
-		Name:   req.Collection.Name,
-		Stream: f.UUID,
+	return &pb.ProcessRecordsResponse{
+		StreamRecords: &pb.StreamRecords{
+			StreamName: f.UUID,
+			Records:    req.StreamRecords.Records,
+		},
 	}, nil
-}
-
-func (s *specBuilderService) RegisterSecret(_ context.Context, secret *pb.Secret) (*emptypb.Empty, error) {
-	if err := secret.Validate(); err != nil {
-		return nil, err
-	}
-	s.spec.Secrets[secret.Name] = secret.Value
-	return empty(), nil
-}
-
-func (s *specBuilderService) HasFunctions(_ context.Context, _ *emptypb.Empty) (*wrapperspb.BoolValue, error) {
-	return wrapperspb.Bool(len(s.spec.Functions) > 0), nil
-}
-
-func (s *specBuilderService) ListResources(_ context.Context, _ *emptypb.Empty) (*pb.ListResourcesResponse, error) {
-	return &pb.ListResourcesResponse{Resources: s.resources}, nil
 }
 
 func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) (*pb.GetSpecResponse, error) {
@@ -179,16 +161,4 @@ func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) 
 	}
 
 	return &pb.GetSpecResponse{Spec: spec}, nil
-}
-
-func configMap(configs *pb.Configs) map[string]any {
-	if configs == nil {
-		return nil
-	}
-
-	m := make(map[string]any)
-	for _, c := range configs.Config {
-		m[c.Field] = c.Value
-	}
-	return m
 }
