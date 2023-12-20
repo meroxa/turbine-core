@@ -11,24 +11,26 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+var _ Client = (*TurbineClient)(nil)
+
 type Client interface {
 	Close()
 	pb.TurbineServiceClient
 }
 
-type client struct {
+type TurbineClient struct {
 	*grpc.ClientConn
 	pb.TurbineServiceClient
 }
 
-func DialTimeout(addr string, timeout time.Duration) (*client, error) {
+func DialTimeout(addr string, timeout time.Duration) (*TurbineClient, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	return DialContext(ctx, addr)
 }
 
-func DialContext(ctx context.Context, addr string) (*client, error) {
+func DialContext(ctx context.Context, addr string) (*TurbineClient, error) {
 	c, err := grpc.DialContext(
 		ctx,
 		addr,
@@ -38,12 +40,12 @@ func DialContext(ctx context.Context, addr string) (*client, error) {
 		return nil, err
 	}
 
-	return &client{
+	return &TurbineClient{
 		ClientConn:           c,
 		TurbineServiceClient: pb.NewTurbineServiceClient(c),
 	}, nil
 }
 
-func (c *client) Close() {
+func (c *TurbineClient) Close() {
 	c.ClientConn.Close()
 }

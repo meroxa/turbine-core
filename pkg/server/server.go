@@ -22,33 +22,33 @@ type Server interface {
 	GracefulStop()
 }
 
-var _ Server = (*turbineCoreServer)(nil)
+var _ Server = (*TurbineCoreServer)(nil)
 
-type turbineCoreServer struct {
+type TurbineCoreServer struct {
 	*grpc.Server
 }
 
-func NewRunServer() *turbineCoreServer {
+func NewRunServer() *TurbineCoreServer {
 	s := grpc.NewServer()
 	pb.RegisterTurbineServiceServer(s, NewRunService())
-	return &turbineCoreServer{Server: s}
+	return &TurbineCoreServer{Server: s}
 }
 
-func NewSpecBuilderServer() *turbineCoreServer {
+func NewSpecBuilderServer() *TurbineCoreServer {
 	s := grpc.NewServer()
 	pb.RegisterTurbineServiceServer(s, NewSpecBuilderService())
-	return &turbineCoreServer{Server: s}
+	return &TurbineCoreServer{Server: s}
 }
 
-func NewRecordServer() *turbineCoreServer {
+func NewRecordServer() *TurbineCoreServer {
 	return NewSpecBuilderServer()
 }
 
-func (s *turbineCoreServer) Run(ctx context.Context) {
+func (s *TurbineCoreServer) Run(ctx context.Context) {
 	s.RunAddr(ctx, ListenAddress)
 }
 
-func (s *turbineCoreServer) RunAddr(ctx context.Context, addr string) {
+func (s *TurbineCoreServer) RunAddr(ctx context.Context, addr string) {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

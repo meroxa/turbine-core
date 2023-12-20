@@ -28,7 +28,7 @@ func NewRunService() *runService {
 	}
 }
 
-func (s *runService) Init(ctx context.Context, req *pb.InitRequest) (*emptypb.Empty, error) {
+func (s *runService) Init(_ context.Context, req *pb.InitRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (s *runService) Init(ctx context.Context, req *pb.InitRequest) (*emptypb.Em
 	return empty(), nil
 }
 
-func (s *runService) AddSource(ctx context.Context, req *pb.AddSourceRequest) (*pb.AddSourceResponse, error) {
+func (s *runService) AddSource(_ context.Context, req *pb.AddSourceRequest) (*pb.AddSourceResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (s *runService) ReadRecords(ctx context.Context, req *pb.ReadRecordsRequest
 	}, nil
 }
 
-func (s *runService) AddDestination(ctx context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
+func (s *runService) AddDestination(_ context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (s *runService) AddDestination(ctx context.Context, req *pb.AddDestinationR
 	}, nil
 }
 
-func (s *runService) WriteRecords(ctx context.Context, req *pb.WriteRecordsRequest) (*emptypb.Empty, error) {
+func (s *runService) WriteRecords(_ context.Context, req *pb.WriteRecordsRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (s *runService) WriteRecords(ctx context.Context, req *pb.WriteRecordsReque
 	return empty(), nil
 }
 
-func (s *runService) ProcessRecords(ctx context.Context, req *pb.ProcessRecordsRequest) (*pb.ProcessRecordsResponse, error) {
+func (s *runService) ProcessRecords(_ context.Context, req *pb.ProcessRecordsRequest) (*pb.ProcessRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}

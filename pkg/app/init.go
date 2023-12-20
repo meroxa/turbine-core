@@ -27,7 +27,7 @@ func NewAppInit(appName string, lang ir.Lang, path string) *AppInit {
 	switch lang {
 	case ir.GoLang:
 		templateDir = filepath.Join("templates", "_"+string(lang))
-	default:
+	case ir.JavaScript, ir.Python, ir.Ruby:
 		templateDir = filepath.Join("templates", string(lang))
 	}
 
@@ -65,7 +65,7 @@ func (a *AppInit) applytemplate(srcDir, destDir, fileName string) error {
 	return t.Execute(f, appTrait)
 }
 
-// copyFile simply copies the file from srcDir to destDir (without applying a template)
+// copyFile simply copies the file from srcDir to destDir (without applying a template).
 func (a *AppInit) copyFile(srcDir, destDir, fileName string) error {
 	srcPath := filepath.Join(srcDir, fileName)
 	destPath := filepath.Join(destDir, fileName)
@@ -102,7 +102,7 @@ func (a *AppInit) duplicateFileInPath(srcDir, destDir, fileName string) error {
 	return a.applytemplate(srcDir, destDir, fileName)
 }
 
-// listTemplateContentFromPath is used to return existing files and directories on a given path
+// listTemplateContentFromPath is used to return existing files and directories on a given path.
 func (a *AppInit) listTemplateContentFromPath(srcPath string) ([]string, []string, error) {
 	var files, directories []string
 
@@ -129,6 +129,9 @@ func (a *AppInit) duplicateDirectory(srcDir, destDir string) error {
 	}
 
 	files, directories, err := a.listTemplateContentFromPath(srcDir)
+	if err != nil {
+		return err
+	}
 
 	for _, fileName := range files {
 		err = a.duplicateFileInPath(srcDir, destDir, fileName)

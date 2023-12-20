@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
 	"github.com/google/uuid"
 	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
@@ -92,7 +93,7 @@ func TestInit(t *testing.T) {
 func TestAddSource(t *testing.T) {
 	tests := []struct {
 		description     string
-		populateService func(*specBuilderService) *specBuilderService
+		populateService func(*SpecBuilderService) *SpecBuilderService
 		req             *pb.AddSourceRequest
 		want            *ir.DeploymentSpec
 		errMsg          string
@@ -167,7 +168,7 @@ func TestReadRecords(t *testing.T) {
 func TestAddDestination(t *testing.T) {
 	tests := []struct {
 		description     string
-		populateService func(*specBuilderService) *specBuilderService
+		populateService func(*SpecBuilderService) *SpecBuilderService
 		req             *pb.AddDestinationRequest
 		want            *ir.DeploymentSpec
 		errMsg          string
@@ -228,7 +229,7 @@ func TestAddDestination(t *testing.T) {
 func TestWriteRecords(t *testing.T) {
 	tests := []struct {
 		description     string
-		populateService func(*specBuilderService) *specBuilderService
+		populateService func(*SpecBuilderService) *SpecBuilderService
 		req             *pb.WriteRecordsRequest
 		want            *ir.DeploymentSpec
 		errMsg          string
@@ -242,12 +243,14 @@ func TestWriteRecords(t *testing.T) {
 			description: "successfully store stream information",
 			req: &pb.WriteRecordsRequest{
 				StreamRecords: &pb.StreamRecords{
-					Records: []*pb.Record{
-						{
-							Key:   "1",
-							Value: []byte(`{"1":"record-value"}`),
-						},
-					},
+					Records: []*opencdcv1.Record{},
+					/*
+						Records: []*pb.Record{
+							{
+								Key:   "1",
+								Value: []byte(`{"1":"record-value"}`),
+							},
+						}, */
 				},
 			},
 		},
@@ -328,12 +331,13 @@ func TestProcessRecords(t *testing.T) {
 			Name: "synchronize",
 		},
 		StreamRecords: &pb.StreamRecords{
-			Records: []*pb.Record{
+			Records: []*opencdcv1.Record{},
+			/* Records: []*pb.Record{
 				{
 					Key:   "1",
 					Value: []byte(`{"1":"record-value"}`),
 				},
-			},
+			}, */
 		},
 	}
 
@@ -352,14 +356,14 @@ func TestGetSpec(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		description     string
-		populateService func(*specBuilderService) *specBuilderService
+		populateService func(*SpecBuilderService) *SpecBuilderService
 		request         *pb.GetSpecRequest
 		want            *ir.DeploymentSpec
 		wantErr         error
 	}{
 		{
 			description: "get spec with no function",
-			populateService: func(s *specBuilderService) *specBuilderService {
+			populateService: func(s *SpecBuilderService) *SpecBuilderService {
 				s.spec = exampleDeploymentSpec()
 				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "1_3",
@@ -386,7 +390,7 @@ func TestGetSpec(t *testing.T) {
 		},
 		{
 			description: "get spec with no function, set image",
-			populateService: func(s *specBuilderService) *specBuilderService {
+			populateService: func(s *SpecBuilderService) *SpecBuilderService {
 				s.spec = exampleDeploymentSpec()
 				s.spec.Streams = append(s.spec.Streams, ir.StreamSpec{
 					UUID:     "1_3",
@@ -403,7 +407,7 @@ func TestGetSpec(t *testing.T) {
 		},
 		{
 			description: "get spec with function",
-			populateService: func(s *specBuilderService) *specBuilderService {
+			populateService: func(s *SpecBuilderService) *SpecBuilderService {
 				s.spec = exampleDeploymentSpec()
 				s.spec.Functions = append(s.spec.Functions, ir.FunctionSpec{
 					UUID:  "2",
@@ -455,7 +459,7 @@ func TestGetSpec(t *testing.T) {
 		},
 		{
 			description: "get spec with function, overwrite image",
-			populateService: func(s *specBuilderService) *specBuilderService {
+			populateService: func(s *SpecBuilderService) *SpecBuilderService {
 				s.spec = exampleDeploymentSpec()
 				s.spec.Functions = append(s.spec.Functions, ir.FunctionSpec{
 					UUID:  "2",

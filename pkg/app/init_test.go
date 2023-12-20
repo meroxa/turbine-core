@@ -103,6 +103,8 @@ func TestAppInit_Init(t *testing.T) {
 
 // assertDirectory will continue checking for files and subdirectories until there's none left.
 func assertDirectory(t *testing.T, basePath string, dir directory) {
+	t.Helper()
+
 	require.DirExists(t, filepath.Join(basePath, dir.name))
 
 	for _, file := range dir.files {

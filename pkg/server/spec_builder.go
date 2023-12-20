@@ -10,22 +10,22 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var _ pb.TurbineServiceServer = (*specBuilderService)(nil)
+var _ pb.TurbineServiceServer = (*SpecBuilderService)(nil)
 
-type specBuilderService struct {
+type SpecBuilderService struct {
 	pb.UnimplementedTurbineServiceServer
 
 	spec *ir.DeploymentSpec
 	// resources []*pb.Resource
 }
 
-func NewSpecBuilderService() *specBuilderService {
-	return &specBuilderService{
+func NewSpecBuilderService() *SpecBuilderService {
+	return &SpecBuilderService{
 		spec: &ir.DeploymentSpec{},
 	}
 }
 
-func (s *specBuilderService) Init(_ context.Context, req *pb.InitRequest) (*emptypb.Empty, error) {
+func (s *SpecBuilderService) Init(_ context.Context, req *pb.InitRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (s *specBuilderService) Init(_ context.Context, req *pb.InitRequest) (*empt
 	return empty(), nil
 }
 
-func (s *specBuilderService) AddSource(_ context.Context, req *pb.AddSourceRequest) (*pb.AddSourceResponse, error) {
+func (s *SpecBuilderService) AddSource(_ context.Context, req *pb.AddSourceRequest) (*pb.AddSourceResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (s *specBuilderService) AddSource(_ context.Context, req *pb.AddSourceReque
 	return &pb.AddSourceResponse{StreamName: c.UUID}, nil
 }
 
-func (s *specBuilderService) ReadRecords(_ context.Context, req *pb.ReadRecordsRequest) (*pb.ReadRecordsResponse, error) {
+func (s *SpecBuilderService) ReadRecords(_ context.Context, req *pb.ReadRecordsRequest) (*pb.ReadRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (s *specBuilderService) ReadRecords(_ context.Context, req *pb.ReadRecordsR
 	}, nil
 }
 
-func (s *specBuilderService) AddDestination(_ context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
+func (s *SpecBuilderService) AddDestination(_ context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (s *specBuilderService) AddDestination(_ context.Context, req *pb.AddDestin
 	return &pb.AddDestinationResponse{StreamName: c.UUID}, nil
 }
 
-func (s *specBuilderService) WriteRecords(_ context.Context, req *pb.WriteRecordsRequest) (*emptypb.Empty, error) {
+func (s *SpecBuilderService) WriteRecords(_ context.Context, req *pb.WriteRecordsRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func (s *specBuilderService) WriteRecords(_ context.Context, req *pb.WriteRecord
 	return empty(), nil
 }
 
-func (s *specBuilderService) ProcessRecords(_ context.Context, req *pb.ProcessRecordsRequest) (*pb.ProcessRecordsResponse, error) {
+func (s *SpecBuilderService) ProcessRecords(_ context.Context, req *pb.ProcessRecordsRequest) (*pb.ProcessRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func (s *specBuilderService) ProcessRecords(_ context.Context, req *pb.ProcessRe
 	}, nil
 }
 
-func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) (*pb.GetSpecResponse, error) {
+func (s *SpecBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) (*pb.GetSpecResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}

@@ -9,6 +9,7 @@ import (
 
 	"github.com/conduitio/conduit-commons/opencdc"
 	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
+	"github.com/meroxa/turbine-core/v2/pkg/record"
 	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 )
 
@@ -18,34 +19,18 @@ func ReadFixture(ctx context.Context, file string) ([]*opencdcv1.Record, error) 
 		return nil, err
 	}
 
-	var (
-		rr             []*opencdcv1.Record
-		fixtureRecords []*opencdc.Record
-	)
+	var fixtureRecords []opencdc.Record
 
 	if err := json.Unmarshal(b, &fixtureRecords); err != nil {
 		return nil, err
 	}
 
-	for _, r := range fixtureRecords {
-		rr = append(rr, wrapRecord(r))
+	rr, err := record.ToProto(fixtureRecords)
+	if err != nil {
+		return nil, err
 	}
 
 	return rr, nil
-}
-
-func wrapRecord(r *opencdc.Record) *opencdcv1.Record {
-	return &opencdcv1.Record{
-		Position:  []byte(r.Position),
-		Operation: opencdcv1.Operation(r.Operation),
-		Metadata:  r.Metadata,
-		Key:       nil, /* &v1.Data{Data: raw/structured} */
-		Payload:   nil, /* &v1.Change{Before: &v1.Data{Data: //}, After...} */
-	}
-}
-
-func unwrapRecord(r *opencdcv1.Record) *opencdc.Record {
-	return &opencdc.Record{}
 }
 
 func PrintRecords(name string, sr *pb.StreamRecords) {
@@ -54,11 +39,17 @@ func PrintRecords(name string, sr *pb.StreamRecords) {
 	fmt.Fprintf(w, "----------------------\n")
 	fmt.Fprintln(w, "index\trecord")
 	fmt.Fprintln(w, "----\t----")
-	for i, r := range sr.Records {
-		unwrapped := unwrapRecord(r)
-		fmt.Fprintf(w, "%d\t%s\n", i, string(unwrapped.Bytes()))
+
+	rr, err := record.FromProto(sr.Records)
+	if err != nil {
+		panic(err)
+	}
+
+	for i, r := range rr {
+		fmt.Fprintf(w, "%d\t%s\n", i, string(r.Bytes()))
 		fmt.Fprintln(w, "----\t----")
 	}
+
 	fmt.Fprintf(w, "records written\t%d\n", len(sr.Records))
 	w.Flush()
 }

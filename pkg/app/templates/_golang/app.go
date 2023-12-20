@@ -8,6 +8,7 @@ import (
 	"log"
 
 	// Dependencies of Turbine
+	"github.com/conduitio/conduit-commons/opencdc"
 	"github.com/meroxa/turbine-go/v3/pkg/turbine"
 	"github.com/meroxa/turbine-go/v3/pkg/turbine/cmd"
 )
@@ -79,7 +80,7 @@ func (a App) Run(t turbine.Turbine) error {
 
 type Anonymize struct{}
 
-func (f Anonymize) Process(stream []turbine.Record) []turbine.Record {
+func (f Anonymize) Process(stream []opencdc.Record) []opencdc.Record {
 	for i, record := range stream {
 		email := fmt.Sprintf("%s", record.Payload.Get("after.customer_email"))
 		if email == "" {

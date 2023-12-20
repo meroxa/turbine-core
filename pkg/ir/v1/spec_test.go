@@ -903,16 +903,16 @@ func Test_DAGScenario6(t *testing.T) {
 
 	require.NoError(t, err)
 
-	err = spec.AddStream(
+	require.NoError(t, spec.AddStream(
 		&ir.StreamSpec{
 			UUID:     "3_4",
 			Name:     "my_stream4",
 			FromUUID: "3",
 			ToUUID:   "4",
 		},
-	)
+	))
 
-	err = spec.AddDestination(
+	require.NoError(t, spec.AddDestination(
 		&ir.ConnectorSpec{
 			UUID:       "5",
 			Collection: "accounts_copy_2",
@@ -922,7 +922,7 @@ func Test_DAGScenario6(t *testing.T) {
 				"config": "value",
 			},
 		},
-	)
+	))
 
 	err = spec.AddStream(
 		&ir.StreamSpec{
