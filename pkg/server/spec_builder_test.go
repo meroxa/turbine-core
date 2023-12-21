@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -211,15 +210,14 @@ func TestAddDestination(t *testing.T) {
 				s   = NewSpecBuilderService()
 			)
 
-			res, err := s.AddDestination(ctx, test.req)
+			_, err := s.AddDestination(ctx, test.req)
 
 			if test.errMsg != "" {
 				require.EqualError(t, err, test.errMsg)
 			} else {
-				require.Nil(t, err)
+				require.NoError(t, err)
 				require.NotEmpty(t, s.spec.Connectors)
 				require.Equal(t, s.spec.Connectors[0].Name, test.req.Name)
-				require.Equal(t, s.spec.Connectors[0].UUID, res.StreamName)
 				require.Equal(t, s.spec.Connectors[0].PluginType, ir.PluginDestination)
 			}
 		})
@@ -254,43 +252,42 @@ func TestWriteRecords(t *testing.T) {
 			var (
 				ctx = context.Background()
 				s   = NewSpecBuilderService()
+				err error
 			)
 
-			ar := &turbinev2.AddSourceRequest{
+			asr, err := s.AddSource(ctx, &turbinev2.AddSourceRequest{
 				Name: "my-source",
 				Plugin: &turbinev2.Plugin{
 					Name: "builtin:postgres@1.0.0",
 				},
+			})
+			require.NoError(t, err)
+
+			if test.errMsg == "" {
+				test.req.StreamRecords.StreamName = asr.StreamName
 			}
 
-			asr, err := s.AddSource(ctx, ar)
-			assert.NoError(t, err)
-
-			dr := &turbinev2.AddDestinationRequest{
+			dst, err := s.AddDestination(ctx, &turbinev2.AddDestinationRequest{
 				Name: "my-destination",
 				Plugin: &turbinev2.Plugin{
 					Name: "builtin:postgres@1.0.0",
 				},
+			})
+			require.NoError(t, err)
+
+			if test.errMsg == "" {
+				test.req.DestinationID = dst.Id
 			}
-
-			adr, err := s.AddDestination(ctx, dr)
-			assert.NoError(t, err)
-
-			if test.req.StreamRecords != nil {
-				test.req.StreamRecords.StreamName = asr.StreamName
-				test.req.DestinationID = adr.StreamName
-			}
-
-			res, err := s.WriteRecords(ctx, test.req)
+			_, err = s.WriteRecords(ctx, test.req)
 			if test.errMsg != "" {
-				require.EqualError(t, err, test.errMsg)
+				require.Error(t, err)
+				require.ErrorContains(t, err, test.errMsg)
 			} else {
-				require.Nil(t, err)
-				require.Equal(t, empty(), res)
+				require.NoError(t, err)
 				require.NotEmpty(t, s.spec.Streams)
 				require.NotEmpty(t, s.spec.Connectors)
-				require.Equal(t, s.spec.Streams[0].FromUUID, s.spec.Connectors[0].UUID)
-				require.Equal(t, s.spec.Streams[0].ToUUID, s.spec.Connectors[1].UUID)
+				require.Equal(t, s.spec.Streams[0].FromUUID, asr.StreamName)
+				require.Equal(t, s.spec.Streams[0].ToUUID, dst.Id)
 			}
 		})
 	}

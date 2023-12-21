@@ -44,7 +44,8 @@ message AddSourceRequest {
 }
 
 message AddSourceResponse {
-  string streamName = 1 [(validate.rules).string.min_len = 1];
+  string id = 1 [(validate.rules).string.min_len = 1];
+  string streamName = 2 [(validate.rules).string.min_len = 1];
 }
 
 message ReadRecordsRequest {
@@ -74,7 +75,7 @@ message AddDestinationRequest {
 }
 
 message AddDestinationResponse {
-  string streamName = 1 [(validate.rules).string.min_len = 1];
+  string id = 1 [(validate.rules).string.min_len = 1];
 }
 
 message WriteRecordsRequest {
