@@ -17,7 +17,7 @@ type Config struct {
 	Language ir.Lang           `json:"language"`
 }
 
-// validateAppConfig will check if app.json contains information required.
+// validateConfig will check if app.json contains information required.
 func (c *Config) validateConfig() error {
 	if c.Name == "" {
 		return errors.New("application name is required to be specified in your app.json")
