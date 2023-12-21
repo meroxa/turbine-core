@@ -9,7 +9,7 @@ import "validate/validate.proto";
 
 option go_package = "github.com/meroxa/turbine/core";
 
-service TurbineService {
+service Service {
   rpc Init(InitRequest) returns (google.protobuf.Empty);
 
   rpc AddSource(AddSourceRequest) returns (AddSourceResponse);

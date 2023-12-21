@@ -10,10 +10,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var _ turbinev2.TurbineServiceServer = (*SpecBuilderService)(nil)
+var _ turbinev2.ServiceServer = (*SpecBuilderService)(nil)
 
 type SpecBuilderService struct {
-	turbinev2.UnimplementedTurbineServiceServer
+	turbinev2.UnimplementedServiceServer
 
 	spec *ir.DeploymentSpec
 	// resources []*turbinev2.Resource

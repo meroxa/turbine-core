@@ -20,19 +20,19 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	TurbineService_Init_FullMethodName           = "/turbine.v2.TurbineService/Init"
-	TurbineService_AddSource_FullMethodName      = "/turbine.v2.TurbineService/AddSource"
-	TurbineService_ReadRecords_FullMethodName    = "/turbine.v2.TurbineService/ReadRecords"
-	TurbineService_ProcessRecords_FullMethodName = "/turbine.v2.TurbineService/ProcessRecords"
-	TurbineService_AddDestination_FullMethodName = "/turbine.v2.TurbineService/AddDestination"
-	TurbineService_WriteRecords_FullMethodName   = "/turbine.v2.TurbineService/WriteRecords"
-	TurbineService_GetSpec_FullMethodName        = "/turbine.v2.TurbineService/GetSpec"
+	Service_Init_FullMethodName           = "/turbine.v2.Service/Init"
+	Service_AddSource_FullMethodName      = "/turbine.v2.Service/AddSource"
+	Service_ReadRecords_FullMethodName    = "/turbine.v2.Service/ReadRecords"
+	Service_ProcessRecords_FullMethodName = "/turbine.v2.Service/ProcessRecords"
+	Service_AddDestination_FullMethodName = "/turbine.v2.Service/AddDestination"
+	Service_WriteRecords_FullMethodName   = "/turbine.v2.Service/WriteRecords"
+	Service_GetSpec_FullMethodName        = "/turbine.v2.Service/GetSpec"
 )
 
-// TurbineServiceClient is the client API for TurbineService service.
+// ServiceClient is the client API for Service service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type TurbineServiceClient interface {
+type ServiceClient interface {
 	Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AddSource(ctx context.Context, in *AddSourceRequest, opts ...grpc.CallOption) (*AddSourceResponse, error)
 	ReadRecords(ctx context.Context, in *ReadRecordsRequest, opts ...grpc.CallOption) (*ReadRecordsResponse, error)
@@ -42,81 +42,81 @@ type TurbineServiceClient interface {
 	GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error)
 }
 
-type turbineServiceClient struct {
+type serviceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewTurbineServiceClient(cc grpc.ClientConnInterface) TurbineServiceClient {
-	return &turbineServiceClient{cc}
+func NewServiceClient(cc grpc.ClientConnInterface) ServiceClient {
+	return &serviceClient{cc}
 }
 
-func (c *turbineServiceClient) Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *serviceClient) Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, TurbineService_Init_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Service_Init_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *turbineServiceClient) AddSource(ctx context.Context, in *AddSourceRequest, opts ...grpc.CallOption) (*AddSourceResponse, error) {
+func (c *serviceClient) AddSource(ctx context.Context, in *AddSourceRequest, opts ...grpc.CallOption) (*AddSourceResponse, error) {
 	out := new(AddSourceResponse)
-	err := c.cc.Invoke(ctx, TurbineService_AddSource_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Service_AddSource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *turbineServiceClient) ReadRecords(ctx context.Context, in *ReadRecordsRequest, opts ...grpc.CallOption) (*ReadRecordsResponse, error) {
+func (c *serviceClient) ReadRecords(ctx context.Context, in *ReadRecordsRequest, opts ...grpc.CallOption) (*ReadRecordsResponse, error) {
 	out := new(ReadRecordsResponse)
-	err := c.cc.Invoke(ctx, TurbineService_ReadRecords_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Service_ReadRecords_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *turbineServiceClient) ProcessRecords(ctx context.Context, in *ProcessRecordsRequest, opts ...grpc.CallOption) (*ProcessRecordsResponse, error) {
+func (c *serviceClient) ProcessRecords(ctx context.Context, in *ProcessRecordsRequest, opts ...grpc.CallOption) (*ProcessRecordsResponse, error) {
 	out := new(ProcessRecordsResponse)
-	err := c.cc.Invoke(ctx, TurbineService_ProcessRecords_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Service_ProcessRecords_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *turbineServiceClient) AddDestination(ctx context.Context, in *AddDestinationRequest, opts ...grpc.CallOption) (*AddDestinationResponse, error) {
+func (c *serviceClient) AddDestination(ctx context.Context, in *AddDestinationRequest, opts ...grpc.CallOption) (*AddDestinationResponse, error) {
 	out := new(AddDestinationResponse)
-	err := c.cc.Invoke(ctx, TurbineService_AddDestination_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Service_AddDestination_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *turbineServiceClient) WriteRecords(ctx context.Context, in *WriteRecordsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *serviceClient) WriteRecords(ctx context.Context, in *WriteRecordsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, TurbineService_WriteRecords_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Service_WriteRecords_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *turbineServiceClient) GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error) {
+func (c *serviceClient) GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error) {
 	out := new(GetSpecResponse)
-	err := c.cc.Invoke(ctx, TurbineService_GetSpec_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Service_GetSpec_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// TurbineServiceServer is the server API for TurbineService service.
-// All implementations must embed UnimplementedTurbineServiceServer
+// ServiceServer is the server API for Service service.
+// All implementations must embed UnimplementedServiceServer
 // for forward compatibility
-type TurbineServiceServer interface {
+type ServiceServer interface {
 	Init(context.Context, *InitRequest) (*emptypb.Empty, error)
 	AddSource(context.Context, *AddSourceRequest) (*AddSourceResponse, error)
 	ReadRecords(context.Context, *ReadRecordsRequest) (*ReadRecordsResponse, error)
@@ -124,207 +124,207 @@ type TurbineServiceServer interface {
 	AddDestination(context.Context, *AddDestinationRequest) (*AddDestinationResponse, error)
 	WriteRecords(context.Context, *WriteRecordsRequest) (*emptypb.Empty, error)
 	GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error)
-	mustEmbedUnimplementedTurbineServiceServer()
+	mustEmbedUnimplementedServiceServer()
 }
 
-// UnimplementedTurbineServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedTurbineServiceServer struct {
+// UnimplementedServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedServiceServer struct {
 }
 
-func (UnimplementedTurbineServiceServer) Init(context.Context, *InitRequest) (*emptypb.Empty, error) {
+func (UnimplementedServiceServer) Init(context.Context, *InitRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Init not implemented")
 }
-func (UnimplementedTurbineServiceServer) AddSource(context.Context, *AddSourceRequest) (*AddSourceResponse, error) {
+func (UnimplementedServiceServer) AddSource(context.Context, *AddSourceRequest) (*AddSourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddSource not implemented")
 }
-func (UnimplementedTurbineServiceServer) ReadRecords(context.Context, *ReadRecordsRequest) (*ReadRecordsResponse, error) {
+func (UnimplementedServiceServer) ReadRecords(context.Context, *ReadRecordsRequest) (*ReadRecordsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadRecords not implemented")
 }
-func (UnimplementedTurbineServiceServer) ProcessRecords(context.Context, *ProcessRecordsRequest) (*ProcessRecordsResponse, error) {
+func (UnimplementedServiceServer) ProcessRecords(context.Context, *ProcessRecordsRequest) (*ProcessRecordsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProcessRecords not implemented")
 }
-func (UnimplementedTurbineServiceServer) AddDestination(context.Context, *AddDestinationRequest) (*AddDestinationResponse, error) {
+func (UnimplementedServiceServer) AddDestination(context.Context, *AddDestinationRequest) (*AddDestinationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddDestination not implemented")
 }
-func (UnimplementedTurbineServiceServer) WriteRecords(context.Context, *WriteRecordsRequest) (*emptypb.Empty, error) {
+func (UnimplementedServiceServer) WriteRecords(context.Context, *WriteRecordsRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WriteRecords not implemented")
 }
-func (UnimplementedTurbineServiceServer) GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error) {
+func (UnimplementedServiceServer) GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSpec not implemented")
 }
-func (UnimplementedTurbineServiceServer) mustEmbedUnimplementedTurbineServiceServer() {}
+func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
 
-// UnsafeTurbineServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to TurbineServiceServer will
+// UnsafeServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ServiceServer will
 // result in compilation errors.
-type UnsafeTurbineServiceServer interface {
-	mustEmbedUnimplementedTurbineServiceServer()
+type UnsafeServiceServer interface {
+	mustEmbedUnimplementedServiceServer()
 }
 
-func RegisterTurbineServiceServer(s grpc.ServiceRegistrar, srv TurbineServiceServer) {
-	s.RegisterService(&TurbineService_ServiceDesc, srv)
+func RegisterServiceServer(s grpc.ServiceRegistrar, srv ServiceServer) {
+	s.RegisterService(&Service_ServiceDesc, srv)
 }
 
-func _TurbineService_Init_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Service_Init_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(InitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TurbineServiceServer).Init(ctx, in)
+		return srv.(ServiceServer).Init(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TurbineService_Init_FullMethodName,
+		FullMethod: Service_Init_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).Init(ctx, req.(*InitRequest))
+		return srv.(ServiceServer).Init(ctx, req.(*InitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_AddSource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Service_AddSource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AddSourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TurbineServiceServer).AddSource(ctx, in)
+		return srv.(ServiceServer).AddSource(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TurbineService_AddSource_FullMethodName,
+		FullMethod: Service_AddSource_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).AddSource(ctx, req.(*AddSourceRequest))
+		return srv.(ServiceServer).AddSource(ctx, req.(*AddSourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_ReadRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Service_ReadRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadRecordsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TurbineServiceServer).ReadRecords(ctx, in)
+		return srv.(ServiceServer).ReadRecords(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TurbineService_ReadRecords_FullMethodName,
+		FullMethod: Service_ReadRecords_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).ReadRecords(ctx, req.(*ReadRecordsRequest))
+		return srv.(ServiceServer).ReadRecords(ctx, req.(*ReadRecordsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_ProcessRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Service_ProcessRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ProcessRecordsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TurbineServiceServer).ProcessRecords(ctx, in)
+		return srv.(ServiceServer).ProcessRecords(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TurbineService_ProcessRecords_FullMethodName,
+		FullMethod: Service_ProcessRecords_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).ProcessRecords(ctx, req.(*ProcessRecordsRequest))
+		return srv.(ServiceServer).ProcessRecords(ctx, req.(*ProcessRecordsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_AddDestination_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Service_AddDestination_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AddDestinationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TurbineServiceServer).AddDestination(ctx, in)
+		return srv.(ServiceServer).AddDestination(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TurbineService_AddDestination_FullMethodName,
+		FullMethod: Service_AddDestination_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).AddDestination(ctx, req.(*AddDestinationRequest))
+		return srv.(ServiceServer).AddDestination(ctx, req.(*AddDestinationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_WriteRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Service_WriteRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WriteRecordsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TurbineServiceServer).WriteRecords(ctx, in)
+		return srv.(ServiceServer).WriteRecords(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TurbineService_WriteRecords_FullMethodName,
+		FullMethod: Service_WriteRecords_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).WriteRecords(ctx, req.(*WriteRecordsRequest))
+		return srv.(ServiceServer).WriteRecords(ctx, req.(*WriteRecordsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TurbineService_GetSpec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Service_GetSpec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSpecRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TurbineServiceServer).GetSpec(ctx, in)
+		return srv.(ServiceServer).GetSpec(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TurbineService_GetSpec_FullMethodName,
+		FullMethod: Service_GetSpec_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).GetSpec(ctx, req.(*GetSpecRequest))
+		return srv.(ServiceServer).GetSpec(ctx, req.(*GetSpecRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// TurbineService_ServiceDesc is the grpc.ServiceDesc for TurbineService service.
+// Service_ServiceDesc is the grpc.ServiceDesc for Service service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var TurbineService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "turbine.v2.TurbineService",
-	HandlerType: (*TurbineServiceServer)(nil),
+var Service_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "turbine.v2.Service",
+	HandlerType: (*ServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Init",
-			Handler:    _TurbineService_Init_Handler,
+			Handler:    _Service_Init_Handler,
 		},
 		{
 			MethodName: "AddSource",
-			Handler:    _TurbineService_AddSource_Handler,
+			Handler:    _Service_AddSource_Handler,
 		},
 		{
 			MethodName: "ReadRecords",
-			Handler:    _TurbineService_ReadRecords_Handler,
+			Handler:    _Service_ReadRecords_Handler,
 		},
 		{
 			MethodName: "ProcessRecords",
-			Handler:    _TurbineService_ProcessRecords_Handler,
+			Handler:    _Service_ProcessRecords_Handler,
 		},
 		{
 			MethodName: "AddDestination",
-			Handler:    _TurbineService_AddDestination_Handler,
+			Handler:    _Service_AddDestination_Handler,
 		},
 		{
 			MethodName: "WriteRecords",
-			Handler:    _TurbineService_WriteRecords_Handler,
+			Handler:    _Service_WriteRecords_Handler,
 		},
 		{
 			MethodName: "GetSpec",
-			Handler:    _TurbineService_GetSpec_Handler,
+			Handler:    _Service_GetSpec_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -6,7 +6,7 @@ import (
 	"context"
 	"time"
 
-	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
+	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -15,12 +15,12 @@ var _ Client = (*TurbineClient)(nil)
 
 type Client interface {
 	Close()
-	pb.TurbineServiceClient
+	turbinev2.ServiceClient
 }
 
 type TurbineClient struct {
 	*grpc.ClientConn
-	pb.TurbineServiceClient
+	turbinev2.ServiceClient
 }
 
 func DialTimeout(addr string, timeout time.Duration) (*TurbineClient, error) {
@@ -41,8 +41,8 @@ func DialContext(ctx context.Context, addr string) (*TurbineClient, error) {
 	}
 
 	return &TurbineClient{
-		ClientConn:           c,
-		TurbineServiceClient: pb.NewTurbineServiceClient(c),
+		ClientConn:    c,
+		ServiceClient: turbinev2.NewServiceClient(c),
 	}, nil
 }
 

@@ -30,13 +30,13 @@ type TurbineCoreServer struct {
 
 func NewRunServer() *TurbineCoreServer {
 	s := grpc.NewServer()
-	turbinev2.RegisterTurbineServiceServer(s, NewRunService())
+	turbinev2.RegisterServiceServer(s, NewRunService())
 	return &TurbineCoreServer{Server: s}
 }
 
 func NewSpecBuilderServer() *TurbineCoreServer {
 	s := grpc.NewServer()
-	turbinev2.RegisterTurbineServiceServer(s, NewSpecBuilderService())
+	turbinev2.RegisterServiceServer(s, NewSpecBuilderService())
 	return &TurbineCoreServer{Server: s}
 }
 

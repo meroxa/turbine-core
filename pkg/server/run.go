@@ -13,10 +13,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var _ turbinev2.TurbineServiceServer = (*RunService)(nil)
+var _ turbinev2.ServiceServer = (*RunService)(nil)
 
 type RunService struct {
-	turbinev2.UnimplementedTurbineServiceServer
+	turbinev2.UnimplementedServiceServer
 
 	config  app.Config
 	appPath string
