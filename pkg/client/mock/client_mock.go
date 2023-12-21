@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	v2 "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
+	turbinev2 "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	grpc "google.golang.org/grpc"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
@@ -38,14 +38,14 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 }
 
 // AddDestination mocks base method.
-func (m *MockClient) AddDestination(ctx context.Context, in *v2.AddDestinationRequest, opts ...grpc.CallOption) (*v2.AddDestinationResponse, error) {
+func (m *MockClient) AddDestination(ctx context.Context, in *turbinev2.AddDestinationRequest, opts ...grpc.CallOption) (*turbinev2.AddDestinationResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "AddDestination", varargs...)
-	ret0, _ := ret[0].(*v2.AddDestinationResponse)
+	ret0, _ := ret[0].(*turbinev2.AddDestinationResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -58,14 +58,14 @@ func (mr *MockClientMockRecorder) AddDestination(ctx, in interface{}, opts ...in
 }
 
 // AddSource mocks base method.
-func (m *MockClient) AddSource(ctx context.Context, in *v2.AddSourceRequest, opts ...grpc.CallOption) (*v2.AddSourceResponse, error) {
+func (m *MockClient) AddSource(ctx context.Context, in *turbinev2.AddSourceRequest, opts ...grpc.CallOption) (*turbinev2.AddSourceResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "AddSource", varargs...)
-	ret0, _ := ret[0].(*v2.AddSourceResponse)
+	ret0, _ := ret[0].(*turbinev2.AddSourceResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -90,14 +90,14 @@ func (mr *MockClientMockRecorder) Close() *gomock.Call {
 }
 
 // GetSpec mocks base method.
-func (m *MockClient) GetSpec(ctx context.Context, in *v2.GetSpecRequest, opts ...grpc.CallOption) (*v2.GetSpecResponse, error) {
+func (m *MockClient) GetSpec(ctx context.Context, in *turbinev2.GetSpecRequest, opts ...grpc.CallOption) (*turbinev2.GetSpecResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "GetSpec", varargs...)
-	ret0, _ := ret[0].(*v2.GetSpecResponse)
+	ret0, _ := ret[0].(*turbinev2.GetSpecResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -110,7 +110,7 @@ func (mr *MockClientMockRecorder) GetSpec(ctx, in interface{}, opts ...interface
 }
 
 // Init mocks base method.
-func (m *MockClient) Init(ctx context.Context, in *v2.InitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (m *MockClient) Init(ctx context.Context, in *turbinev2.InitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
@@ -130,14 +130,14 @@ func (mr *MockClientMockRecorder) Init(ctx, in interface{}, opts ...interface{})
 }
 
 // ProcessRecords mocks base method.
-func (m *MockClient) ProcessRecords(ctx context.Context, in *v2.ProcessRecordsRequest, opts ...grpc.CallOption) (*v2.ProcessRecordsResponse, error) {
+func (m *MockClient) ProcessRecords(ctx context.Context, in *turbinev2.ProcessRecordsRequest, opts ...grpc.CallOption) (*turbinev2.ProcessRecordsResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "ProcessRecords", varargs...)
-	ret0, _ := ret[0].(*v2.ProcessRecordsResponse)
+	ret0, _ := ret[0].(*turbinev2.ProcessRecordsResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -150,14 +150,14 @@ func (mr *MockClientMockRecorder) ProcessRecords(ctx, in interface{}, opts ...in
 }
 
 // ReadRecords mocks base method.
-func (m *MockClient) ReadRecords(ctx context.Context, in *v2.ReadRecordsRequest, opts ...grpc.CallOption) (*v2.ReadRecordsResponse, error) {
+func (m *MockClient) ReadRecords(ctx context.Context, in *turbinev2.ReadRecordsRequest, opts ...grpc.CallOption) (*turbinev2.ReadRecordsResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "ReadRecords", varargs...)
-	ret0, _ := ret[0].(*v2.ReadRecordsResponse)
+	ret0, _ := ret[0].(*turbinev2.ReadRecordsResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -170,7 +170,7 @@ func (mr *MockClientMockRecorder) ReadRecords(ctx, in interface{}, opts ...inter
 }
 
 // WriteRecords mocks base method.
-func (m *MockClient) WriteRecords(ctx context.Context, in *v2.WriteRecordsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (m *MockClient) WriteRecords(ctx context.Context, in *turbinev2.WriteRecordsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
