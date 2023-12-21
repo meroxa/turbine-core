@@ -92,7 +92,9 @@ func (s *SpecBuilderService) AddDestination(_ context.Context, req *turbinev2.Ad
 		return nil, err
 	}
 
-	return &turbinev2.AddDestinationResponse{StreamName: c.UUID}, nil
+	return &turbinev2.AddDestinationResponse{
+		Id: c.UUID,
+	}, nil
 }
 
 func (s *SpecBuilderService) WriteRecords(_ context.Context, req *turbinev2.WriteRecordsRequest) (*emptypb.Empty, error) {

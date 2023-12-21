@@ -88,7 +88,7 @@ func (s *RunService) AddDestination(_ context.Context, req *turbinev2.AddDestina
 	}
 
 	return &turbinev2.AddDestinationResponse{
-		StreamName: req.Name,
+		Id: req.Name,
 	}, nil
 }
 

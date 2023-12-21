@@ -333,6 +333,17 @@ func (m *AddSourceResponse) validate(all bool) error {
 
 	var errors []error
 
+	if utf8.RuneCountInString(m.GetId()) < 1 {
+		err := AddSourceResponseValidationError{
+			field:  "Id",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if utf8.RuneCountInString(m.GetStreamName()) < 1 {
 		err := AddSourceResponseValidationError{
 			field:  "StreamName",
@@ -1167,9 +1178,9 @@ func (m *AddDestinationResponse) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetStreamName()) < 1 {
+	if utf8.RuneCountInString(m.GetId()) < 1 {
 		err := AddDestinationResponseValidationError{
-			field:  "StreamName",
+			field:  "Id",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {

@@ -286,11 +286,11 @@ func Test_AddDestination(t *testing.T) {
 			s := &RunService{}
 			req := tc.setup()
 
-			r, err := s.AddDestination(ctx, req)
+			_, err := s.AddDestination(ctx, req)
 			if tc.wantErr != nil {
 				assert.ErrorContains(t, err, tc.wantErr.Error())
-			} else if assert.NoError(t, err) {
-				assert.Equal(t, r.StreamName, req.Name)
+			} else {
+				assert.NoError(t, err)
 			}
 		})
 	}

@@ -38,14 +38,14 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 }
 
 // AddDestination mocks base method.
-func (m *MockClient) AddDestination(ctx context.Context, in *turbinev2.AddDestinationRequest, opts ...grpc.CallOption) (*turbinev2.AddDestinationResponse, error) {
+func (m *MockClient) AddDestination(ctx context.Context, in *turbinev2.AddDestinationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "AddDestination", varargs...)
-	ret0, _ := ret[0].(*turbinev2.AddDestinationResponse)
+	ret0, _ := ret[0].(*emptypb.Empty)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
