@@ -244,13 +244,6 @@ func TestWriteRecords(t *testing.T) {
 			req: &turbinev2.WriteRecordsRequest{
 				StreamRecords: &turbinev2.StreamRecords{
 					Records: []*opencdcv1.Record{},
-					/*
-						Records: []*turbinev2.Record{
-							{
-								Key:   "1",
-								Value: []byte(`{"1":"record-value"}`),
-							},
-						}, */
 				},
 			},
 		},
@@ -316,39 +309,29 @@ func TestProcessRecords(t *testing.T) {
 		}
 	)
 
-	ar := &turbinev2.AddSourceRequest{
+	asr, err := s.AddSource(ctx, &turbinev2.AddSourceRequest{
 		Name: "my-source",
 		Plugin: &turbinev2.Plugin{
 			Name: "builtin:postgres@1.0.0",
 		},
-	}
+	})
+	require.NoError(t, err)
 
-	asr, err := s.AddSource(ctx, ar)
-	assert.NoError(t, err)
-
-	req := turbinev2.ProcessRecordsRequest{
+	res, err := s.ProcessRecords(ctx, &turbinev2.ProcessRecordsRequest{
 		Process: &turbinev2.ProcessRecordsRequest_Process{
 			Name: "synchronize",
 		},
 		StreamRecords: &turbinev2.StreamRecords{
-			Records: []*opencdcv1.Record{},
-			/* Records: []*turbinev2.Record{
-				{
-					Key:   "1",
-					Value: []byte(`{"1":"record-value"}`),
-				},
-			}, */
+			Records:    []*opencdcv1.Record{},
+			StreamName: asr.StreamName,
 		},
-	}
+	})
+	require.NoError(t, err)
 
-	req.StreamRecords.StreamName = asr.StreamName
-	res, err := s.ProcessRecords(ctx, &req)
-
-	require.Nil(t, err)
 	require.NotEmpty(t, res)
 	require.NotEmpty(t, s.spec.Functions)
-	require.Equal(t, s.spec.Functions[0].Name, want.Functions[0].Name)
 	require.Equal(t, s.spec.Streams[0].FromUUID, asr.StreamName)
+	require.Equal(t, s.spec.Functions[0].Name, want.Functions[0].Name)
 	require.Equal(t, s.spec.Streams[0].ToUUID, res.StreamRecords.StreamName)
 }
 

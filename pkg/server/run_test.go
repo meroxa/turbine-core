@@ -168,7 +168,7 @@ func Test_ReadRecords(t *testing.T) {
 	tests := []struct {
 		desc        string
 		srv         *RunService
-		setup       func() *turbinev2.ReadRecordsRequest
+		setup       func(*testing.T) *turbinev2.ReadRecordsRequest
 		wantRecords *turbinev2.ReadRecordsResponse
 		wantErr     error
 	}{
@@ -176,7 +176,7 @@ func Test_ReadRecords(t *testing.T) {
 			desc:    "fails when source is missing",
 			srv:     &RunService{},
 			wantErr: errors.New("invalid ReadRecordsRequest.SourceStream: value length must be at least 1 runes"),
-			setup: func() *turbinev2.ReadRecordsRequest {
+			setup: func(_ *testing.T) *turbinev2.ReadRecordsRequest {
 				return &turbinev2.ReadRecordsRequest{}
 			},
 		},
@@ -191,13 +191,12 @@ func Test_ReadRecords(t *testing.T) {
 				},
 			},
 			wantErr: errors.New("no such file or directory"),
-			setup: func() *turbinev2.ReadRecordsRequest {
+			setup: func(_ *testing.T) *turbinev2.ReadRecordsRequest {
 				return &turbinev2.ReadRecordsRequest{
 					SourceStream: "resource",
 				}
 			},
 		},
-		/* Skip until fixture serialization to Record works.
 		{
 			desc: "success",
 			srv: &RunService{
@@ -214,14 +213,15 @@ func Test_ReadRecords(t *testing.T) {
 					Records:    []*opencdcv1.Record{testProtoRecord(t)},
 				},
 			},
-			setup: func() *turbinev2.ReadRecordsRequest {
+			setup: func(t *testing.T) *turbinev2.ReadRecordsRequest {
+				t.Skipf("Fixture serialization is incomplete, skipping test..")
+
 				file := path.Join(tempdir, "fixture.json")
 				require.NoError(t, os.WriteFile(file, testOpenCDCRecord, 0o644))
 
 				return &turbinev2.ReadRecordsRequest{SourceStream: "source"}
 			},
 		},
-		*/
 		{
 			desc: "wrong fixture source name",
 			srv: &RunService{
@@ -233,7 +233,7 @@ func Test_ReadRecords(t *testing.T) {
 				},
 			},
 			wantErr: errors.New("no fixture file found for source pg"),
-			setup: func() *turbinev2.ReadRecordsRequest {
+			setup: func(_ *testing.T) *turbinev2.ReadRecordsRequest {
 				file := path.Join(tempdir, "fixture.json")
 				require.NoError(t, os.WriteFile(file, testOpenCDCRecord, 0o644))
 
@@ -244,7 +244,7 @@ func Test_ReadRecords(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			req := tc.setup()
+			req := tc.setup(t)
 
 			c, err := tc.srv.ReadRecords(ctx, req)
 			if tc.wantErr != nil {
