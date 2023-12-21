@@ -1,358 +1,540 @@
-{
-  "collection_name": [
-    {
-      "key": "1",
-      "value": {
-        "schema": {
-            "type": "struct",
-            "fields": [
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "id", "optional": false, "type": "int32" },
-                  { "field": "category", "optional": false, "type": "string" },
-                  { "field": "product_type", "optional": false, "type": "string" },
-                  { "field": "product_name", "optional": false, "type": "string" },
-                  { "field": "stock", "optional": false, "type": "boolean" },
-                  { "field": "product_id", "optional": false, "type": "int32" },
-                  { "field": "shipping_address", "optional": false, "type": "string" },
-                  { "field": "customer_email", "optional": false, "type": "varchar" }
-                ],
-                "optional": true,
-                "name": "resource.public.collection_name.Value",
-                "field": "before"
-              },
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "id", "optional": false, "type": "int32" },
-                  { "field": "category", "optional": false, "type": "string" },
-                  { "field": "product_type", "optional": false, "type": "string" },
-                  { "field": "product_name", "optional": false, "type": "string" },
-                  { "field": "stock", "optional": false, "type": "boolean" },
-                  { "field": "product_id", "optional": false, "type": "int32" },
-                  { "field": "shipping_address", "optional": false, "type": "string" },
-                  { "field": "customer_email", "optional": false, "type": "varchar" }
-                ],
-                "optional": true,
-                "name": "resource.public.collection_name.Value",
-                "field": "after"
-              },
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "version", "optional": false, "type": "string" },
-                  { "field": "connector", "optional": false, "type": "string" },
-                  { "field": "name", "optional": false, "type": "string" },
-                  { "field": "ts_ms", "optional": false, "type": "int64" },
-                  {
-                    "name": "io.debezium.data.Enum",
-                    "optional": true,
-                    "type": "string",
-                    "version": 1,
-                    "parameters": { 
-                        "allowed": "true,last,false" 
-                    },
-                    "default": "false",
-                    "field": "snapshot"
-                  },
-                  { "field": "db", "optional": false, "type": "string" },
-                  { "field": "schema", "optional": false, "type": "string" },
-                  { "field": "table", "optional": false, "type": "string" },
-                  { "field": "txId", "optional": true, "type": "int64" },
-                  { "field": "lsn", "optional": true, "type": "int64" },
-                  { "field": "xmin", "optional": true, "type": "int64" }
-                ],
-                "optional": false,
-                "name": "io.debezium.connector.postgresql.Source",
-                "field": "source"
-              },
-              { "field": "op", "optional": false, "type": "string" },
-              { "field": "ts_ms", "optional": true, "type": "int64" },
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "id", "optional": false, "type": "string" },
-                  { "field": "total_order", "optional": false, "type": "int64" },
-                  {
-                    "field": "data_collection_order",
-                    "optional": false,
-                    "type": "int64"
-                  }
-                ],
-                "optional": true,
-                "field": "transaction"
-              }
-            ],
-            "optional": false,
-            "name": "resource.public.collection_name.Envelope"
-        },
-        "payload": {
-          "before": null,
-          "after": {
-            "id": 9582724,
-            "category": "camping",
-            "product_type": "sleeping-bag",
-            "product_name": "Forte 35 Sleeping Bag - Womens",
-            "stock": true,
-            "product_id": 361632,
-            "shipping_address": "9718 East Virginia Avenue Silver Spring, MD 20901",
-            "customer_email": "usera@example.com"
-          },
-          "source": {
-            "version": "1.2.5.Final",
-            "connector": "postgresql",
-            "name": "source_name",
-            "ts_ms": 1644362356740,
-            "snapshot": "true",
-            "db": "database",
-            "schema": "public",
-            "table": "collection_name",
-            "lsn": 537810437656,
-            "txId": 8680,
-            "xmin": null
-          },
-          "op": "r",
-          "ts_ms": 1644362356743,
-          "transaction": null
-        }
-      }
+[
+  {
+    "position": "MC9DNTQ2Q0Iw",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257132000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
     },
-    {
-      "key": "2",
-      "value": {
-        "schema": {
-            "type": "struct",
-            "fields": [
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "id", "optional": false, "type": "int32" },
-                  { "field": "category", "optional": false, "type": "string" },
-                  { "field": "product_type", "optional": false, "type": "string" },
-                  { "field": "product_name", "optional": false, "type": "string" },
-                  { "field": "stock", "optional": false, "type": "boolean" },
-                  { "field": "product_id", "optional": false, "type": "int32" },
-                  { "field": "shipping_address", "optional": false, "type": "string" },
-                  { "field": "customer_email", "optional": false, "type": "varchar" }
-                ],
-                "optional": true,
-                "name": "resource.public.collection_name.Value",
-                "field": "before"
-              },
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "id", "optional": false, "type": "int32" },
-                  { "field": "category", "optional": false, "type": "string" },
-                  { "field": "product_type", "optional": false, "type": "string" },
-                  { "field": "product_name", "optional": false, "type": "string" },
-                  { "field": "stock", "optional": false, "type": "boolean" },
-                  { "field": "product_id", "optional": false, "type": "int32" },
-                  { "field": "shipping_address", "optional": false, "type": "string" },
-                  { "field": "customer_email", "optional": false, "type": "varchar" }
-                ],
-                "optional": true,
-                "name": "resource.public.collection_name.Value",
-                "field": "after"
-              },
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "version", "optional": false, "type": "string" },
-                  { "field": "connector", "optional": false, "type": "string" },
-                  { "field": "name", "optional": false, "type": "string" },
-                  { "field": "ts_ms", "optional": false, "type": "int64" },
-                  {
-                    "name": "io.debezium.data.Enum",
-                    "optional": true,
-                    "type": "string",
-                    "version": 1,
-                    "parameters": { 
-                        "allowed": "true,last,false" 
-                    },
-                    "default": "false",
-                    "field": "snapshot"
-                  },
-                  { "field": "db", "optional": false, "type": "string" },
-                  { "field": "schema", "optional": false, "type": "string" },
-                  { "field": "table", "optional": false, "type": "string" },
-                  { "field": "txId", "optional": true, "type": "int64" },
-                  { "field": "lsn", "optional": true, "type": "int64" },
-                  { "field": "xmin", "optional": true, "type": "int64" }
-                ],
-                "optional": false,
-                "name": "io.debezium.connector.postgresql.Source",
-                "field": "source"
-              },
-              { "field": "op", "optional": false, "type": "string" },
-              { "field": "ts_ms", "optional": true, "type": "int64" },
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "id", "optional": false, "type": "string" },
-                  { "field": "total_order", "optional": false, "type": "int64" },
-                  {
-                    "field": "data_collection_order",
-                    "optional": false,
-                    "type": "int64"
-                  }
-                ],
-                "optional": true,
-                "field": "transaction"
-              }
-            ],
-            "optional": false,
-            "name": "resource.public.collection_name.Envelope"
-        },
-        "payload": {
-          "before": null,
-          "after": {
-            "id": 9582725,
-            "category": "camping",
-            "product_type": "sleeping-bag",
-            "product_name": "Cosmic 20 Sleeping Bag - Mens",
-            "stock": true,
-            "product_id": 235367,
-            "shipping_address": "881 South Newbridge Lane Upland, CA 91784",
-            "customer_email": "userb@example.com"
-          },
-          "source": {
-            "version": "1.2.5.Final",
-            "connector": "postgresql",
-            "name": "source_name",
-            "ts_ms": 1644362356740,
-            "snapshot": "true",
-            "db": "database",
-            "schema": "public",
-            "table": "collection_name",
-            "lsn": 537810437656,
-            "txId": 8680,
-            "xmin": null
-          },
-          "op": "r",
-          "ts_ms": 1644362356743,
-          "transaction": null
-        }
-      }
+    "key": {
+      "id": 1
     },
-    {
-      "key": "3",
-      "value": {
-        "schema": {
-            "type": "struct",
-            "fields": [
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "id", "optional": false, "type": "int32" },
-                  { "field": "category", "optional": false, "type": "string" },
-                  { "field": "product_type", "optional": false, "type": "string" },
-                  { "field": "product_name", "optional": false, "type": "string" },
-                  { "field": "stock", "optional": false, "type": "boolean" },
-                  { "field": "product_id", "optional": false, "type": "int32" },
-                  { "field": "shipping_address", "optional": false, "type": "string" },
-                  { "field": "customer_email", "optional": false, "type": "varchar" }
-                ],
-                "optional": true,
-                "name": "resource.public.collection_name.Value",
-                "field": "before"
-              },
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "id", "optional": false, "type": "int32" },
-                  { "field": "category", "optional": false, "type": "string" },
-                  { "field": "product_type", "optional": false, "type": "string" },
-                  { "field": "product_name", "optional": false, "type": "string" },
-                  { "field": "stock", "optional": false, "type": "boolean" },
-                  { "field": "product_id", "optional": false, "type": "int32" },
-                  { "field": "shipping_address", "optional": false, "type": "string" },
-                  { "field": "customer_email", "optional": false, "type": "varchar" }
-                ],
-                "optional": true,
-                "name": "resource.public.collection_name.Value",
-                "field": "after"
-              },
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "version", "optional": false, "type": "string" },
-                  { "field": "connector", "optional": false, "type": "string" },
-                  { "field": "name", "optional": false, "type": "string" },
-                  { "field": "ts_ms", "optional": false, "type": "int64" },
-                  {
-                    "name": "io.debezium.data.Enum",
-                    "optional": true,
-                    "type": "string",
-                    "version": 1,
-                    "parameters": { 
-                        "allowed": "true,last,false" 
-                    },
-                    "default": "false",
-                    "field": "snapshot"
-                  },
-                  { "field": "db", "optional": false, "type": "string" },
-                  { "field": "schema", "optional": false, "type": "string" },
-                  { "field": "table", "optional": false, "type": "string" },
-                  { "field": "txId", "optional": true, "type": "int64" },
-                  { "field": "lsn", "optional": true, "type": "int64" },
-                  { "field": "xmin", "optional": true, "type": "int64" }
-                ],
-                "optional": false,
-                "name": "io.debezium.connector.postgresql.Source",
-                "field": "source"
-              },
-              { "field": "op", "optional": false, "type": "string" },
-              { "field": "ts_ms", "optional": true, "type": "int64" },
-              {
-                "type": "struct",
-                "fields": [
-                  { "field": "id", "optional": false, "type": "string" },
-                  { "field": "total_order", "optional": false, "type": "int64" },
-                  {
-                    "field": "data_collection_order",
-                    "optional": false,
-                    "type": "int64"
-                  }
-                ],
-                "optional": true,
-                "field": "transaction"
-              }
-            ],
-            "optional": false,
-            "name": "resource.public.collection_name.Envelope"
-        },
-        "payload": {
-          "before": null,
-          "after": {
-            "id": 9582726,
-            "category": "camping",
-            "product_type": "sleeping-bag",
-            "product_name": "Zephyr 25 Recycled Sleeping Bag - Kid",
-            "stock": true,
-            "product_id": 203000,
-            "shipping_address": "43 Sunnyslope Street Port Richey, FL 34668",
-            "customer_email": "userc@example.com"
-          },
-          "source": {
-            "version": "1.2.5.Final",
-            "connector": "postgresql",
-            "name": "source_name",
-            "ts_ms": 1644362356740,
-            "snapshot": "true",
-            "db": "database",
-            "schema": "public",
-            "table": "collection_name",
-            "lsn": 537810437656,
-            "txId": 8680,
-            "xmin": null
-          },
-          "op": "r",
-          "ts_ms": 1644362356743,
-          "transaction": null
-        }
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Electronics",
+        "customer_email": "customer1@example.com",
+        "id": 1,
+        "product_id": 101,
+        "product_name": "Example Laptop 1",
+        "product_type": "Laptop",
+        "shipping_address": "123 Main St, Cityville",
+        "stock": true
       }
     }
-  ]
-}
+  },
+  {
+    "position": "MC9DNTQ2REYw",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257143000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 2
+    },
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Clothing",
+        "customer_email": "customer2@example.com",
+        "id": 2,
+        "product_id": 102,
+        "product_name": "Running Shoes 1",
+        "product_type": "Shoes",
+        "shipping_address": "456 Oak St, Townsville",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ2RUM4",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257244000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 3
+    },
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Home Goods",
+        "customer_email": "customer3@example.com",
+        "id": 3,
+        "product_id": 103,
+        "product_name": "Coffee Table 1",
+        "product_type": "Furniture",
+        "shipping_address": "789 Pine St, Villageton",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ2RkE4",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257268000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 4
+    },
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Electronics",
+        "customer_email": "customer4@example.com",
+        "id": 4,
+        "product_id": 104,
+        "product_name": "Example Phone 1",
+        "product_type": "Smartphone",
+        "shipping_address": "101 Elm St, Hamletown",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3MDg4",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257279000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 5
+    },
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Clothing",
+        "customer_email": "customer5@example.com",
+        "id": 5,
+        "product_id": 105,
+        "product_name": "Graphic Tee 1",
+        "product_type": "T-Shirt",
+        "shipping_address": "202 Birch St, Woodsville",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3MTYw",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257292000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 6
+    },
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Home Goods",
+        "customer_email": "customer6@example.com",
+        "id": 6,
+        "product_id": 106,
+        "product_name": "Microwave 1",
+        "product_type": "Appliance",
+        "shipping_address": "303 Maple St, Orchard City",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3MjQw",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257308000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 7
+    },
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Electronics",
+        "customer_email": "customer7@example.com",
+        "id": 7,
+        "product_id": 107,
+        "product_name": "Over-ear Headphones 1",
+        "product_type": "Headphones",
+        "shipping_address": "404 Cedar St, Forestville",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3MzI4",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257323000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 8
+    },
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Clothing",
+        "customer_email": "customer8@example.com",
+        "id": 8,
+        "product_id": 108,
+        "product_name": "Denim Jeans 1",
+        "product_type": "Jeans",
+        "shipping_address": "505 Redwood St, Groveton",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3NDAw",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257350000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 9
+    },
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Home Goods",
+        "customer_email": "customer9@example.com",
+        "id": 9,
+        "product_id": 109,
+        "product_name": "Desk Lamp 1",
+        "product_type": "Lighting",
+        "shipping_address": "606 Walnut St, Riverside",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3NEUw",
+    "operation": "create",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019966257427000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 10
+    },
+    "payload": {
+      "before": null,
+      "after": {
+        "category": "Electronics",
+        "customer_email": "customer10@example.com",
+        "id": 10,
+        "product_id": 110,
+        "product_name": "Example Tablet 1",
+        "product_type": "Tablet",
+        "shipping_address": "707 Pineapple St, Beachville",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3NUY4",
+    "operation": "update",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971692922000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 1
+    },
+    "payload": {
+      "before": {
+        "category": "Electronics",
+        "customer_email": "customer1@example.com",
+        "id": 1,
+        "product_id": 101,
+        "product_name": "Example Laptop 1",
+        "product_type": "Laptop",
+        "shipping_address": "123 Main St, Cityville",
+        "stock": true
+      },
+      "after": {
+        "category": "Electronics Updated",
+        "customer_email": "customer1@example.com",
+        "id": 1,
+        "product_id": 101,
+        "product_name": "Example Laptop 1",
+        "product_type": "Laptop",
+        "shipping_address": "Updated Address 1",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3NzQw",
+    "operation": "update",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971693273000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 2
+    },
+    "payload": {
+      "before": {
+        "category": "Clothing",
+        "customer_email": "customer2@example.com",
+        "id": 2,
+        "product_id": 102,
+        "product_name": "Running Shoes 1",
+        "product_type": "Shoes",
+        "shipping_address": "456 Oak St, Townsville",
+        "stock": true
+      },
+      "after": {
+        "category": "Clothing",
+        "customer_email": "updated_customer2@example.com",
+        "id": 2,
+        "product_id": 102,
+        "product_name": "Running Shoes 1",
+        "product_type": "Shoes Updated",
+        "shipping_address": "456 Oak St, Townsville",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3ODg4",
+    "operation": "delete",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971693557000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 3
+    },
+    "payload": {
+      "before": null,
+      "after": null
+    }
+  },
+  {
+    "position": "MC9DNTQ3OTYw",
+    "operation": "update",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971693771000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 4
+    },
+    "payload": {
+      "before": {
+        "category": "Electronics",
+        "customer_email": "customer4@example.com",
+        "id": 4,
+        "product_id": 104,
+        "product_name": "Example Phone 1",
+        "product_type": "Smartphone",
+        "shipping_address": "101 Elm St, Hamletown",
+        "stock": true
+      },
+      "after": {
+        "category": "Electronics Updated",
+        "customer_email": "customer4@example.com",
+        "id": 4,
+        "product_id": 104,
+        "product_name": "Example Phone 1",
+        "product_type": "Smartphone Updated",
+        "shipping_address": "Updated Address 4",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3QUIw",
+    "operation": "delete",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971694028000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 5
+    },
+    "payload": {
+      "before": null,
+      "after": null
+    }
+  },
+  {
+    "position": "MC9DNTQ3Qjgw",
+    "operation": "update",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971694206000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 6
+    },
+    "payload": {
+      "before": {
+        "category": "Home Goods",
+        "customer_email": "customer6@example.com",
+        "id": 6,
+        "product_id": 106,
+        "product_name": "Microwave 1",
+        "product_type": "Appliance",
+        "shipping_address": "303 Maple St, Orchard City",
+        "stock": true
+      },
+      "after": {
+        "category": "Home Goods",
+        "customer_email": "updated_customer6@example.com",
+        "id": 6,
+        "product_id": 106,
+        "product_name": "Microwave 1",
+        "product_type": "Appliance",
+        "shipping_address": "Updated Address 6",
+        "stock": true
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3Q0Qw",
+    "operation": "update",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971694430000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 7
+    },
+    "payload": {
+      "before": {
+        "category": "Electronics",
+        "customer_email": "customer7@example.com",
+        "id": 7,
+        "product_id": 107,
+        "product_name": "Over-ear Headphones 1",
+        "product_type": "Headphones",
+        "shipping_address": "404 Cedar St, Forestville",
+        "stock": true
+      },
+      "after": {
+        "category": "Electronics Updated",
+        "customer_email": "customer7@example.com",
+        "id": 7,
+        "product_id": 107,
+        "product_name": "Over-ear Headphones 1",
+        "product_type": "Headphones Updated",
+        "shipping_address": "404 Cedar St, Forestville",
+        "stock": false
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ3RTM4",
+    "operation": "delete",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971694578000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 8
+    },
+    "payload": {
+      "before": null,
+      "after": null
+    }
+  },
+  {
+    "position": "MC9DNTQ3RjA4",
+    "operation": "update",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971695115000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 9
+    },
+    "payload": {
+      "before": {
+        "category": "Home Goods",
+        "customer_email": "customer9@example.com",
+        "id": 9,
+        "product_id": 109,
+        "product_name": "Desk Lamp 1",
+        "product_type": "Lighting",
+        "shipping_address": "606 Walnut St, Riverside",
+        "stock": true
+      },
+      "after": {
+        "category": "Home Goods",
+        "customer_email": "updated_customer9@example.com",
+        "id": 9,
+        "product_id": 109,
+        "product_name": "Desk Lamp 1",
+        "product_type": "Lighting",
+        "shipping_address": "606 Walnut St, Riverside",
+        "stock": false
+      }
+    }
+  },
+  {
+    "position": "MC9DNTQ4MDcw",
+    "operation": "delete",
+    "metadata": {
+      "conduit.source.connector.id": "pg-cdc-to-file:pg-cdc",
+      "opencdc.readAt": "1703019971695820000",
+      "opencdc.version": "v1",
+      "postgres.table": "orders"
+    },
+    "key": {
+      "id": 10
+    },
+    "payload": {
+      "before": null,
+      "after": null
+    }
+  }
+]

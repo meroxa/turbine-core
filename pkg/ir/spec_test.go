@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/heimdalr/dag"
 	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -341,7 +342,7 @@ func Test_WrongDestinationConnector(t *testing.T) {
 
 // Scenario 1 - Simple DAG
 // source → fn -> dest
-// ( src_con ) → (stream) → (function) → (stream) → (dest1)
+// ( src_con ) → (stream) → (function) → (stream) → (dest1) .
 func Test_Scenario1(t *testing.T) {
 	var spec ir.DeploymentSpec
 	spec.Definition.Metadata.SpecVersion = ir.SpecVersion_v3
@@ -765,7 +766,7 @@ func Test_DAGScenario6(t *testing.T) {
 		},
 	}
 
-	err := spec.AddSource(
+	require.NoError(t, spec.AddSource(
 		&ir.ConnectorSpec{
 			UUID:       "1",
 			PluginName: "mongo",
@@ -775,48 +776,41 @@ func Test_DAGScenario6(t *testing.T) {
 				"config":     "value",
 			},
 		},
-	)
+	))
 
-	require.NoError(t, err)
-
-	err = spec.AddFunction(
+	require.NoError(t, spec.AddFunction(
 		&ir.FunctionSpec{
 			UUID: "2",
 			Name: "addition_first_function",
 		},
-	)
-	require.NoError(t, err)
+	))
 
-	err = spec.AddStream(
+	require.NoError(t, spec.AddStream(
 		&ir.StreamSpec{
 			UUID:     "1_2",
 			Name:     "my_stream1",
 			FromUUID: "1",
 			ToUUID:   "2",
 		},
-	)
+	))
 
-	require.NoError(t, err)
-
-	err = spec.AddFunction(
+	require.NoError(t, spec.AddFunction(
 		&ir.FunctionSpec{
 			UUID: "3",
 			Name: "subtraction_second_function",
 		},
-	)
-	require.NoError(t, err)
+	))
 
-	err = spec.AddStream(
+	require.NoError(t, spec.AddStream(
 		&ir.StreamSpec{
 			UUID:     "2_3",
 			Name:     "my_stream4",
 			FromUUID: "2",
 			ToUUID:   "3",
 		},
-	)
-	require.NoError(t, err)
+	))
 
-	err = spec.AddDestination(
+	require.NoError(t, spec.AddDestination(
 		&ir.ConnectorSpec{
 			UUID:       "4",
 			PluginName: "pg",
@@ -826,20 +820,18 @@ func Test_DAGScenario6(t *testing.T) {
 				"config":     "value",
 			},
 		},
-	)
+	))
 
-	require.NoError(t, err)
-
-	err = spec.AddStream(
+	require.NoError(t, spec.AddStream(
 		&ir.StreamSpec{
 			UUID:     "3_4",
 			Name:     "my_stream4",
 			FromUUID: "3",
 			ToUUID:   "4",
 		},
-	)
+	))
 
-	err = spec.AddDestination(
+	require.NoError(t, spec.AddDestination(
 		&ir.ConnectorSpec{
 			UUID:       "5",
 			PluginName: "pg",
@@ -849,38 +841,34 @@ func Test_DAGScenario6(t *testing.T) {
 				"config":     "value",
 			},
 		},
-	)
+	))
 
-	err = spec.AddStream(
+	require.NoError(t, spec.AddStream(
 		&ir.StreamSpec{
 			UUID:     "2_5",
 			Name:     "my_stream5",
 			FromUUID: "2",
 			ToUUID:   "5",
 		},
-	)
+	))
 
-	require.NoError(t, err)
-
-	err = spec.AddFunction(
+	require.NoError(t, spec.AddFunction(
 		&ir.FunctionSpec{
 			UUID: "6",
 			Name: "multiplication_third_function",
 		},
-	)
-	require.NoError(t, err)
+	))
 
-	err = spec.AddStream(
+	require.NoError(t, spec.AddStream(
 		&ir.StreamSpec{
 			UUID:     "2_6",
 			Name:     "my_stream5",
 			FromUUID: "2",
 			ToUUID:   "6",
 		},
-	)
-	require.NoError(t, err)
+	))
 
-	err = spec.AddDestination(
+	require.NoError(t, spec.AddDestination(
 		&ir.ConnectorSpec{
 			UUID:       "7",
 			PluginName: "pg",
@@ -890,20 +878,17 @@ func Test_DAGScenario6(t *testing.T) {
 				"config":     "value",
 			},
 		},
-	)
-	require.NoError(t, err)
+	))
 
-	err = spec.AddStream(
+	require.NoError(t, spec.AddStream(
 		&ir.StreamSpec{
 			UUID:     "6_7",
 			Name:     "my_stream6",
 			FromUUID: "6",
 			ToUUID:   "7",
 		},
-	)
-	require.NoError(t, err)
-
-	_, err = spec.BuildDAG()
+	))
+	_, err := spec.BuildDAG()
 	require.NoError(t, err)
 }
 
@@ -1181,54 +1166,81 @@ func Test_Scenario10(t *testing.T) {
 func Test_ValidateDAG(t *testing.T) {
 	testCases := []struct {
 		name      string
-		spec      *ir.DeploymentSpec
+		setup     func(t *testing.T) *dag.DAG
 		wantError error
 	}{
 		{
 			name: "empty DAG",
-			spec: &ir.DeploymentSpec{
-				Definition: ir.DefinitionSpec{
-					Metadata: ir.MetadataSpec{
-						SpecVersion: ir.SpecVersion_v3,
+			setup: func(t *testing.T) *dag.DAG {
+				t.Helper()
+
+				spec := ir.DeploymentSpec{
+					Definition: ir.DefinitionSpec{
+						Metadata: ir.MetadataSpec{
+							SpecVersion: ir.SpecVersion_v3,
+						},
 					},
-				},
+				}
+
+				dag, err := spec.BuildDAG()
+				require.NoError(t, err)
+
+				return dag
 			},
 			wantError: fmt.Errorf("invalid DAG, no sources found"),
 		},
 		{
 			name: "too many sources",
-			spec: &ir.DeploymentSpec{
-				Definition: ir.DefinitionSpec{
-					Metadata: ir.MetadataSpec{
-						SpecVersion: ir.SpecVersion_v3,
+			setup: func(t *testing.T) *dag.DAG {
+				t.Helper()
+
+				spec := ir.DeploymentSpec{
+					Definition: ir.DefinitionSpec{
+						Metadata: ir.MetadataSpec{
+							SpecVersion: ir.SpecVersion_v3,
+						},
 					},
-				},
-				Connectors: []ir.ConnectorSpec{
-					{
-						UUID:       uuid.New().String(),
-						PluginType: ir.PluginSource,
+					Connectors: []ir.ConnectorSpec{
+						{
+							UUID:       uuid.New().String(),
+							PluginType: ir.PluginSource,
+						},
+						{
+							UUID:       uuid.New().String(),
+							PluginType: ir.PluginSource,
+						},
 					},
-					{
-						UUID:       uuid.New().String(),
-						PluginType: ir.PluginSource,
-					},
-				},
+				}
+
+				dag, err := spec.BuildDAG()
+				require.NoError(t, err)
+
+				return dag
 			},
 			wantError: fmt.Errorf("invalid DAG, too many sources"),
 		},
 		{
 			name: "only one source",
-			spec: &ir.DeploymentSpec{
-				Definition: ir.DefinitionSpec{
-					Metadata: ir.MetadataSpec{
-						SpecVersion: ir.SpecVersion_v3,
+			setup: func(t *testing.T) *dag.DAG {
+				t.Helper()
+
+				spec := ir.DeploymentSpec{
+					Definition: ir.DefinitionSpec{
+						Metadata: ir.MetadataSpec{
+							SpecVersion: ir.SpecVersion_v3,
+						},
 					},
-				},
-				Connectors: []ir.ConnectorSpec{
-					{
-						PluginType: ir.PluginSource,
+					Connectors: []ir.ConnectorSpec{
+						{
+							PluginType: ir.PluginSource,
+						},
 					},
-				},
+				}
+
+				dag, err := spec.BuildDAG()
+				require.NoError(t, err)
+
+				return dag
 			},
 			wantError: fmt.Errorf("invalid DAG, there has to be at least one source, at most one function, and zero or more destinations"),
 		},
@@ -1236,20 +1248,14 @@ func Test_ValidateDAG(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			spec := tc.spec
-			dag, buildError := spec.BuildDAG()
-			if tc.wantError != nil && buildError != nil {
-				assert.Equal(t, tc.wantError.Error(), buildError.Error())
-				return
-			} else {
-				assert.NoError(t, buildError)
-			}
+			spec := &ir.DeploymentSpec{}
 
-			validateError := spec.ValidateDAG(dag)
+			err := spec.ValidateDAG(tc.setup(t))
 			if tc.wantError != nil {
-				assert.Equal(t, tc.wantError.Error(), validateError.Error())
+				require.Error(t, err)
+				require.Equal(t, tc.wantError.Error(), err.Error())
 			} else {
-				assert.NoError(t, validateError)
+				require.NoError(t, err)
 			}
 		})
 	}

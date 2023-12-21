@@ -53,13 +53,8 @@ tools: ## Run make in "tools", optionally add "tools-[target]" to run a specific
 
 .PHONY: proto
 proto: ## Generate Turbine GoLang gRPC bindings
-	docker run \
-		--rm \
-		-v $(CURDIR)/proto:/defs \
-		-v $(CURDIR)/lib/go:/out \
-		namely/protoc-all  \
-			-f ./turbine_v2.proto \
-			-l go --with-validator -o /out
+	make -C proto
+
 ruby-sdk-%:
 	make -C $(CURDIR)/lib/ruby $*
 

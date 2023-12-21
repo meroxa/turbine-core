@@ -4,22 +4,17 @@ run:
     - telemetry/otelecho.*
 
 linters-settings:
-  depguard:
-    rules:
-      main:
-        files:
-          - "**/*.go"
-          - "!*_test.go"
-        deny:
-          - pkg: "errors"
-            desc: "Use github.com/go-errors/errors instead."
-          - pkg: "github.com/pkg/errors"
-            desc: "Use github.com/go-errors/errors instead."
-
-  forbidigo:
-    forbid:
-      - p: ^time.Now$
-        msg: "Use github.com/meroxa/mdpx/core/timeext.Now instead."
+#   depguard:
+#     rules:
+#       main:
+#         files:
+#           - "**/*.go"
+#           - "!*_test.go"
+#        deny:
+#           - pkg: "errors"
+#             desc: "Use github.com/go-errors/errors instead."
+#           - pkg: "github.com/pkg/errors"
+#             desc: "Use github.com/go-errors/errors instead."
   gocognit:
     min-complexity: 20
   godot:
@@ -33,84 +28,47 @@ linters-settings:
       - empty
       - stdlib
       # Custom rules.
+      - github.com/meroxa/turbine-core/pkg/record
       - slog.Handler
-      - github.com/conduitio/conduit/pkg/foundation/database.Transaction
-      - github.com/meroxa/mdpx/core/telemetry.Option
-      - github.com/meroxa/mdpx/platform/internal/stream/manager.Manager
   nolintlint:
     allow-unused: false # Report any unused nolint directives.
     require-explanation: true # Require an explanation for nolint directives.
     require-specific: true # Require nolint directives to mention the specific linter being suppressed.
-  wrapcheck:
-    ignoreSigs:
-      # Default sigs.
-      - .Errorf(
-      - errors.New(
-      - errors.Unwrap(
-      - errors.Join(
-      - .WorkflowResult(
-      - .Wrap(
-      - .Wrapf(
-      - .WithMessage(
-      - .WithMessagef(
-      - .WithStack(
-      # Custom sigs for echo. These functions can be called and returned without wrapping the error.
-      - (github.com/labstack/echo/v5.Context).Render(
-      - (github.com/labstack/echo/v5.Context).HTML(
-      - (github.com/labstack/echo/v5.Context).HTMLBlob(
-      - (github.com/labstack/echo/v5.Context).String(
-      - (github.com/labstack/echo/v5.Context).JSON(
-      - (github.com/labstack/echo/v5.Context).JSONPretty(
-      - (github.com/labstack/echo/v5.Context).JSONBlob(
-      - (github.com/labstack/echo/v5.Context).JSONP(
-      - (github.com/labstack/echo/v5.Context).JSONPBlob(
-      - (github.com/labstack/echo/v5.Context).XML(
-      - (github.com/labstack/echo/v5.Context).XMLPretty(
-      - (github.com/labstack/echo/v5.Context).XMLBlob(
-      - (github.com/labstack/echo/v5.Context).Blob(
-      - (github.com/labstack/echo/v5.Context).Stream(
-      - (github.com/labstack/echo/v5.Context).File(
-      - (github.com/labstack/echo/v5.Context).Attachment(
-      - (github.com/labstack/echo/v5.Context).Inline(
-      - (github.com/labstack/echo/v5.Context).NoContent(
-      - (github.com/labstack/echo/v5.Context).Redirect(
-      # Other custom sigs
-      - (log/slog.Handler).Handle
-    ignorePackageGlobs:
-      - github.com/go-errors/errors
-      - github.com/go-ozzo/ozzo-validation/v4 # Pocketbase can't work with wrapped validation errors.
-      - github.com/cschleiden/go-workflows/workflow
+#   wrapcheck:
+#     ignoreSigs:
+#       # Default sigs.
+#       - .Errorf(
+#       - errors.New(
+#       - errors.Unwrap(
+#       - errors.Join(
+#       - .WorkflowResult(
+#       - .Wrap(
+#       - .Wrapf(
+#       - .WithMessage(
+#       - .WithMessagef(
+#       - .WithStack(
+#       # Other custom sigs
+#       - (log/slog.Handler).Handle
+#     ignorePackageGlobs:
+#       - github.com/go-errors/errors
 
 issues:
   exclude-rules:
-    # Exclude funlen for workflow functions
-    - path: workflow\.go
-      linters:
-        - funlen
     # Exclude some linters from running on tests files.
     - path: _test\.go
       linters:
         - dogsled
         - goconst
+        - goerr113
         - gosec
         - gocognit
         - errcheck
         - forcetypeassert
         - funlen
-    - path: migrations/.*\.go
+        - dupl # re-enable after refactoring
+    - path: spec_test\.go
       linters:
-        - funlen
-        - gochecknoinits
-        - wrapcheck
-        - var-naming
-        - errcheck
-        - gci
-        - gofumpt
-        - gofmt
-        - goimports
-        - revive
-        - stylecheck
-        - nolintlint
+        - godot
 
 linters:
   disable-all: true
@@ -122,7 +80,7 @@ linters:
     - containedctx
     - contextcheck
     - decorder
-    - depguard
+    # - depguard
     - dogsled
     - dupl
     - dupword
@@ -145,7 +103,7 @@ linters:
     - goconst
     - gocritic
     - godot
-    - goerr113
+    # - goerr113
     - gofmt
     - gofumpt
     - goheader
@@ -192,5 +150,5 @@ linters:
     - usestdlibvars
     - wastedassign
     - whitespace
-    - wrapcheck
+   #  - wrapcheck
     - zerologlint

@@ -7,7 +7,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
+	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -22,33 +22,33 @@ type Server interface {
 	GracefulStop()
 }
 
-var _ Server = (*turbineCoreServer)(nil)
+var _ Server = (*TurbineCoreServer)(nil)
 
-type turbineCoreServer struct {
+type TurbineCoreServer struct {
 	*grpc.Server
 }
 
-func NewRunServer() *turbineCoreServer {
+func NewRunServer() *TurbineCoreServer {
 	s := grpc.NewServer()
-	pb.RegisterTurbineServiceServer(s, NewRunService())
-	return &turbineCoreServer{Server: s}
+	turbinev2.RegisterServiceServer(s, NewRunService())
+	return &TurbineCoreServer{Server: s}
 }
 
-func NewSpecBuilderServer() *turbineCoreServer {
+func NewSpecBuilderServer() *TurbineCoreServer {
 	s := grpc.NewServer()
-	pb.RegisterTurbineServiceServer(s, NewSpecBuilderService())
-	return &turbineCoreServer{Server: s}
+	turbinev2.RegisterServiceServer(s, NewSpecBuilderService())
+	return &TurbineCoreServer{Server: s}
 }
 
-func NewRecordServer() *turbineCoreServer {
+func NewRecordServer() *TurbineCoreServer {
 	return NewSpecBuilderServer()
 }
 
-func (s *turbineCoreServer) Run(ctx context.Context) {
+func (s *TurbineCoreServer) Run(ctx context.Context) {
 	s.RunAddr(ctx, ListenAddress)
 }
 
-func (s *turbineCoreServer) RunAddr(ctx context.Context, addr string) {
+func (s *TurbineCoreServer) RunAddr(ctx context.Context, addr string) {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

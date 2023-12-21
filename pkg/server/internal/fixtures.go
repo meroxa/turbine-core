@@ -6,66 +6,50 @@ import (
 	"fmt"
 	"os"
 	"text/tabwriter"
-	"time"
 
-	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"github.com/conduitio/conduit-commons/opencdc"
+	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
+	"github.com/meroxa/turbine-core/v2/pkg/record"
+	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 )
 
-type fixtureRecord struct {
-	Key       interface{}
-	Value     map[string]interface{}
-	Timestamp string
-}
-
-func ReadFixture(ctx context.Context, file string) ([]*pb.Record, error) {
+func ReadFixture(ctx context.Context, file string) ([]*opencdcv1.Record, error) {
 	b, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
 
-	var (
-		rr             []*pb.Record
-		fixtureRecords []fixtureRecord
-	)
+	var fixtureRecords []opencdc.Record
 
 	if err := json.Unmarshal(b, &fixtureRecords); err != nil {
 		return nil, err
 	}
 
-	for _, r := range fixtureRecords {
-		rr = append(rr, wrapRecord(r))
+	rr, err := record.ToProto(fixtureRecords)
+	if err != nil {
+		return nil, err
 	}
 
 	return rr, nil
 }
 
-func wrapRecord(m fixtureRecord) *pb.Record {
-	b, _ := json.Marshal(m.Value)
-
-	ts := timestamppb.New(time.Now())
-	if m.Timestamp != "" {
-		t, _ := time.Parse(time.RFC3339, m.Timestamp)
-		ts = timestamppb.New(t)
-	}
-
-	return &pb.Record{
-		Key:       fmt.Sprintf("%v", m.Key),
-		Value:     b,
-		Timestamp: ts,
-	}
-}
-
-func PrintRecords(name string, sr *pb.StreamRecords) {
+func PrintRecords(name string, sr *turbinev2.StreamRecords) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.AlignRight|tabwriter.Debug)
 	fmt.Fprintf(w, "Destination %s\n", name)
 	fmt.Fprintf(w, "----------------------\n")
 	fmt.Fprintln(w, "index\trecord")
 	fmt.Fprintln(w, "----\t----")
-	for i, r := range sr.Records {
-		fmt.Fprintf(w, "%d\t%s\n", i, string(r.Value))
+
+	rr, err := record.FromProto(sr.Records)
+	if err != nil {
+		panic(err)
+	}
+
+	for i, r := range rr {
+		fmt.Fprintf(w, "%d\t%s\n", i, string(r.Bytes()))
 		fmt.Fprintln(w, "----\t----")
 	}
+
 	fmt.Fprintf(w, "records written\t%d\n", len(sr.Records))
 	w.Flush()
 }

@@ -5,30 +5,30 @@ import (
 	"fmt"
 	"path"
 
-	pb "github.com/meroxa/turbine-core/v2/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/v2/pkg/app"
 	"github.com/meroxa/turbine-core/v2/pkg/server/internal"
+	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var _ pb.TurbineServiceServer = (*runService)(nil)
+var _ turbinev2.ServiceServer = (*RunService)(nil)
 
-type runService struct {
-	pb.UnimplementedTurbineServiceServer
+type RunService struct {
+	turbinev2.UnimplementedServiceServer
 
 	config  app.Config
 	appPath string
 }
 
-func NewRunService() *runService {
-	return &runService{
+func NewRunService() *RunService {
+	return &RunService{
 		config: app.Config{},
 	}
 }
 
-func (s *runService) Init(ctx context.Context, req *pb.InitRequest) (*emptypb.Empty, error) {
+func (s *RunService) Init(_ context.Context, req *turbinev2.InitRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -43,17 +43,17 @@ func (s *runService) Init(ctx context.Context, req *pb.InitRequest) (*emptypb.Em
 	return empty(), nil
 }
 
-func (s *runService) AddSource(ctx context.Context, req *pb.AddSourceRequest) (*pb.AddSourceResponse, error) {
+func (s *RunService) AddSource(_ context.Context, req *turbinev2.AddSourceRequest) (*turbinev2.AddSourceResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	return &pb.AddSourceResponse{
+	return &turbinev2.AddSourceResponse{
 		StreamName: req.Name,
 	}, nil
 }
 
-func (s *runService) ReadRecords(ctx context.Context, req *pb.ReadRecordsRequest) (*pb.ReadRecordsResponse, error) {
+func (s *RunService) ReadRecords(ctx context.Context, req *turbinev2.ReadRecordsRequest) (*turbinev2.ReadRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -74,25 +74,25 @@ func (s *runService) ReadRecords(ctx context.Context, req *pb.ReadRecordsRequest
 		return nil, err
 	}
 
-	return &pb.ReadRecordsResponse{
-		StreamRecords: &pb.StreamRecords{
+	return &turbinev2.ReadRecordsResponse{
+		StreamRecords: &turbinev2.StreamRecords{
 			StreamName: req.SourceStream,
 			Records:    rr,
 		},
 	}, nil
 }
 
-func (s *runService) AddDestination(ctx context.Context, req *pb.AddDestinationRequest) (*pb.AddDestinationResponse, error) {
+func (s *RunService) AddDestination(_ context.Context, req *turbinev2.AddDestinationRequest) (*turbinev2.AddDestinationResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	return &pb.AddDestinationResponse{
+	return &turbinev2.AddDestinationResponse{
 		StreamName: req.Name,
 	}, nil
 }
 
-func (s *runService) WriteRecords(ctx context.Context, req *pb.WriteRecordsRequest) (*emptypb.Empty, error) {
+func (s *RunService) WriteRecords(_ context.Context, req *turbinev2.WriteRecordsRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -102,13 +102,13 @@ func (s *runService) WriteRecords(ctx context.Context, req *pb.WriteRecordsReque
 	return empty(), nil
 }
 
-func (s *runService) ProcessRecords(ctx context.Context, req *pb.ProcessRecordsRequest) (*pb.ProcessRecordsResponse, error) {
+func (s *RunService) ProcessRecords(_ context.Context, req *turbinev2.ProcessRecordsRequest) (*turbinev2.ProcessRecordsResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	return &pb.ProcessRecordsResponse{
-		StreamRecords: &pb.StreamRecords{
+	return &turbinev2.ProcessRecordsResponse{
+		StreamRecords: &turbinev2.StreamRecords{
 			StreamName: req.StreamRecords.StreamName,
 			Records:    req.StreamRecords.Records,
 		},

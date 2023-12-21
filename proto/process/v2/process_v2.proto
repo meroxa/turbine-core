@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package process.v2;
+
+import "opencdc/v1/opencdc.proto";
+
+service ProcessorService {
+  rpc Process(ProcessRequest) returns (ProcessResponse) {}
+}
+
+message ProcessRequest {
+  repeated opencdc.v1.Record records = 1;
+}
+
+message ProcessResponse {
+  repeated opencdc.v1.Record records = 1;
+}

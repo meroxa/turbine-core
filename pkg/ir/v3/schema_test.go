@@ -61,6 +61,7 @@ func Test_ValidSpec(t *testing.T) {
 				"connectors": [
 					{
 						"uuid":   "68dde1cc-3a56-4a2a-993e-bfe49d526d07",
+						"name": "my-source",
 						"collection": "users",
 						"plugin_type": "source",
 						"plugin_name": "postgres"
