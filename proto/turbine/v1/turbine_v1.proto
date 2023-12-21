@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package turbine_core;
+package turbine.v1;
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
@@ -30,7 +30,7 @@ enum Language {
 
 message InitRequest {
   string appName = 1 [(validate.rules).string.min_len = 1];
-  string configFilePath = 2 [(validate.rules).string.min_len = 1];;
+  string configFilePath = 2 [(validate.rules).string.min_len = 1];
   Language language = 3 [(validate.rules).enum.defined_only = true];
   string gitSHA = 4;
   string turbineVersion = 5;
@@ -54,7 +54,7 @@ message Collection {
 }
 
 message Record {
-  string key = 1 [(validate.rules).string.min_len = 1];;
+  string key = 1 [(validate.rules).string.min_len = 1];
   bytes value = 2;
   google.protobuf.Timestamp timestamp = 3;
 }

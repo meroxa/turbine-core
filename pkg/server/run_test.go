@@ -16,7 +16,7 @@ import (
 	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
 	"github.com/meroxa/turbine-core/v2/pkg/app"
 	"github.com/meroxa/turbine-core/v2/pkg/ir"
-	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
+	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -30,34 +30,34 @@ func Test_Init(t *testing.T) {
 	tempdir := t.TempDir()
 	tests := []struct {
 		desc    string
-		setup   func() *pb.InitRequest
+		setup   func() *turbinev2.InitRequest
 		wantErr error
 	}{
 		{
 			desc:    "fails with invalid app name",
 			wantErr: errors.New("invalid InitRequest.AppName: value length must be at least 1 runes"),
-			setup: func() *pb.InitRequest {
-				return &pb.InitRequest{
+			setup: func() *turbinev2.InitRequest {
+				return &turbinev2.InitRequest{
 					ConfigFilePath: "/foo/bar",
-					Language:       pb.Language_GOLANG,
+					Language:       turbinev2.Language_GOLANG,
 				}
 			},
 		},
 		{
 			desc:    "fails with invalid config file path",
 			wantErr: errors.New("invalid InitRequest.ConfigFilePath: value length must be at least 1 runes"),
-			setup: func() *pb.InitRequest {
-				return &pb.InitRequest{
+			setup: func() *turbinev2.InitRequest {
+				return &turbinev2.InitRequest{
 					AppName:  "turbine-app",
-					Language: pb.Language_GOLANG,
+					Language: turbinev2.Language_GOLANG,
 				}
 			},
 		},
 		{
 			desc:    "fails with invalid lang",
 			wantErr: errors.New("invalid InitRequest.Language: value must be one of the defined enum values"),
-			setup: func() *pb.InitRequest {
-				return &pb.InitRequest{
+			setup: func() *turbinev2.InitRequest {
+				return &turbinev2.InitRequest{
 					AppName:        "turbine-app",
 					ConfigFilePath: "/foo/bar",
 					Language:       101221,
@@ -67,8 +67,8 @@ func Test_Init(t *testing.T) {
 		{
 			desc:    "fails to load app config",
 			wantErr: errors.New("no such file or directory"),
-			setup: func() *pb.InitRequest {
-				return &pb.InitRequest{
+			setup: func() *turbinev2.InitRequest {
+				return &turbinev2.InitRequest{
 					AppName:        "test-app",
 					ConfigFilePath: "/nonexistingapp",
 				}
@@ -76,7 +76,7 @@ func Test_Init(t *testing.T) {
 		},
 		{
 			desc: "success",
-			setup: func() *pb.InitRequest {
+			setup: func() *turbinev2.InitRequest {
 				file := path.Join(tempdir, "app.json")
 				require.NoError(
 					t,
@@ -93,7 +93,7 @@ func Test_Init(t *testing.T) {
 					),
 				)
 
-				return &pb.InitRequest{
+				return &turbinev2.InitRequest{
 					AppName:        "app",
 					ConfigFilePath: tempdir,
 				}
@@ -104,7 +104,7 @@ func Test_Init(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
 			req := tc.setup()
-			s := &runService{}
+			s := &RunService{}
 
 			_, err := s.Init(ctx, req)
 			if tc.wantErr != nil {
@@ -128,20 +128,20 @@ func Test_AddSource(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		desc    string
-		setup   func() *pb.AddSourceRequest
+		setup   func() *turbinev2.AddSourceRequest
 		wantErr error
 	}{
 		{
 			desc: "fails on invalid name",
-			setup: func() *pb.AddSourceRequest {
-				return &pb.AddSourceRequest{}
+			setup: func() *turbinev2.AddSourceRequest {
+				return &turbinev2.AddSourceRequest{}
 			},
 			wantErr: errors.New("invalid AddSourceRequest.Name: value length must be at least 1 runes"),
 		},
 		{
 			desc: "success",
-			setup: func() *pb.AddSourceRequest {
-				return &pb.AddSourceRequest{
+			setup: func() *turbinev2.AddSourceRequest {
+				return &turbinev2.AddSourceRequest{
 					Name: "source-name",
 				}
 			},
@@ -149,7 +149,7 @@ func Test_AddSource(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			s := &runService{}
+			s := &RunService{}
 			req := tc.setup()
 
 			r, err := s.AddSource(ctx, req)
@@ -167,22 +167,22 @@ func Test_ReadRecords(t *testing.T) {
 	tempdir := t.TempDir()
 	tests := []struct {
 		desc        string
-		srv         *runService
-		setup       func() *pb.ReadRecordsRequest
-		wantRecords *pb.ReadRecordsResponse
+		srv         *RunService
+		setup       func() *turbinev2.ReadRecordsRequest
+		wantRecords *turbinev2.ReadRecordsResponse
 		wantErr     error
 	}{
 		{
 			desc:    "fails when source is missing",
-			srv:     &runService{},
+			srv:     &RunService{},
 			wantErr: errors.New("invalid ReadRecordsRequest.SourceStream: value length must be at least 1 runes"),
-			setup: func() *pb.ReadRecordsRequest {
-				return &pb.ReadRecordsRequest{}
+			setup: func() *turbinev2.ReadRecordsRequest {
+				return &turbinev2.ReadRecordsRequest{}
 			},
 		},
 		{
 			desc: "fails on missing fixture file",
-			srv: &runService{
+			srv: &RunService{
 				appPath: tempdir,
 				config: app.Config{
 					Fixtures: map[string]string{
@@ -191,8 +191,8 @@ func Test_ReadRecords(t *testing.T) {
 				},
 			},
 			wantErr: errors.New("no such file or directory"),
-			setup: func() *pb.ReadRecordsRequest {
-				return &pb.ReadRecordsRequest{
+			setup: func() *turbinev2.ReadRecordsRequest {
+				return &turbinev2.ReadRecordsRequest{
 					SourceStream: "resource",
 				}
 			},
@@ -200,7 +200,7 @@ func Test_ReadRecords(t *testing.T) {
 		/* Skip until fixture serialization to Record works.
 		{
 			desc: "success",
-			srv: &runService{
+			srv: &RunService{
 				appPath: path.Join(tempdir),
 				config: app.Config{
 					Fixtures: map[string]string{
@@ -208,23 +208,23 @@ func Test_ReadRecords(t *testing.T) {
 					},
 				},
 			},
-			wantRecords: &pb.ReadRecordsResponse{
-				StreamRecords: &pb.StreamRecords{
+			wantRecords: &turbinev2.ReadRecordsResponse{
+				StreamRecords: &turbinev2.StreamRecords{
 					StreamName: "source",
 					Records:    []*opencdcv1.Record{testProtoRecord(t)},
 				},
 			},
-			setup: func() *pb.ReadRecordsRequest {
+			setup: func() *turbinev2.ReadRecordsRequest {
 				file := path.Join(tempdir, "fixture.json")
 				require.NoError(t, os.WriteFile(file, testOpenCDCRecord, 0o644))
 
-				return &pb.ReadRecordsRequest{SourceStream: "source"}
+				return &turbinev2.ReadRecordsRequest{SourceStream: "source"}
 			},
 		},
 		*/
 		{
 			desc: "wrong fixture source name",
-			srv: &runService{
+			srv: &RunService{
 				appPath: path.Join(tempdir),
 				config: app.Config{
 					Fixtures: map[string]string{
@@ -233,11 +233,11 @@ func Test_ReadRecords(t *testing.T) {
 				},
 			},
 			wantErr: errors.New("no fixture file found for source pg"),
-			setup: func() *pb.ReadRecordsRequest {
+			setup: func() *turbinev2.ReadRecordsRequest {
 				file := path.Join(tempdir, "fixture.json")
 				require.NoError(t, os.WriteFile(file, testOpenCDCRecord, 0o644))
 
-				return &pb.ReadRecordsRequest{SourceStream: "pg"}
+				return &turbinev2.ReadRecordsRequest{SourceStream: "pg"}
 			},
 		},
 	}
@@ -262,20 +262,20 @@ func Test_AddDestination(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		desc    string
-		setup   func() *pb.AddDestinationRequest
+		setup   func() *turbinev2.AddDestinationRequest
 		wantErr error
 	}{
 		{
 			desc: "fails on invalid name",
-			setup: func() *pb.AddDestinationRequest {
-				return &pb.AddDestinationRequest{}
+			setup: func() *turbinev2.AddDestinationRequest {
+				return &turbinev2.AddDestinationRequest{}
 			},
 			wantErr: errors.New("invalid AddDestinationRequest.Name: value length must be at least 1 runes"),
 		},
 		{
 			desc: "success",
-			setup: func() *pb.AddDestinationRequest {
-				return &pb.AddDestinationRequest{
+			setup: func() *turbinev2.AddDestinationRequest {
+				return &turbinev2.AddDestinationRequest{
 					Name: "destination-name",
 				}
 			},
@@ -283,7 +283,7 @@ func Test_AddDestination(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			s := &runService{}
+			s := &RunService{}
 			req := tc.setup()
 
 			r, err := s.AddDestination(ctx, req)
@@ -300,33 +300,33 @@ func Test_WriteRecords(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		desc    string
-		setup   func(*testing.T) *pb.WriteRecordsRequest
+		setup   func(*testing.T) *turbinev2.WriteRecordsRequest
 		wantErr error
 	}{
 		{
 			desc:    "fails when destinationID is missing",
 			wantErr: errors.New("invalid WriteRecordsRequest.DestinationID: value length must be at least 1 runes"),
-			setup: func(_ *testing.T) *pb.WriteRecordsRequest {
-				return &pb.WriteRecordsRequest{}
+			setup: func(_ *testing.T) *turbinev2.WriteRecordsRequest {
+				return &turbinev2.WriteRecordsRequest{}
 			},
 		},
 		{
 			desc:    "fails when streamRecords is missing",
 			wantErr: errors.New("invalid WriteRecordsRequest.StreamRecords: value is required"),
-			setup: func(_ *testing.T) *pb.WriteRecordsRequest {
-				return &pb.WriteRecordsRequest{
+			setup: func(_ *testing.T) *turbinev2.WriteRecordsRequest {
+				return &turbinev2.WriteRecordsRequest{
 					DestinationID: "stream-destination",
 				}
 			},
 		},
 		{
 			desc: "success",
-			setup: func(t *testing.T) *pb.WriteRecordsRequest {
+			setup: func(t *testing.T) *turbinev2.WriteRecordsRequest {
 				t.Helper()
 
-				return &pb.WriteRecordsRequest{
+				return &turbinev2.WriteRecordsRequest{
 					DestinationID: "destination-stream",
-					StreamRecords: &pb.StreamRecords{
+					StreamRecords: &turbinev2.StreamRecords{
 						StreamName: "source",
 						Records:    []*opencdcv1.Record{testProtoRecord(t)},
 					},
@@ -337,7 +337,7 @@ func Test_WriteRecords(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			s := &runService{}
+			s := &RunService{}
 			req := tc.setup(t)
 
 			// capture stdout and match if it contains what we need
@@ -380,31 +380,31 @@ func Test_ProcessRecords(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		desc    string
-		setup   func() *pb.ProcessRecordsRequest
+		setup   func() *turbinev2.ProcessRecordsRequest
 		wantErr error
 	}{
 		{
 			desc: "fails on missing process",
-			setup: func() *pb.ProcessRecordsRequest {
-				return &pb.ProcessRecordsRequest{}
+			setup: func() *turbinev2.ProcessRecordsRequest {
+				return &turbinev2.ProcessRecordsRequest{}
 			},
 			wantErr: errors.New("invalid ProcessRecordsRequest.Process: value is required"),
 		},
 		{
 			desc: "fails on missing streamRecords",
-			setup: func() *pb.ProcessRecordsRequest {
-				return &pb.ProcessRecordsRequest{
-					Process: &pb.ProcessRecordsRequest_Process{Name: "my-process"},
+			setup: func() *turbinev2.ProcessRecordsRequest {
+				return &turbinev2.ProcessRecordsRequest{
+					Process: &turbinev2.ProcessRecordsRequest_Process{Name: "my-process"},
 				}
 			},
 			wantErr: errors.New("invalid ProcessRecordsRequest.StreamRecords: value is required"),
 		},
 		{
 			desc: "success",
-			setup: func() *pb.ProcessRecordsRequest {
-				return &pb.ProcessRecordsRequest{
-					Process: &pb.ProcessRecordsRequest_Process{Name: "my-process"},
-					StreamRecords: &pb.StreamRecords{
+			setup: func() *turbinev2.ProcessRecordsRequest {
+				return &turbinev2.ProcessRecordsRequest{
+					Process: &turbinev2.ProcessRecordsRequest_Process{Name: "my-process"},
+					StreamRecords: &turbinev2.StreamRecords{
 						StreamName: "my-stream",
 					},
 				}
@@ -414,7 +414,7 @@ func Test_ProcessRecords(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			s := &runService{}
+			s := &RunService{}
 			req := tc.setup()
 
 			c, err := s.ProcessRecords(ctx, req)

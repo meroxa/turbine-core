@@ -10,7 +10,7 @@ import (
 	"github.com/conduitio/conduit-commons/opencdc"
 	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
 	"github.com/meroxa/turbine-core/v2/pkg/record"
-	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
+	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 )
 
 func ReadFixture(ctx context.Context, file string) ([]*opencdcv1.Record, error) {
@@ -33,7 +33,7 @@ func ReadFixture(ctx context.Context, file string) ([]*opencdcv1.Record, error) 
 	return rr, nil
 }
 
-func PrintRecords(name string, sr *pb.StreamRecords) {
+func PrintRecords(name string, sr *turbinev2.StreamRecords) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.AlignRight|tabwriter.Debug)
 	fmt.Fprintf(w, "Destination %s\n", name)
 	fmt.Fprintf(w, "----------------------\n")

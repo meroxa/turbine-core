@@ -7,7 +7,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
+	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -30,13 +30,13 @@ type TurbineCoreServer struct {
 
 func NewRunServer() *TurbineCoreServer {
 	s := grpc.NewServer()
-	pb.RegisterTurbineServiceServer(s, NewRunService())
+	turbinev2.RegisterTurbineServiceServer(s, NewRunService())
 	return &TurbineCoreServer{Server: s}
 }
 
 func NewSpecBuilderServer() *TurbineCoreServer {
 	s := grpc.NewServer()
-	pb.RegisterTurbineServiceServer(s, NewSpecBuilderService())
+	turbinev2.RegisterTurbineServiceServer(s, NewSpecBuilderService())
 	return &TurbineCoreServer{Server: s}
 }
 

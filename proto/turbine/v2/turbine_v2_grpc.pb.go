@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: turbine/v2/turbine_v2.proto
 
-package v2
+package turbinev2
 
 import (
 	context "context"
@@ -20,13 +20,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	TurbineService_Init_FullMethodName           = "/turbine_core_v2.TurbineService/Init"
-	TurbineService_AddSource_FullMethodName      = "/turbine_core_v2.TurbineService/AddSource"
-	TurbineService_ReadRecords_FullMethodName    = "/turbine_core_v2.TurbineService/ReadRecords"
-	TurbineService_ProcessRecords_FullMethodName = "/turbine_core_v2.TurbineService/ProcessRecords"
-	TurbineService_AddDestination_FullMethodName = "/turbine_core_v2.TurbineService/AddDestination"
-	TurbineService_WriteRecords_FullMethodName   = "/turbine_core_v2.TurbineService/WriteRecords"
-	TurbineService_GetSpec_FullMethodName        = "/turbine_core_v2.TurbineService/GetSpec"
+	TurbineService_Init_FullMethodName           = "/turbine.v2.TurbineService/Init"
+	TurbineService_AddSource_FullMethodName      = "/turbine.v2.TurbineService/AddSource"
+	TurbineService_ReadRecords_FullMethodName    = "/turbine.v2.TurbineService/ReadRecords"
+	TurbineService_ProcessRecords_FullMethodName = "/turbine.v2.TurbineService/ProcessRecords"
+	TurbineService_AddDestination_FullMethodName = "/turbine.v2.TurbineService/AddDestination"
+	TurbineService_WriteRecords_FullMethodName   = "/turbine.v2.TurbineService/WriteRecords"
+	TurbineService_GetSpec_FullMethodName        = "/turbine.v2.TurbineService/GetSpec"
 )
 
 // TurbineServiceClient is the client API for TurbineService service.
@@ -295,7 +295,7 @@ func _TurbineService_GetSpec_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var TurbineService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "turbine_core_v2.TurbineService",
+	ServiceName: "turbine.v2.TurbineService",
 	HandlerType: (*TurbineServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -9,7 +9,7 @@ import (
 	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
 	"github.com/google/uuid"
 	"github.com/meroxa/turbine-core/v2/pkg/ir"
-	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
+	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,7 @@ func TestInit(t *testing.T) {
 	testCases := []struct {
 		test    string
 		spec    *ir.DeploymentSpec
-		request *pb.InitRequest
+		request *turbinev2.InitRequest
 		want    error
 	}{
 		{
@@ -35,10 +35,10 @@ func TestInit(t *testing.T) {
 					},
 				},
 			},
-			request: &pb.InitRequest{
+			request: &turbinev2.InitRequest{
 				AppName:        "test-ruby",
 				ConfigFilePath: "path/to/ruby",
-				Language:       pb.Language_RUBY,
+				Language:       turbinev2.Language_RUBY,
 				GitSHA:         "gitsha",
 				TurbineVersion: "0.1.0",
 			},
@@ -58,7 +58,7 @@ func TestInit(t *testing.T) {
 					},
 				},
 			},
-			request: &pb.InitRequest{
+			request: &turbinev2.InitRequest{
 				AppName:        "test-emoji",
 				ConfigFilePath: "path/to/emoji",
 				Language:       101221,
@@ -94,24 +94,24 @@ func TestAddSource(t *testing.T) {
 	tests := []struct {
 		description     string
 		populateService func(*SpecBuilderService) *SpecBuilderService
-		req             *pb.AddSourceRequest
+		req             *turbinev2.AddSourceRequest
 		want            *ir.DeploymentSpec
 		errMsg          string
 	}{
 		{
 			description: "successfully store source information",
-			req: &pb.AddSourceRequest{
+			req: &turbinev2.AddSourceRequest{
 				Name: "my-source",
-				Plugin: &pb.Plugin{
+				Plugin: &turbinev2.Plugin{
 					Name: "builtin:postgres@1.0.0",
 				},
 			},
 		},
 		{
 			description: "successfully store source information with config",
-			req: &pb.AddSourceRequest{
+			req: &turbinev2.AddSourceRequest{
 				Name: "my-source",
-				Plugin: &pb.Plugin{
+				Plugin: &turbinev2.Plugin{
 					Name: "builtin:postgres@1.0.0",
 					Config: map[string]string{
 						"collection":     "accounts",
@@ -154,12 +154,12 @@ func TestReadRecords(t *testing.T) {
 		uuid = uuid.New().String()
 	)
 
-	res, err := s.ReadRecords(ctx, &pb.ReadRecordsRequest{
+	res, err := s.ReadRecords(ctx, &turbinev2.ReadRecordsRequest{
 		SourceStream: uuid,
 	})
 	require.Nil(t, err)
-	require.Equal(t, &pb.ReadRecordsResponse{
-		StreamRecords: &pb.StreamRecords{
+	require.Equal(t, &turbinev2.ReadRecordsResponse{
+		StreamRecords: &turbinev2.StreamRecords{
 			StreamName: uuid,
 		},
 	}, res)
@@ -169,20 +169,20 @@ func TestAddDestination(t *testing.T) {
 	tests := []struct {
 		description     string
 		populateService func(*SpecBuilderService) *SpecBuilderService
-		req             *pb.AddDestinationRequest
+		req             *turbinev2.AddDestinationRequest
 		want            *ir.DeploymentSpec
 		errMsg          string
 	}{
 		{
 			description: "empty request",
-			req:         &pb.AddDestinationRequest{},
+			req:         &turbinev2.AddDestinationRequest{},
 			errMsg:      "invalid AddDestinationRequest.Name: value length must be at least 1 runes",
 		},
 		{
 			description: "successfully store destination information with config",
-			req: &pb.AddDestinationRequest{
+			req: &turbinev2.AddDestinationRequest{
 				Name: "my-destination",
-				Plugin: &pb.Plugin{
+				Plugin: &turbinev2.Plugin{
 					Name: "builtin:postgres@1.0.0",
 					Config: map[string]string{
 						"collection": "accounts_copy",
@@ -230,22 +230,22 @@ func TestWriteRecords(t *testing.T) {
 	tests := []struct {
 		description     string
 		populateService func(*SpecBuilderService) *SpecBuilderService
-		req             *pb.WriteRecordsRequest
+		req             *turbinev2.WriteRecordsRequest
 		want            *ir.DeploymentSpec
 		errMsg          string
 	}{
 		{
 			description: "empty request",
-			req:         &pb.WriteRecordsRequest{},
+			req:         &turbinev2.WriteRecordsRequest{},
 			errMsg:      "invalid WriteRecordsRequest.DestinationID: value length must be at least 1 runes",
 		},
 		{
 			description: "successfully store stream information",
-			req: &pb.WriteRecordsRequest{
-				StreamRecords: &pb.StreamRecords{
+			req: &turbinev2.WriteRecordsRequest{
+				StreamRecords: &turbinev2.StreamRecords{
 					Records: []*opencdcv1.Record{},
 					/*
-						Records: []*pb.Record{
+						Records: []*turbinev2.Record{
 							{
 								Key:   "1",
 								Value: []byte(`{"1":"record-value"}`),
@@ -263,9 +263,9 @@ func TestWriteRecords(t *testing.T) {
 				s   = NewSpecBuilderService()
 			)
 
-			ar := &pb.AddSourceRequest{
+			ar := &turbinev2.AddSourceRequest{
 				Name: "my-source",
-				Plugin: &pb.Plugin{
+				Plugin: &turbinev2.Plugin{
 					Name: "builtin:postgres@1.0.0",
 				},
 			}
@@ -273,9 +273,9 @@ func TestWriteRecords(t *testing.T) {
 			asr, err := s.AddSource(ctx, ar)
 			assert.NoError(t, err)
 
-			dr := &pb.AddDestinationRequest{
+			dr := &turbinev2.AddDestinationRequest{
 				Name: "my-destination",
-				Plugin: &pb.Plugin{
+				Plugin: &turbinev2.Plugin{
 					Name: "builtin:postgres@1.0.0",
 				},
 			}
@@ -316,9 +316,9 @@ func TestProcessRecords(t *testing.T) {
 		}
 	)
 
-	ar := &pb.AddSourceRequest{
+	ar := &turbinev2.AddSourceRequest{
 		Name: "my-source",
-		Plugin: &pb.Plugin{
+		Plugin: &turbinev2.Plugin{
 			Name: "builtin:postgres@1.0.0",
 		},
 	}
@@ -326,13 +326,13 @@ func TestProcessRecords(t *testing.T) {
 	asr, err := s.AddSource(ctx, ar)
 	assert.NoError(t, err)
 
-	req := pb.ProcessRecordsRequest{
-		Process: &pb.ProcessRecordsRequest_Process{
+	req := turbinev2.ProcessRecordsRequest{
+		Process: &turbinev2.ProcessRecordsRequest_Process{
 			Name: "synchronize",
 		},
-		StreamRecords: &pb.StreamRecords{
+		StreamRecords: &turbinev2.StreamRecords{
 			Records: []*opencdcv1.Record{},
-			/* Records: []*pb.Record{
+			/* Records: []*turbinev2.Record{
 				{
 					Key:   "1",
 					Value: []byte(`{"1":"record-value"}`),
@@ -357,7 +357,7 @@ func TestGetSpec(t *testing.T) {
 	tests := []struct {
 		description     string
 		populateService func(*SpecBuilderService) *SpecBuilderService
-		request         *pb.GetSpecRequest
+		request         *turbinev2.GetSpecRequest
 		want            *ir.DeploymentSpec
 		wantErr         error
 	}{
@@ -374,7 +374,7 @@ func TestGetSpec(t *testing.T) {
 
 				return s
 			},
-			request: &pb.GetSpecRequest{
+			request: &turbinev2.GetSpecRequest{
 				Image: "",
 			},
 			want: func() *ir.DeploymentSpec {
@@ -400,7 +400,7 @@ func TestGetSpec(t *testing.T) {
 				})
 				return s
 			},
-			request: &pb.GetSpecRequest{
+			request: &turbinev2.GetSpecRequest{
 				Image: "some/image",
 			},
 			wantErr: fmt.Errorf("cannot set image without defined functions"),
@@ -428,7 +428,7 @@ func TestGetSpec(t *testing.T) {
 				})
 				return s
 			},
-			request: &pb.GetSpecRequest{
+			request: &turbinev2.GetSpecRequest{
 				Image: "some/image",
 			},
 			want: func() *ir.DeploymentSpec {
@@ -480,7 +480,7 @@ func TestGetSpec(t *testing.T) {
 				})
 				return s
 			},
-			request: &pb.GetSpecRequest{
+			request: &turbinev2.GetSpecRequest{
 				Image: "some/image",
 			},
 			want: func() *ir.DeploymentSpec {
