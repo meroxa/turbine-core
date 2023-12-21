@@ -22,4 +22,4 @@ lint: ## Run linting on Protobuf files
 
 .PHONY: fmt
 fmt: ## Format Protobuf files
-	buf format
+	buf format -w
