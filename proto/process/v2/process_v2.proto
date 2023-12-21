@@ -9,9 +9,9 @@ service ProcessorService {
 }
 
 message ProcessRequest {
-  repeated opencdc.v1.Record record = 1;
+  repeated opencdc.v1.Record records = 1;
 }
 
 message ProcessResponse {
-  repeated opencdc.v1.Record record = 1;
+  repeated opencdc.v1.Record records = 1;
 }

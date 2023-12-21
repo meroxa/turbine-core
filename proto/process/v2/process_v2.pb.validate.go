@@ -57,7 +57,7 @@ func (m *ProcessRequest) validate(all bool) error {
 
 	var errors []error
 
-	for idx, item := range m.GetRecord() {
+	for idx, item := range m.GetRecords() {
 		_, _ = idx, item
 
 		if all {
@@ -65,7 +65,7 @@ func (m *ProcessRequest) validate(all bool) error {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, ProcessRequestValidationError{
-						field:  fmt.Sprintf("Record[%v]", idx),
+						field:  fmt.Sprintf("Records[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -73,7 +73,7 @@ func (m *ProcessRequest) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, ProcessRequestValidationError{
-						field:  fmt.Sprintf("Record[%v]", idx),
+						field:  fmt.Sprintf("Records[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -82,7 +82,7 @@ func (m *ProcessRequest) validate(all bool) error {
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return ProcessRequestValidationError{
-					field:  fmt.Sprintf("Record[%v]", idx),
+					field:  fmt.Sprintf("Records[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -191,7 +191,7 @@ func (m *ProcessResponse) validate(all bool) error {
 
 	var errors []error
 
-	for idx, item := range m.GetRecord() {
+	for idx, item := range m.GetRecords() {
 		_, _ = idx, item
 
 		if all {
@@ -199,7 +199,7 @@ func (m *ProcessResponse) validate(all bool) error {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, ProcessResponseValidationError{
-						field:  fmt.Sprintf("Record[%v]", idx),
+						field:  fmt.Sprintf("Records[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -207,7 +207,7 @@ func (m *ProcessResponse) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, ProcessResponseValidationError{
-						field:  fmt.Sprintf("Record[%v]", idx),
+						field:  fmt.Sprintf("Records[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -216,7 +216,7 @@ func (m *ProcessResponse) validate(all bool) error {
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return ProcessResponseValidationError{
-					field:  fmt.Sprintf("Record[%v]", idx),
+					field:  fmt.Sprintf("Records[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
