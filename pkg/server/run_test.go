@@ -13,19 +13,19 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
+	"github.com/conduitio/conduit-commons/opencdc"
+	"github.com/conduitio/conduit-commons/proto/opencdc/v1"
 	"github.com/meroxa/turbine-core/v2/pkg/app"
 	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 //go:embed testdata/opencdc_record.json
 var testOpenCDCRecord []byte
 
-func Test_Init(t *testing.T) {
+func TestRunService_Init(t *testing.T) {
 	ctx := context.Background()
 	tempdir := t.TempDir()
 	tests := []struct {
@@ -124,7 +124,7 @@ func Test_Init(t *testing.T) {
 	}
 }
 
-func Test_AddSource(t *testing.T) {
+func TestRunService_AddSource(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		desc    string
@@ -162,7 +162,7 @@ func Test_AddSource(t *testing.T) {
 	}
 }
 
-func Test_ReadRecords(t *testing.T) {
+func TestRunService_ReadRecords(t *testing.T) {
 	ctx := context.Background()
 	tempdir := t.TempDir()
 	tests := []struct {
@@ -210,14 +210,14 @@ func Test_ReadRecords(t *testing.T) {
 			wantRecords: &turbinev2.ReadRecordsResponse{
 				StreamRecords: &turbinev2.StreamRecords{
 					StreamName: "source",
-					Records:    []*opencdcv1.Record{testProtoRecord(t)},
+					Records:    testProtoRecords(t),
 				},
 			},
 			setup: func(t *testing.T) *turbinev2.ReadRecordsRequest {
-				t.Skipf("Fixture serialization is incomplete, skipping test..")
+				t.Helper()
 
 				file := path.Join(tempdir, "fixture.json")
-				require.NoError(t, os.WriteFile(file, testOpenCDCRecord, 0o644))
+				require.NoError(t, os.WriteFile(file, testJSONRecords(t), 0o644))
 
 				return &turbinev2.ReadRecordsRequest{SourceStream: "source"}
 			},
@@ -235,7 +235,7 @@ func Test_ReadRecords(t *testing.T) {
 			wantErr: errors.New("no fixture file found for source pg"),
 			setup: func(_ *testing.T) *turbinev2.ReadRecordsRequest {
 				file := path.Join(tempdir, "fixture.json")
-				require.NoError(t, os.WriteFile(file, testOpenCDCRecord, 0o644))
+				require.NoError(t, os.WriteFile(file, testJSONRecords(t), 0o644))
 
 				return &turbinev2.ReadRecordsRequest{SourceStream: "pg"}
 			},
@@ -252,13 +252,13 @@ func Test_ReadRecords(t *testing.T) {
 			} else if assert.NoError(t, err) {
 				assert.Equal(t, c.StreamRecords.StreamName, tc.wantRecords.StreamRecords.StreamName)
 				assert.Equal(t, len(c.StreamRecords.Records), len(tc.wantRecords.StreamRecords.Records))
-				// assert.Equal(t, c.StreamRecords.Records[0], // opencdc record)
+				assert.Equal(t, c.StreamRecords.Records, testProtoRecords(t))
 			}
 		})
 	}
 }
 
-func Test_AddDestination(t *testing.T) {
+func TestRunService_AddDestination(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		desc    string
@@ -296,7 +296,7 @@ func Test_AddDestination(t *testing.T) {
 	}
 }
 
-func Test_WriteRecords(t *testing.T) {
+func TestRunService_WriteRecords(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		desc    string
@@ -328,7 +328,7 @@ func Test_WriteRecords(t *testing.T) {
 					DestinationID: "destination-stream",
 					StreamRecords: &turbinev2.StreamRecords{
 						StreamName: "source",
-						Records:    []*opencdcv1.Record{testProtoRecord(t)},
+						Records:    testProtoRecords(t),
 					},
 				}
 			},
@@ -366,17 +366,18 @@ func Test_WriteRecords(t *testing.T) {
 				return err
 			})
 			if tc.wantErr != nil {
-				assert.ErrorContains(t, err, tc.wantErr.Error())
+				require.Error(t, err)
+				require.ErrorContains(t, err, tc.wantErr.Error())
 			} else {
-				assert.Contains(t, output, string(testJSONRecord(t)))
-				assert.Contains(t, output, "destination-stream")
-				assert.NoError(t, err)
+				require.NoError(t, err)
+				require.Contains(t, output, string(testJSONRecord(t)))
+				require.Contains(t, output, "destination-stream")
 			}
 		})
 	}
 }
 
-func Test_ProcessRecords(t *testing.T) {
+func TestRunService_ProcessRecords(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		desc    string
@@ -431,50 +432,32 @@ func testJSONRecord(t *testing.T) []byte {
 	t.Helper()
 	var out bytes.Buffer
 	require.NoError(t, json.Compact(&out, testOpenCDCRecord))
+	return out.Bytes()
+}
+
+func testJSONRecords(t *testing.T) []byte {
+	t.Helper()
+	var out bytes.Buffer
+
+	out.Write([]byte(`[`))
+	require.NoError(t, json.Compact(&out, testOpenCDCRecord))
+	out.Write([]byte(`]`))
 
 	return out.Bytes()
 }
 
-func testProtoRecord(t *testing.T) *opencdcv1.Record {
+func testProtoRecords(t *testing.T) []*opencdcv1.Record {
 	t.Helper()
 
-	keydata, err := structpb.NewStruct(map[string]any{
-		"id": 1,
-	})
-	require.NoError(t, err)
+	var rr []opencdc.Record
 
-	afterdata, err := structpb.NewStruct(map[string]any{
-		"category":         "Electronics",
-		"customer_email":   "customer1@example.com",
-		"id":               1,
-		"product_id":       101,
-		"product_name":     "Example Laptop 1",
-		"product_type":     "Laptop",
-		"shipping_address": "123 Main St, Cityville",
-		"stock":            true,
-	})
-	require.NoError(t, err)
+	require.NoError(t, json.Unmarshal(testJSONRecords(t), &rr))
 
-	return &opencdcv1.Record{
-		Position:  []byte("position-1"),
-		Operation: opencdcv1.Operation_OPERATION_CREATE,
-		Metadata: map[string]string{
-			"conduit.source.connector.id": "connector-1",
-			"opencdc.readAt":              "1703019966257132000",
-			"opencdc.version":             "v1",
-		},
-		Key: &opencdcv1.Data{
-			Data: &opencdcv1.Data_StructuredData{
-				StructuredData: keydata,
-			},
-		},
-		Payload: &opencdcv1.Change{
-			Before: nil,
-			After: &opencdcv1.Data{
-				Data: &opencdcv1.Data_StructuredData{
-					StructuredData: afterdata,
-				},
-			},
-		},
+	protoRecords := make([]*opencdcv1.Record, len(rr))
+	for i, r := range rr {
+		protoRecords[i] = &opencdcv1.Record{}
+		require.NoError(t, r.ToProto(protoRecords[i]))
 	}
+
+	return protoRecords
 }

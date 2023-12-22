@@ -10,7 +10,7 @@
     "id": 1
   },
   "payload": {
-    "before": null,
+    "before": {},
     "after": {
       "category": "Electronics",
       "customer_email": "customer1@example.com",

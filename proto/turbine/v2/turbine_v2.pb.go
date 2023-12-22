@@ -7,7 +7,7 @@
 package turbinev2
 
 import (
-	v1 "github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
+	v1 "github.com/conduitio/conduit-commons/proto/opencdc/v1"
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
