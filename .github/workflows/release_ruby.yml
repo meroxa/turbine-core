@@ -11,7 +11,7 @@ jobs:
       run:
         working-directory: lib/ruby/turbine_rb
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.MEROXA_MACHINE }}
 
