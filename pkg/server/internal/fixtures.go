@@ -8,8 +8,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/conduitio/conduit-commons/opencdc"
-	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
-	"github.com/meroxa/turbine-core/v2/pkg/record"
+	"github.com/conduitio/conduit-commons/proto/opencdc/v1"
 	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 )
 
@@ -25,12 +24,16 @@ func ReadFixture(ctx context.Context, file string) ([]*opencdcv1.Record, error) 
 		return nil, err
 	}
 
-	rr, err := record.ToProto(fixtureRecords)
-	if err != nil {
-		return nil, err
+	protoRecords := make([]*opencdcv1.Record, len(fixtureRecords))
+
+	for i, r := range fixtureRecords {
+		protoRecords[i] = &opencdcv1.Record{}
+		if err := r.ToProto(protoRecords[i]); err != nil {
+			return nil, err
+		}
 	}
 
-	return rr, nil
+	return protoRecords, nil
 }
 
 func PrintRecords(name string, sr *turbinev2.StreamRecords) {
@@ -40,13 +43,15 @@ func PrintRecords(name string, sr *turbinev2.StreamRecords) {
 	fmt.Fprintln(w, "index\trecord")
 	fmt.Fprintln(w, "----\t----")
 
-	rr, err := record.FromProto(sr.Records)
-	if err != nil {
-		panic(err)
-	}
+	for i, proto := range sr.Records {
+		var r opencdc.Record
 
-	for i, r := range rr {
-		fmt.Fprintf(w, "%d\t%s\n", i, string(r.Bytes()))
+		if err := r.FromProto(proto); err != nil {
+			fmt.Fprintf(w, "%d\t%s\n", i, fmt.Sprintf("failed to render, error: %s", err.Error()))
+		} else {
+			fmt.Fprintf(w, "%d\t%s\n", i, string(r.Bytes()))
+		}
+
 		fmt.Fprintln(w, "----\t----")
 	}
 

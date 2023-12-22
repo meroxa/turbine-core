@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/conduitio/conduit-connector-protocol/proto/opencdc/v1"
+	"github.com/conduitio/conduit-commons/proto/opencdc/v1"
 	"github.com/google/uuid"
 	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	"github.com/meroxa/turbine-core/v2/proto/turbine/v2"
