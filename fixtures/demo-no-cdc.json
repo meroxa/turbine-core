@@ -8,9 +8,9 @@
       "opencdc.version": "v1",
       "postgres.table": "orders"
     },
-    "key": null,
+    "key": {},
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Electronics",
         "customer_email": "customer11@example.com",
@@ -32,9 +32,9 @@
       "opencdc.version": "v1",
       "postgres.table": "orders"
     },
-    "key": null,
+    "key": {},
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Clothing",
         "customer_email": "customer12@example.com",
@@ -56,9 +56,9 @@
       "opencdc.version": "v1",
       "postgres.table": "orders"
     },
-    "key": null,
+    "key": {},
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Home Goods",
         "customer_email": "customer13@example.com",
@@ -80,9 +80,9 @@
       "opencdc.version": "v1",
       "postgres.table": "orders"
     },
-    "key": null,
+    "key": {},
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Electronics",
         "customer_email": "customer14@example.com",
@@ -104,9 +104,9 @@
       "opencdc.version": "v1",
       "postgres.table": "orders"
     },
-    "key": null,
+    "key": {},
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Clothing",
         "customer_email": "customer15@example.com",
@@ -128,9 +128,9 @@
       "opencdc.version": "v1",
       "postgres.table": "orders"
     },
-    "key": null,
+    "key": {},
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Home Goods",
         "customer_email": "customer16@example.com",
@@ -152,9 +152,9 @@
       "opencdc.version": "v1",
       "postgres.table": "orders"
     },
-    "key": null,
+    "key": {},
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Electronics",
         "customer_email": "customer17@example.com",
@@ -176,9 +176,9 @@
       "opencdc.version": "v1",
       "postgres.table": "orders"
     },
-    "key": null,
+    "key": {},
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Clothing",
         "customer_email": "customer18@example.com",
@@ -200,9 +200,9 @@
       "opencdc.version": "v1",
       "postgres.table": "orders"
     },
-    "key": null,
+    "key": {},
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Home Goods",
         "customer_email": "customer19@example.com",

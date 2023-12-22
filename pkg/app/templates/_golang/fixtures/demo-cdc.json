@@ -12,7 +12,7 @@
       "id": 1
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Electronics",
         "customer_email": "customer1@example.com",
@@ -38,7 +38,7 @@
       "id": 2
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Clothing",
         "customer_email": "customer2@example.com",
@@ -64,7 +64,7 @@
       "id": 3
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Home Goods",
         "customer_email": "customer3@example.com",
@@ -90,7 +90,7 @@
       "id": 4
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Electronics",
         "customer_email": "customer4@example.com",
@@ -116,7 +116,7 @@
       "id": 5
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Clothing",
         "customer_email": "customer5@example.com",
@@ -142,7 +142,7 @@
       "id": 6
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Home Goods",
         "customer_email": "customer6@example.com",
@@ -168,7 +168,7 @@
       "id": 7
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Electronics",
         "customer_email": "customer7@example.com",
@@ -194,7 +194,7 @@
       "id": 8
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Clothing",
         "customer_email": "customer8@example.com",
@@ -220,7 +220,7 @@
       "id": 9
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Home Goods",
         "customer_email": "customer9@example.com",
@@ -246,7 +246,7 @@
       "id": 10
     },
     "payload": {
-      "before": null,
+      "before": {},
       "after": {
         "category": "Electronics",
         "customer_email": "customer10@example.com",
@@ -342,8 +342,8 @@
       "id": 3
     },
     "payload": {
-      "before": null,
-      "after": null
+      "before": {},
+      "after": {}
     }
   },
   {
@@ -394,8 +394,8 @@
       "id": 5
     },
     "payload": {
-      "before": null,
-      "after": null
+      "before": {},
+      "after": {}
     }
   },
   {
@@ -481,8 +481,8 @@
       "id": 8
     },
     "payload": {
-      "before": null,
-      "after": null
+      "before": {},
+      "after": {}
     }
   },
   {
@@ -533,8 +533,8 @@
       "id": 10
     },
     "payload": {
-      "before": null,
-      "after": null
+      "before": {},
+      "after": {}
     }
   }
 ]
