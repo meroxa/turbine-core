@@ -3,9 +3,9 @@ version: v1
 deps:
   - remote: buf.build
     owner: conduitio
-    repository: conduit-connector-protocol
-    commit: 73c233355d144c6d8d0a8f765b60c3c7
-    digest: shake256:7179582c72d6cb45b31296f47f6210848d015e9643f7210cd6121a9c44d2316cd64679e27780abb4ba51ad8d7bd0bff795613708bd93485551f1af3ab6daaf9e
+    repository: conduit-commons
+    commit: 29a2792d387e4e85a0da15b5ea895637
+    digest: shake256:1275ac9a7d437cc6b48bd6ff2e9edc59f0450a8f9ab6050f49fb9949e231b7f4d91debfd42b09fc29d9e4aed1b9904266a46a46f7a5676218b53aafb7efe211d
   - remote: buf.build
     owner: envoyproxy
     repository: protoc-gen-validate
