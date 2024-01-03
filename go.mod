@@ -6,7 +6,7 @@ go 1.21.4
 replace github.com/conduitio/conduit-commons v0.0.0-20231215130533-b393cff920e2 => github.com/conduitio/conduit-commons v0.0.0-20231222110339-d2dade3dc74a
 
 require (
-	github.com/conduitio/conduit-commons v0.0.0-20240103174500-680d445703c0
+	github.com/conduitio/conduit-commons v0.0.0-20240103192808-8f84b3f51c55
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.5.0
@@ -240,7 +240,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b // indirect
+	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240103183307-be819d1f06fc // indirect
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
