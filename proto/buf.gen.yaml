@@ -8,7 +8,7 @@ managed:
       - buf.build/googleapis/googleapis
       - buf.build/envoyproxy/protoc-gen-validate
     override:
-      buf.build/conduitio/conduit-connector-protocol: github.com/conduitio/conduit-commons/proto
+      buf.build/conduitio/conduit-commons: github.com/conduitio/conduit-commons/proto
 plugins:
   - plugin: buf.build/protocolbuffers/go:v1.31.0
     out: .

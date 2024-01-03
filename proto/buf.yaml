@@ -8,5 +8,5 @@ breaking:
     - FILE
 deps:
   - buf.build/googleapis/googleapis
-  - buf.build/conduitio/conduit-connector-protocol
+  - buf.build/conduitio/conduit-commons
   - buf.build/envoyproxy/protoc-gen-validate
