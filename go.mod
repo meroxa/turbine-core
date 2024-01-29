@@ -6,7 +6,7 @@ require (
 	github.com/conduitio/conduit-commons v0.0.0-20240103200651-5a5746611a8e
 	github.com/envoyproxy/protoc-gen-validate v1.0.4
 	github.com/golang/mock v1.6.0
-	github.com/google/uuid v1.5.0
+	github.com/google/uuid v1.6.0
 	github.com/heimdalr/dag v1.4.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/stretchr/testify v1.8.4
