@@ -7,7 +7,7 @@ require (
 	github.com/envoyproxy/protoc-gen-validate v1.0.4
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
-	github.com/heimdalr/dag v1.4.0
+	github.com/heimdalr/dag v1.5.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/stretchr/testify v1.9.0
 	google.golang.org/grpc v1.65.0
